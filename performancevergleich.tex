@@ -1,0 +1,231 @@
+\documentclass[fontsize=12pt,paper=a4,twoside=semi,parskip=half-,headsepline,headinclude]{scrreprt}
+% Grundgröße 12pt, zweiseitig
+\usepackage[headsepline,automark]{scrlayer-scrpage}
+% Seitenköpfe automatisch 
+\usepackage[ngerman]{babel}
+% Sprachpaket für Deutsch (Umlaute, Trennung,deutsche Überschriften)
+\usepackage{blindtext}
+% macht nur den Blindtext, den Sie aktuell sehen
+\usepackage{lmodern}
+% schöne PDF-Schrift
+\usepackage{graphicx,hyperref,amssymb}
+%Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
+%Math. Symbole aus AmsTeX
+\usepackage[utf8]{inputenc}
+% Umlaute und über Tastatur einzugeben
+\usepackage{listings}
+% nette Listing-Formatierung
+\usepackage[backend=biber]{biblatex}
+\addbibresource{literatur.bib}
+
+% Festlegung Kopf- und Fußzeile     
+\defpagestyle{meinstil}{%
+{\headmark \hfill}
+{\hfill \headmark}
+{\hfill \headmark\hfill }
+(\textwidth,.4pt)
+}{%
+(\textwidth,.4pt)
+{\pagemark\hfill Vorname Name}
+{\today \hfill \pagemark}
+{\today\hfill\pagemark} 
+}
+\pagestyle{meinstil} 
+
+\raggedbottom
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}    % hier gehts los
+  \thispagestyle{empty} % Titelseite
+\includegraphics[width=0.2\textwidth]{hsh_icons/Wortmarke_WI_schwarz}
+
+   {  ~ \sffamily
+  \vfill
+  {\Huge\bfseries Performance-Vergleich von \\Nebenläufigkeits-Konzepten in \\objektorientierten Programmiersprachen}
+  \bigskip
+
+  {\Large 
+  Philipp Ermer \\[2ex]
+ Master-Arbeit im Studiengang "`Angewandte Informatik"' 
+ \\[5ex]
+   \today } 
+}
+ \vfill
+  
+  ~ \hfill
+  \includegraphics[height=0.3\paperheight]{hsh_icons/H_WI_Pantone1665} 
+
+\vspace*{-3cm}
+
+
+\newpage 
+\thispagestyle{empty}
+\quad 
+
+
+  \newpage \thispagestyle{empty}
+ \begin{tabular}{ll}
+{\bfseries\sffamily Autor} &  Philipp Ermer \\ 
+            & Matrikelnummer: 1313395 \\
+            & philipp.ermer@web.de \\[5ex]
+{\bfseries\sffamily Erstprüferin:} & Prof. Dr. Holger Peine \\
+          & Abteilung Informatik, Fakultät IV \\
+         & Hochschule Hannover \\
+        & holger.peine@hs-hannover.de \\[5ex]
+{\bfseries\sffamily Zweitprüfer:} &Prof. Dr. Robert Garmann \\
+          & Abteilung Informatik, Fakultät IV \\
+         & Hochschule Hannover \\
+        & robert.garmann@hs-hannover.de
+\end{tabular}
+
+\vfill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Die folgende Lizenz kann die weitere Verwertung Ihrer Arbeit vereinfachen.
+% Wenn Sie Ihre Arbeit nicht unter dem genannten Lizenzvertrag lizenzieren
+% möchten, können Sie diesen Abschnitt entfernen.
+% Dies hat keinerlei Einfluss auf die Bewertung Ihrer Arbeit.
+Soweit nicht anders gekennzeichnet, ist dieses Werk unter einem
+Creative-Commons-Lizenzvertrag Namensnennung 4.0 lizenziert.
+Dies gilt nicht für Zitate und Werke, die aufgrund einer anderen Erlaubnis
+genutzt werden.
+Um die Bedingungen der Lizenz einzusehen, folgen Sie bitte dem Hyperlink:\\
+\url{https://creativecommons.org/licenses/by/4.0/deed.de}
+
+\vfill
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center} \sffamily\bfseries Selbständigkeitserklärung \end{center}
+% fett und zentriert in der minipage
+
+Hiermit erkläre ich, dass ich die eingereichte Master-Arbeit
+selbständig und ohne fremde Hilfe verfasst, andere als die von mir angegebenen Quellen
+und Hilfsmittel nicht benutzt und die den benutzten Werken wörtlich oder
+inhaltlich entnommenen Stellen als solche kenntlich gemacht habe. 
+\vspace*{7ex}
+
+Hannover, den \today \hfill Unterschrift
+
+
+\newpage 
+\thispagestyle{empty}
+\quad 
+\newpage
+
+
+  \pdfbookmark[0]{Inhalt}{contents}
+  \tableofcontents  % Inhaltsverzeichnis
+
+\listoffigures      % Abbildungsverzeichnis
+
+\listoftables       % Tabellenverzeichnis
+
+\chapter{Einführung}
+
+\section{Motivation}
+
+\section{Ziel der Arbeit}
+
+\section{Verwandte Arbeiten}
+
+\section{Methodik}
+
+\section{Gliederung und Aufbau}
+
+
+
+\chapter{Nebenläufigkeitskonzepte}
+
+\section{Java: Virtual Threads}
+
+Virtual Threads \cite{Karsten2020}
+
+\section{Java: Plattform Threads}
+
+\includegraphics[scale=2.5]{figures/example.png}
+
+\section{Java: Completable Futures}
+
+\section{Kotlin: CO-Routinen}
+
+\section{Kotlin: Threads}
+
+\section{Go: Go-Routinen}
+
+\section{C\#: async/await}
+
+\section{Vergleich der Konzepte}
+
+
+
+\chapter{Benchmarks}
+
+\section{Benchmark 1}
+
+\section{Benchmark 2}
+
+\section{Benchmark 3}
+
+\section{Benchmark 4}
+
+
+
+\chapter{Testaufbau}
+
+\section{Testumgebung}
+
+\section{Performancefaktoren}
+
+\section{Werkzeuge zur Datenerhebung}
+
+
+
+\chapter{Messungen}
+
+\section{Messung: Benchmark 1}
+
+\section{Messung: Benchmark 2}
+
+\section{Messung: Benchmark 3}
+
+\section{Messung: Benchmark 4}
+
+
+
+\chapter{Auswertung}
+
+\section{Ergebnisse und Beobachtungen}
+
+\section{Diskussion und Bewertung}
+
+
+
+\chapter{Zusammenfassung und Ausblick}
+
+\section{Zusammenfassung}
+
+\section{Ausblick}
+
+
+
+\printbibliography
+
+
+%\input{abkuerz.tex}      % Einbinden von Tex-Files
+%\input{einfuehrung.tex}
+%
+%\include{normen}        % Einbinden von größeren Tex-Files,z.B. Kapiteln
+%\include{aufbau}
+%\include{zitieren}
+%\include{form}
+%\include{allgtips}
+%
+%\bibliographystyle{alpha}  % Schlüssel als Buchstaben
+%\bibliography{literaturverzeichnis}      % Literaturverzeichnis
+
+\end{document}
+
+
