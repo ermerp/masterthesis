@@ -24,10 +24,9 @@ jobs:
          path: performancevergleich.pdf
          
       - name: Create Release
-        uses: "marvinpinto/action-automatic-releases@v1.2.1"
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          automatic_release_tag: Release ${{ github.ref }}
           files: |
             performancevergleich.pdf
