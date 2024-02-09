@@ -18,24 +18,16 @@ jobs:
         with:
           root_file: performancevergleich.tex
 
+      - uses: actions/upload-artifact@v3
+        with:
+         name: PDF
+         path: performancevergleich.pdf
+         
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./performancevergleich.pdf
-          asset_name: performancevergleich.pdf
-          asset_content_type: pdf
+          automatic_release_tag: Release ${{ github.ref }}
+          files: |
+            performancevergleich.pdf
