@@ -139,17 +139,88 @@ Hannover, den \today \hfill Unterschrift
 
 \chapter{Nebenläufigkeitskonzepte}
 
-\section{Java: Virtual Threads}
-
-Virtual Threads \cite{Karsten2020}
+TODO: Einleitungs-Text Kapitel Nebenläufigkeit
 
 \section{Java: Plattform Threads}
 
-\includegraphics[scale=2.5]{figures/example.png}
+abc
+
+\section{Java: Virtual Threads}
+
+Java Virtual Threads sind seit dem JDK 21(Java Development Kit) [Quelle JDK 21] ein fester Bestandteil von Java. Ursprünglich entwickelt wurden die Virtual Threads im Rahmen des Project Loom als so genannte Fiebers. Das Ziel war es die mittlerweile in die Jahre gekommenen Java Threads, durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API(Application Programming Interface) zurückgreift.
+
+Die bisher verwendeten Java Threads werden auch als Platform Threads bezeichnet, da sie sogenannte Wrapper sind die einen Betriebssystem Thread umschließen. Das bedeutet, dass für jeden Platform Thread ein Betriebssystem Thread erstellt wird, welcher dann von einem Java Platform Thread umschlossen wird. Das hat zur Folge, dass Plattform Threads schwergewichtig werden, da Betriebssystem Thread ressourcenintensiv sind und ihre maximale Anzahl damit begrenzt ist. Dies führt dazu, dass die Anzahl der Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. Ein weiteres Problem ist, dass die Verwaltung der Threads
+vom Betriebssystem übernommen wird und die JRE(Java Runtime Enviroment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sonder für alle Programmiersprachen funktionieren muss.
+
+TODO: Pooling? Senkt kosten zum erstellen, erhört nicht die maximale Anzahl an Threads
+
+TODO: Zeichnung Platform Threads
+
+Ziel von Virtual Threads ist es dies Schwachstellen zu umgehen, in dem eine große Zahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Die Verwaltung der Virtual Threads kann so mit von der JRE übernommen werden.
+
+Im Detail sieht dies wie folgt aus:
+
+Es wird eine kleine Anzahl an Platform Threads erstellt, die ihrer seit einen Betriebssystem Thread umschließen(Wrapper). Diese Platform Threads werden als Carrier bezeichnet und ihre Anzahl entspricht standardmäßig der Anzahl der Prozessorkerne des ausführenden Systems. Die Carrier Threads werden von einem ForkJoinPool verwalten der nach dem FIFO(First In - First Out) Prinzip arbeitet. 
+
+carrier thread
+forkjoin pool
+Workstealing
+
+VT mount/ unmount
+JDK rewritten where blocking
+continuations .yield()
+blocking I/O operation automatically suspends the virtual thread until it can be resumed later
+
+pinning (schlecht)
+VT kann nicht unmounted werden
+native call
+synchronized code block
+-kurze Zeit kein Problem
+-sonst reentrant lock
+-zukünftig vermutlich gelöst
+
+Thread Per Request Model
+Gut für nebenläufige IO Operationen
+Request=PT=OST schlecht
+Request=VT gut
+task ganze zeit im gleiche VT
+wird in unterschiedliche PT mounted
+the virtual thread consumes an OS thread only while it performs calculations on the CPU
+
+Little's law
+latency, concurrency, and throughput
+
+platform threads, implemented as wrappers for OS threads (1:1 scheduling). Virtual threads employ M:N scheduling, where a large number (M) of virtual threads is scheduled to run on a smaller number (N) of OS threads.
+
+VT seit JDK 19 previe(alte JEP)
+Einsatz auf mehrkernprozessoren
+
+Einfache Programmierung
+Gleiche Trhread API
+java.lang.Thread API
+Können integriert werden ohne bestehende Codebasis wesentlich zu verändern
+TODO:Code Beispiel
+Virtual threads are cheap and plentiful, and thus should never be pooled: 
+A new virtual thread should be created for every application task
+virtual threads will thus be short-lived and have shallow call stacks
+Platform threads, by contrast, are heavyweight and expensive
+
+
+PT erstellen kostet Zeit Speicher
+2 MB pro PT
+~ 1 Ms
+~100 ns context switch(OS abhängig)
+
+PT
+einige hunder
+VT
+Millionen(fast unbegrenzt)
+
+Virtual Threads \cite{Karsten2020}
 
 \section{Java: Completable Futures}
 
-Test 2
+\includegraphics[scale=2.5]{figures/example.png}
 
 \section{Kotlin: CO-Routinen}
 
