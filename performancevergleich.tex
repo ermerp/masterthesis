@@ -26,7 +26,7 @@
 (\textwidth,.4pt)
 }{%
 (\textwidth,.4pt)
-{\pagemark\hfill Vorname Name}
+{\pagemark\hfill Philipp Ermer}
 {\today \hfill \pagemark}
 {\today\hfill\pagemark} 
 }
@@ -71,7 +71,7 @@
 {\bfseries\sffamily Autor} &  Philipp Ermer \\ 
             & Matrikelnummer: 1313395 \\
             & philipp.ermer@web.de \\[5ex]
-{\bfseries\sffamily Erstprüferin:} & Prof. Dr. Holger Peine \\
+{\bfseries\sffamily Erstprüfer:} & Prof. Dr. Holger Peine \\
           & Abteilung Informatik, Fakultät IV \\
          & Hochschule Hannover \\
         & holger.peine@hs-hannover.de \\[5ex]
@@ -143,28 +143,38 @@ TODO: Einleitungs-Text Kapitel Nebenläufigkeit
 
 \section{Java: Plattform Threads}
 
-abc
-
-\section{Java: Virtual Threads}
-
-Java Virtual Threads sind seit dem JDK 21(Java Development Kit) [Quelle JDK 21] ein fester Bestandteil von Java. Ursprünglich entwickelt wurden die Virtual Threads im Rahmen des Project Loom als so genannte Fiebers. Das Ziel war es die mittlerweile in die Jahre gekommenen Java Threads, durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API(Application Programming Interface) zurückgreift.
-
-Die bisher verwendeten Java Threads werden auch als Platform Threads bezeichnet, da sie sogenannte Wrapper sind die einen Betriebssystem Thread umschließen. Das bedeutet, dass für jeden Platform Thread ein Betriebssystem Thread erstellt wird, welcher dann von einem Java Platform Thread umschlossen wird. Das hat zur Folge, dass Plattform Threads schwergewichtig werden, da Betriebssystem Thread ressourcenintensiv sind und ihre maximale Anzahl damit begrenzt ist. Dies führt dazu, dass die Anzahl der Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. Ein weiteres Problem ist, dass die Verwaltung der Threads
-vom Betriebssystem übernommen wird und die JRE(Java Runtime Enviroment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sonder für alle Programmiersprachen funktionieren muss.
+Die bisher verwendeten Java Threads werden auch als Platform Threads bezeichnet, da sie sogenannte Wrapper sind, welche einen Betriebssystem Thread umschließen. Das bedeutet, dass für jeden Platform Thread ein Betriebssystem Thread erstellt wird, welcher dann von einem Java Platform Thread umschlossen wird. Das hat zur Folge, dass Plattform Threads schwergewichtig werden, da Betriebssystem Thread ressourcenintensiv sind und ihre maximale Anzahl damit begrenzt ist. Dies führt dazu, dass die Anzahl der Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. Ein weiteres Problem ist, dass die Verwaltung der Threads
+vom Betriebssystem übernommen wird und die JRE(Java Runtime Environment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sondern für alle Programmiersprachen funktionieren muss.
 
 TODO: Pooling? Senkt kosten zum erstellen, erhört nicht die maximale Anzahl an Threads
 
 TODO: Zeichnung Platform Threads
 
-Ziel von Virtual Threads ist es dies Schwachstellen zu umgehen, in dem eine große Zahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Die Verwaltung der Virtual Threads kann so mit von der JRE übernommen werden.
+\section{Java: Virtual Threads}
+
+Die Java Virtual Threads sind seit dem JDK 21 (Java Development Kit) fester Bestandteil von Java, sie wurden ursprünglich im Rahmen des Project Loom als sogenannte Fiebers entwickelt. Das Ziel war es die mittlerweile nicht mehr zeitgemäßen Java Threads, durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API(Application Programming Interface) zurückgreift.
+
+Das Ziel von Virtual Threads besteht in der Umgehung der Schwachstellen von Platform Threads, indem eine große ANzahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Dadurch kann eine deutlich größere Anzahl an Virtual Threads gleichzeitig erstellt werden, welche von der JRE verwaltet werden.
 
 Im Detail sieht dies wie folgt aus:
 
-Es wird eine kleine Anzahl an Platform Threads erstellt, die ihrer seit einen Betriebssystem Thread umschließen(Wrapper). Diese Platform Threads werden als Carrier bezeichnet und ihre Anzahl entspricht standardmäßig der Anzahl der Prozessorkerne des ausführenden Systems. Die Carrier Threads werden von einem ForkJoinPool verwalten der nach dem FIFO(First In - First Out) Prinzip arbeitet. 
+Es wird eine kleine Anzahl an Platform Threads(Wrapper) erstellt, die ihrerseits einen Betriebssystem Thread umschließen. Diese Platform Threads werden als Carrier Threads bezeichnet und ihre Anzahl entspricht standardmäßig der Anzahl der Prozessorkerne des ausführenden Systems. Die Carrier Threads werden von einem ForkJoinPool verwalten der nach dem FIFO(First In - First Out) Prinzip und mit work-stealing arbeitet. 
 
-carrier thread
-forkjoin pool
-Workstealing
+Für jede neue Aufgabe(task) im System, die nebenläufig ausgeführt werden kann, wird ein neuer Virtual Thread erstellt. Die Aufgabe bleibt dabei die ganze Zeit im gleichen Virtual Thread. Der Virtual Thread wiederum wird zum bearbeiten der Aufgabe in einen Carrier Thread eingesetzt(mount). 
+
+TODO: Zeichnung Virtual Threads
+
+Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen(unmount) und so lange ausgesetzt bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann.
+
+TODO: Zeichnung Virtual Threads Ablaufdiagramm
+
+Thread Per Request Model
+Gut für nebenläufige IO Operationen
+Request=PT=OST schlecht
+Request=VT gut
+task ganze zeit im gleiche VT
+wird in unterschiedliche PT mounted
+the virtual thread consumes an OS thread only while it performs calculations on the CPU
 
 VT mount/ unmount
 JDK rewritten where blocking
@@ -178,14 +188,6 @@ synchronized code block
 -kurze Zeit kein Problem
 -sonst reentrant lock
 -zukünftig vermutlich gelöst
-
-Thread Per Request Model
-Gut für nebenläufige IO Operationen
-Request=PT=OST schlecht
-Request=VT gut
-task ganze zeit im gleiche VT
-wird in unterschiedliche PT mounted
-the virtual thread consumes an OS thread only while it performs calculations on the CPU
 
 Little's law
 latency, concurrency, and throughput
@@ -212,9 +214,11 @@ PT erstellen kostet Zeit Speicher
 ~100 ns context switch(OS abhängig)
 
 PT
-einige hunder
+einige hundert
 VT
 Millionen(fast unbegrenzt)
+
+VT= Daemon threads
 
 Virtual Threads \cite{Karsten2020}
 
