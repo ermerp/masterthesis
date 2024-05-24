@@ -164,17 +164,28 @@ Für jede neue Aufgabe(task) im System, die nebenläufig ausgeführt werden kann
 
 TODO: Zeichnung Virtual Threads
 
-Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen(unmount) und so lange ausgesetzt bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann.
+Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen(unmount) und so lange geparkt bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann. Der Virtual Thread wir dann wieder in eine freien Carrier Thread eingesetzt werden, dies kann aber ein andere sein als zu Beginn. Daraus folgt, eine Aufgabe wird ihre gesamte Lebenszeit vom gleichen Virtual Thread ausgeführt, welcher jedoch in unterschiedlichen Carrier Threads eingesetzt werden kann. Die hat den Vorteil, dass ein Virtual Thread ein Betriebsystems Thread nur dann benutzt, wenn der Virtual Thread Berechnungen auf dem Prozessor ausführt. Ist ein Virtual Thread blockiert macht er platzt auf dem Betriebsystem Thread für einen anderen Virtual Thread. Dies führt zu einer effizienteren auslastung des Prozessors.
 
 TODO: Zeichnung Virtual Threads Ablaufdiagramm
 
-Thread Per Request Model
-Gut für nebenläufige IO Operationen
-Request=PT=OST schlecht
-Request=VT gut
-task ganze zeit im gleiche VT
-wird in unterschiedliche PT mounted
-the virtual thread consumes an OS thread only while it performs calculations on the CPU
+Ein typischer Anwendungsfall für Virtual Threads ist ein Server-Anwendung die Anfragen im Thread per request Model bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig berarbeitet werden. Dies bedeutet bei Platform Threads, dass für jede neue Anfrage nicht nur ein neuer Platform Thread sondern auch ein neuer Betriebssystem Thread erstellt werden muss. Da die Anzahl an Betriebssystem Thread aber für ein System stark limitiert ist, in der Regel einige Tausend, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Plarform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfühgung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine Große Anzahl von ihnen erstellen, bis zu mehrere Millionen.
+
+Der Vorteil von Virtual Thread gegenüber Platform Threads bei dem Thread per request Model, lässt sich gut mit Littels Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben davon abhängig ist wie hoch der Durchsatz($\lambda$) und die Durchlautzeit (W) sind.
+
+TODO: Formel
+
+Daraus folgt, das der Durchsatz sich aus den gleichzeitig in Bearbeitung befindlichen Aufgaben und der Durchlaufzeit errechnet.
+
+TODO: umgestelle Formel
+
+Auf das Thread per request Model angewandt, bedeutet das der Durchsatz die pro Sekunde in das System eingehend Anfragen ist. Die Durchlaufzeit wird dadurch beschrieben wie hoch die durchschnittlich Latenz des Systems ist um eine Anfrage zu beantworten. 
+
+Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, bei einer Latenz von 50ms pro Anfrage. Dafür ist es nötig 10 Anfragen gleichzeitig nebenläufig zu verarbeiten. Soll das System nun auf 2000 Anfragen pro Sekunde, bei gleichbleibender Latenz skaliert werden, muss das System nun 100  Aufgeben gleichzeitig nebenläufig verarbeiten.
+
+Da wir vom Thread per request Model ausgehen, müssen also im Fall von  Platform Threads, 100 von ihnen erstellt werden und damit auch 100 Betriebssystem Threads. Somit ist die Skalierbarkeit auf die maximal zur Verfühgung stehenden Betriebssystem Threads(einige Tausend) begrenzt. Virtual Threads hingegen lassen sich in einer deutlich größeren Anzahl erstellen(mehrere Millionen) und werden so nicht zum limitierenden Faktor wenn es um die Skalierbarkeit des beschriebenen Beispiels geht.
+
+Die Annahme stimmt allerdings nur so, wie die nebenläufig bearbeiteten Aufgaben, weiterhin mit der gleichen Latenz bearbeitet werden. Dies ist der Fall, wenn ein Aufgabe pausiert um beispielsweise auf I/O-Operation zu warten. Wenn die einzelne Aufgaben jedoch rechenintensiv sind und möglicherweise niemals pausieren verlieren Virtual Threads ihren Vorteil gegen über Platform Threads. Virtual Threads können nicht einzelne Aufgaben schneller ausführen als Platform Threads, sondern mehr Aufgaben nebenläufig Aufgaben. Damit lässt sich abschließend sagen Virtual Threads steigern den Durchsatz einer Anwendung gen über Platform Threads, wenn viel Aufgaben nebenläufig ausgeführt werden und die rechenlast der einzelnen Aufgaben niedrig ist.
+
 
 VT mount/ unmount
 JDK rewritten where blocking
@@ -188,9 +199,6 @@ synchronized code block
 -kurze Zeit kein Problem
 -sonst reentrant lock
 -zukünftig vermutlich gelöst
-
-Little's law
-latency, concurrency, and throughput
 
 platform threads, implemented as wrappers for OS threads (1:1 scheduling). Virtual threads employ M:N scheduling, where a large number (M) of virtual threads is scheduled to run on a smaller number (N) of OS threads.
 
@@ -209,7 +217,7 @@ Platform threads, by contrast, are heavyweight and expensive
 
 
 PT erstellen kostet Zeit Speicher
-2 MB pro PT
+2 MB pro PT (20 MB?)
 ~ 1 Ms
 ~100 ns context switch(OS abhängig)
 
