@@ -15,7 +15,8 @@
 % Umlaute und über Tastatur einzugeben
 \usepackage{listings}
 % nette Listing-Formatierung
-\usepackage[backend=biber]{biblatex}
+%\usepackage[backend=bibtex]{biblatex}
+\usepackage[sorting=none, style=nature]{biblatex}
 \addbibresource{literatur.bib}
 
 % Festlegung Kopf- und Fußzeile     
@@ -37,9 +38,35 @@
 \renewcommand{\bottomfraction}{1}
 \newcommand{\code}[1]{\texttt{#1}}
 
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Java,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+	\DeclareUnicodeCharacter{03BB}{$\lambda$}
 \begin{document}    % hier gehts los
+	\renewcommand{\figurename}{Abb.}
+	
   \thispagestyle{empty} % Titelseite
 \includegraphics[width=0.2\textwidth]{hsh_icons/Wortmarke_WI_schwarz}
 
@@ -140,95 +167,133 @@ Hannover, den \today \hfill Unterschrift
 
 \chapter{Nebenläufigkeitskonzepte}
 
-TODO: Einleitungs-Text Kapitel Nebenläufigkeit
+Im Folgenden Kapitel werden die unterschiedlichen Nebenläufigkeits-Konzepte der verschieden Programmiersprachen vorgestellt, welche im Rahmen der Master-Arbeit verglichen wurden. Dabei werden ihre Funktionsweisen, so wie ihre Stärken und Schwächen beleuchtet.
 
 \section{Java: Plattform Threads}
 
-Die bisher verwendeten Java Threads werden auch als Platform Threads bezeichnet, da sie sogenannte Wrapper sind, welche einen Betriebssystem Thread umschließen. Das bedeutet, dass für jeden Platform Thread ein Betriebssystem Thread erstellt wird, welcher dann von einem Java Platform Thread umschlossen wird. Das hat zur Folge, dass Plattform Threads schwergewichtig werden, da Betriebssystem Thread ressourcenintensiv sind und ihre maximale Anzahl damit begrenzt ist. Dies führt dazu, dass die Anzahl der Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. Ein weiteres Problem ist, dass die Verwaltung der Threads
-vom Betriebssystem übernommen wird und die JRE(Java Runtime Environment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sondern für alle Programmiersprachen funktionieren muss.
+Java Threads sind die verbreitetste Art um Nebenläufigkeit in Java-Programmen zu erreichen. Mittlerweile werden Threads auch als Platform Threads bezeichnet, um sie leichter von Virtual Threads unterschieden zu können. Der Name leitet sich davon ab, dass es sich bei Platform Threads um sogenannte Wrapper handelt, welche einen Betriebssystem Thread umschließen. Das bedeutet, dass für jeden Platform Thread ein Betriebssystem Thread erstellt wird.
 
-TODO: Pooling? Senkt kosten zum erstellen, erhört nicht die maximale Anzahl an Threads
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/PlatformThreads.png}
+	\caption{Aufbau: Java Platform Threads}
+	\label{fig:PlatformThreads}
+\end{figure}
 
-\includegraphics[scale=0.5]{figures/PlatformThreads.png}
+Dieser Aufbau hat zur Folge, dass Plattform Threads schwergewichtig sind. Schwergewichtig mein in diesem Fall, das ein Plattform Thread viel Speicher verbraucht($\sim$ 2-3 MB) und es lange dauert ihn zu erstellen($\sim$ 1ms). Platform Threads und die dazugehörigen Betriebssystem Threads sind also ressourcenintensiv und ihre maximale Anzahl ist somit für ein ausführendes System begrenzt. Dies führt dazu, dass die maximale Anzahl der Platform Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. 
+
+Eine Lösung um zumindest die Kosten für das Erstellen von neuen Platform Threads zu senken, ist das Verwenden von Thread Pools. Hierbei wird eine Gruppe von Aufgaben einem Pool von Platform Threads zugewiesen. In der Regel übersteigt dabei die Anzahl der Aufgaben die Anzahl an Platform Thread. Dies hat zur Folge, dass einem Plattform Thread, nachdem er die ihm zugewiesene Aufgabe abgearbeitet hat, dierekt eine neue Aufgabe zugewiesen wird. Das hat den Vorteil, dass nicht mehr für jede Aufgabe ein neuer Platform Thread erstellt werden muss, statdessen können die gleichen Plattform Threads wiederverwendet werden um mehrere Aufgaben hintereinander auszuführen. Damit lassen sich zwar die Kosten für das Erstellen von neuen Platform Threads senken. Es lässt sich jedoch nicht die maximale Anzahl an Platform Threads erhöhen.
+
+Ein weiteres Problem ist, dass die Verwaltung der Threads vom Betriebssystem über\-nommen wird und die JRE(Java Runtime Environment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sondern für alle Programmiersprachen funktionieren muss.
 
 \section{Java: Virtual Threads}
 
-Java Virtual Threads waren erstmals im JDK 19 in Form einer Vorschauversion enthalten. Seit dem JDK 21 (Java Development Kit) sind sie ein fester Bestandteil von Java, sie wurden ursprünglich im Rahmen des Project Loom als sogenannte Fiebers entwickelt. Das Ziel war es die mittlerweile nicht mehr zeitgemäßen Java Threads, durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API(Application Programming Interface) zurückgreift.
+Java Virtual Threads waren erstmals im JDK 19(Java Development Kit) in Form einer Vorschauversion enthalten. Seit dem JDK 21 sind sie ein fester Bestandteil von Java. Sie wurden ursprünglich im Rahmen des Project Loom als sogenannte Fiebers entwickelt. Das Ziel war es die mittlerweile nicht mehr zeitgemäßen Java Threads, durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API(Application Programming Interface) zurückgreift.
 
 Das Ziel von Virtual Threads besteht in der Umgehung der Schwachstellen von Platform Threads, indem eine große Anzahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Dadurch kann eine deutlich größere Anzahl an Virtual Threads gleichzeitig erstellt werden, welche von der JRE verwaltet werden.
 
 Im Detail sieht dies wie folgt aus:
 
-Es wird eine kleine Anzahl an Platform Threads(Wrapper) erstellt, die ihrerseits einen Betriebssystem Thread umschließen. Diese Platform Threads werden als Carrier Threads bezeichnet und ihre Anzahl entspricht standardmäßig der Anzahl der Prozessorkerne des ausführenden Systems, kann je nach Anwendungsfall jedoch leicht variieren. Die Carrier Threads werden von einem ForkJoinPool verwalten der nach dem FIFO(First In - First Out) Prinzip und mit work-stealing arbeitet. 
+Es wird eine kleine Anzahl an Platform Threads(Wrapper) erstellt, die ihrerseits einen Betriebssystem Thread umschließen. Diese Platform Threads werden als Carrier Threads bezeichnet und ihre Anzahl entspricht standardmäßig der Anzahl der Prozessorkerne des ausführenden Systems, kann jedoch je nach Anwendungsfall leicht variieren. Die Carrier Threads werden von einem ForkJoinPool verwalten der nach dem FIFO-Prinzip(First In - First Out) und mit work-stealing arbeitet.\cite{Pressler2023a}
 
 Für jede neue Aufgabe(task) im System, die nebenläufig ausgeführt werden kann, wird ein neuer Virtual Thread erstellt. Die Aufgabe bleibt dabei die ganze Zeit im gleichen Virtual Thread. Der Virtual Thread wiederum wird zum bearbeiten der Aufgabe in einen Carrier Thread eingesetzt(mount). 
 
-\includegraphics[scale=0.5]{figures/VirtualThreads.png}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/VirtualThreads.png}
+	\caption{Aufbau: Java Virtual Threads}
+	\label{fig:VirtualThreads}
+\end{figure}
 
-Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen(unmount) und so lange geparkt bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann. Der Virtual Thread wir dann wieder in eine freien Carrier Thread eingesetzt werden, dies kann aber ein andere sein als zu Beginn. Daraus folgt, eine Aufgabe wird ihre gesamte Lebenszeit vom gleichen Virtual Thread ausgeführt, welcher jedoch in unterschiedlichen Carrier Threads eingesetzt werden kann. Die hat den Vorteil, dass ein Virtual Thread ein Betriebsystems Thread nur dann benutzt, wenn der Virtual Thread Berechnungen auf dem Prozessor ausführt. Ist ein Virtual Thread blockiert macht er platzt auf dem Betriebsystem Thread für einen anderen Virtual Thread. Dies führt zu einer effizienteren Auslastung des Prozessors.
 
-\includegraphics[scale=0.5]{figures/VirtualThreadsAblauf.png}
+Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen(unmount) und so lange geparkt bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann. Der Virtual Thread wir dann wieder in eine freien Carrier Thread eingesetzt, dies kann aber ein andere sein als zu Beginn. Daraus folgt, eine Aufgabe wird ihre gesamte Lebenszeit vom gleichen Virtual Thread ausgeführt, welcher jedoch in unterschiedliche Carrier Threads eingesetzt werden kann. Dies hat den Vorteil, dass ein Virtual Thread ein Betriebsystems Thread nur dann benutzt, wenn der Virtual Thread Berechnungen auf dem Prozessor ausführt. Ist ein Virtual Thread blockiert macht er platzt auf dem Betriebsystem Thread für einen anderen Virtual Thread. Dies führt zu einer effizienteren Auslastung des Prozessors.\cite{Bateman2023}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/VirtualThreadsAblauf.png}
+	\caption{Verwaltung: Java Virtual Threads}
+	\label{fig:VirtualThreadsAblauf}
+\end{figure}
 
 \subsection{Continuations}
 
-Das beschriebene Starten(mount) und Parken(unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um enthaltene Aufgabe entweder zum ersten mal zu starten oder sie nach dem parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen(thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren(freez) bezeichnet. Zu letzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfühgung, um zu überprüfen ob die enthaltene Aufgabe abgeschlossen wurde. Die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen musste neuer Code hinzugefügt werden, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.
+Das beschriebene Starten(mount) und Parken(unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um enthaltene Aufgabe entweder zum ersten mal zu starten oder sie nach dem parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen(thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren(freez) bezeichnet. Zu letzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfühgung, um zu überprüfen ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen musste neuer Code hinzugefügt werden, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
 
-Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialfall, der nach Möglichkeit vermieden sollte, das sogenannte Festecken(pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread sonder auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Die Beschränkung durch Synchronized soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden. Die Bescshränkung durch das Aufrufen von nativen Code wird jedoch bestehen bleiben.
+Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialfall, der nach Möglichkeit vermieden sollte, das sogenannte Festecken(pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread sonder auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Sollte der Code im Synchronized Block lange blockieren, kann es sinnvoll sein das Synchronized durch ein Reentrant Lock zu ersetzen. Die Beschränkung durch Synchronized soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden. Die Beschränkung durch das Aufrufen von nativen Code wird jedoch bestehen bleiben.\cite{Bateman2024}
 
 \subsection{Thread per request Model}
 
-Ein typischer Anwendungsfall für Virtual Threads ist ein Server-Anwendung die Anfragen im Thread per request Model bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig berarbeitet werden. Dies bedeutet bei Platform Threads, dass für jede neue Anfrage nicht nur ein neuer Platform Thread sondern auch ein neuer Betriebssystem Thread erstellt werden muss. Da die Anzahl an Betriebssystem Thread aber für ein System stark limitiert ist, in der Regel einige Tausend, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Plarform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfühgung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine Große Anzahl von ihnen erstellen, bis zu mehrere Millionen.
+Ein typischer Anwendungsfall für Virtual Threads ist ein Server-Anwendung die Anfragen im Thread per request Model bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig berarbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread sondern auch ein neuer Betriebssystem Thread erstellt werden muss. Da die Anzahl an Betriebssystem Thread aber für ein System stark limitiert ist, in der Regel einige Tausend Stück, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Plarform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfühgung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen Stück.
 
-Der Vorteil von Virtual Thread gegenüber Platform Threads bei dem Thread per request Model, lässt sich gut mit Littels Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben davon abhängig ist wie hoch der Durchsatz($\lambda$) und die Durchlautzeit (W) sind.
+Der Vorteil von Virtual Thread gegenüber Platform Threads bei dem Thread per request Model, lässt sich gut an Littels Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind wie hoch der Durchsatz($\lambda$) und die Durchlautzeit (W) sind.\cite{Little_1961}
 
-TODO: Formel
+\begin{eqnarray}
+	L = \lambda \cdot W \nonumber
+\end{eqnarray}
 
-Daraus folgt, das der Durchsatz sich aus den gleichzeitig in Bearbeitung befindlichen Aufgaben und der Durchlaufzeit errechnet.
+Daraus folgt, das der Durchsatz sich aus den gleichzeitig in Bearbeitung befindlichen Aufgaben und der Durchlaufzeit ergibt.
 
-TODO: umgestelle Formel
+\begin{eqnarray}
+	\lambda = \frac{L}{W} \nonumber
+\end{eqnarray}
 
-Auf das Thread per request Model angewandt, bedeutet das der Durchsatz die pro Sekunde in das System eingehend Anfragen ist. Die Durchlaufzeit wird dadurch beschrieben wie hoch die durchschnittlich Latenz des Systems ist um eine Anfrage zu beantworten. 
+Auf das Thread per request Model angewandt, bedeutet das, dass der Durchsatz die pro Sekunde in das System eingehend Anfragen ist. Die Durchlaufzeit wird dadurch beschrieben wie hoch die durchschnittlich Latenz des Systems ist um eine Anfrage zu beantworten. 
 
-Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, bei einer Latenz von 50ms pro Anfrage. Dafür ist es nötig 10 Anfragen gleichzeitig nebenläufig zu verarbeiten. Soll das System nun auf 2000 Anfragen pro Sekunde, bei gleichbleibender Latenz skaliert werden, muss das System nun 100  Aufgeben gleichzeitig nebenläufig verarbeiten.
+Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, bei einer Latenz von 50ms pro Anfrage. Dafür ist es nötig 10 Anfragen gleichzeitig nebenläufig zu verarbeiten. Soll das System nun auf 2000 Anfragen pro Sekunde, bei gleichbleibender Latenz, skaliert werden, muss das System nun 100  Aufgeben gleichzeitig nebenläufig verarbeiten.
 
 Da wir vom Thread per request Model ausgehen, müssen also im Fall von  Platform Threads, 100 von ihnen erstellt werden und damit auch 100 Betriebssystem Threads. Somit ist die Skalierbarkeit auf die maximal zur Verfühgung stehenden Betriebssystem Threads(einige Tausend) begrenzt. Virtual Threads hingegen lassen sich in einer deutlich größeren Anzahl erstellen(mehrere Millionen) und werden so nicht zum limitierenden Faktor wenn es um die Skalierbarkeit des beschriebenen Beispiels geht.
 
-Die Annahme stimmt allerdings nur so lange, wie die nebenläufig bearbeiteten Aufgaben, weiterhin mit der gleichen Latenz bearbeitet werden. Dies ist zum Beispiel dann der Fall, wenn ein Aufgabe pausiert wird um auf I/O-Operation zu warten. Wenn die einzelne Aufgaben jedoch rechenintensiv sind und möglicherweise niemals pausieren verlieren Virtual Threads ihren Vorteil gegen über Platform Threads. Virtual Threads können nicht einzelne Aufgaben schneller ausführen als Platform Threads, sondern mehr Aufgaben nebenläufig bearbeiten. Damit lässt sich abschließend sagen Virtual Threads steigern den Durchsatz einer Anwendung gegenüber Platform Threads, wenn viel Aufgaben nebenläufig ausgeführt werden und die Rechenlast der einzelnen Aufgaben niedrig ist.
+Die Annahme stimmt allerdings nur so lange, wie die nebenläufig bearbeiteten Aufgaben, weiterhin mit der gleichen Latenz bearbeitet werden. Dies ist zum Beispiel dann der Fall, wenn ein Aufgabe pausiert wird um auf I/O-Operation zu warten. Wenn die einzelne Aufgaben jedoch rechenintensiv sind und möglicherweise niemals pausieren verlieren Virtual Threads ihren Vorteil gegen über Platform Threads. Virtual Threads können nicht einzelne Aufgaben schneller ausführen als Platform Threads, sondern mehr Aufgaben nebenläufig bearbeiten. Damit lässt sich abschließend sagen Virtual Threads steigern den Durchsatz einer Anwendung gegenüber Platform Threads, wenn viele Aufgaben nebenläufig ausgeführt werden und die Rechenlast der einzelnen Aufgaben niedrig ist.
 
+\subsection{Softwareentwicklung mit Virtual Threads}
 
+Eine weitere Zielsetzung von Virtual Threads war es Softwareentwicklern den umstieg von Plattform Threads zu Virtual Threads so einfach wie möglich zu gestalten. Deshalb sind Virtual Threads genau wie Plattform Threads eine Instanz der \code{java.lang.Thread} API. So ist es relativ einfach möglich Virtual Threads zu integrieren ohne die bestehende Codebasis wesendlich zu verändern.
 
-Einfache Programmierung
-Gleiche Trhread API
-java.lang.Thread API
-Können integriert werden ohne bestehende Codebasis wesentlich zu verändern
-TODO:Code Beispiel
-Virtual threads are cheap and plentiful, and thus should never be pooled: 
-A new virtual thread should be created for every application task
-virtual threads will thus be short-lived and have shallow call stacks
-Platform threads, by contrast, are heavyweight and expensive
+Am folgendem Code-Beispiel wird deutlich, es muss lediglich der Aufruf \code{Thread.ofPlatform()} durch \code{Thread.ofVirtual()} ersetzt werden, der restliche Code bleibt unberührt.
 
-synchronized code block
--kurze Zeit kein Problem
--sonst reentrant lock
--zukünftig vermutlich gelöst
+\lstset{language=Java}
+\begin{lstlisting}
+	//erstellen eines einzelnen Platform Threads
+	Thread platformThread = Thread.ofPlatform().start(() -> System.out.println("Platform Thread"));
+	platformThread.join();
 
-PT erstellen kostet Zeit Speicher
-2 MB pro PT (20 MB?)
-~ 1 Ms
-~100 ns context switch(OS abhängig)
+	//erstellen eines einzelnen Virtual Threads
+	Thread virtualThread = Thread.ofVirtual().start(() -> System.out.println("Virtual Thread"));
+	virtualThread.join();
+\end{lstlisting}
 
-PT
-einige hundert
-VT
-Millionen(fast unbegrenzt)
+Für Virtual Threads wurde der neue Executor Service \code{Executors.newVirtualThreadPerTaskExecutor()} entwickelt. Für jeden Aufruf von \code{ExecutorService.submit(Runnable)} wird ein neuer Virtual Thread erstellt, der die ihm zugewiesene Aufgabe ausführt. Der Rückgabewert des Executor Service ist ein Future, welches das Ergebnis der Aufgabe enthält so bald der erstellte Virtual Thread ausgeführt wurde. Mit Hilfe von \code{Executors.newVirtualThreadPerTaskExecutor()} lässt sich bestehender Code leicht von Platform Threads auf Virtual Threads umstellen. Oft wird für das Verwalten von Platform Threads ein Thread Pool erstellt und für das Erstellen eines Thread Pools ein Executor Service verwendet. So könnten die Plattform Threads beispielsweise bisher in \code{Executors.newCachedThreadPool()} verwaltet worden sein. Dieser lässt sich nun leicht durch \code{Executors.newVirtualThreadPerTaskExecutor()} ersetzen. Dies wird auch am folgenden Beispiel deutlich:
 
-VT= Daemon threads
+\lstset{language=Java}
+\begin{lstlisting}
+    //mehrere Platform Threads mit Executors.newCachedThreadPool() erstellen
+	try (var cachedPool = Executors.newCachedThreadPool()) {
+		var future1 = cachedPool.submit(() -> powerFunction(task1.base, task1.exponent));
+		var future2 = cachedPool.submit(() -> powerFunction(task2.base, task2.exponent));
+		int ptResult1 = future1.get();
+		int ptResult2 = future2.get();
+	
+		System.out.println("Platform Thread Result 1: " + ptResult1);
+		System.out.println("Platform Thread Result 2: " + ptResult2);
+	} catch (ExecutionException | InterruptedException e) {
+		throw new RuntimeException(e);
+	}
 
-Virtual Threads \cite{Karsten2020}
+	//mehrere Virtual Threads mit Executors.newVirtualThreadPerTaskExecutor() erstellen
+	try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+		var future1 = executor.submit(() -> powerFunction(task1.base, task1.exponent));
+		var future2 = executor.submit(() -> powerFunction(task2.base, task2.exponent));
+		int vtResult1 = future1.get();
+		int vtResult2 = future2.get();
+	
+		System.out.println("Virtual Thread Result 1: " + vtResult1);
+		System.out.println("Virtual Thread Result 2: " + vtResult2);
+	} catch (ExecutionException | InterruptedException e) {
+		throw new RuntimeException(e);
+	}
+\end{lstlisting}
 
-\section{Java: Completable Futures}
-
-\includegraphics[scale=2.5]{figures/example.png}
+Dabei wird deutlich das für Virtual Threads kein Thread Pool benötigt wird. Ihre maximal Anzahl ist deutlich größer als die von Platform Threads und die Zeit sie zu erstellen und ihr Speicherverbrauch sind deutlich geringer. Daher sollten Virtual Thread niemals in einem Thread Pool verwaltet werden. Bei der Umstellung auf Virtual Threads werden Platform Threads also nicht direkt durch Virtual Threads ersetzt. Stattdessen werden die Aufgaben durch Virtual Threads ersetzt, beziehungsweise für jede Aufgabe wird ein neuer Virtual Thread erstellt. Falls ein Thread Pool bei Platform Threads bisher verwendet wurde um die Anzahl an maximal nebenläufig ausgeführten Aufgaben zu limitieren, sollte dafür bei Virtual Threads sattdessen auf Semaphore zurückgegriffen werden.
 
 \section{Kotlin: CO-Routinen}
 
@@ -261,6 +326,8 @@ Virtual Threads \cite{Karsten2020}
 \section{Performancefaktoren}
 
 \section{Werkzeuge zur Datenerhebung}
+jcmd
+jfr
 
 
 
@@ -289,8 +356,9 @@ Virtual Threads \cite{Karsten2020}
 \section{Zusammenfassung}
 
 \section{Ausblick}
-
-
+Java VT kein pinning bei Synchronized
+Structured Concurrency(jeps/preview)
+Scoped Values(jeps/preview)
 
 \printbibliography
 
