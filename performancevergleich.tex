@@ -14,6 +14,7 @@
 \usepackage[utf8]{inputenc}
 % Umlaute und über Tastatur einzugeben
 \usepackage{listings}
+\usepackage{xcolor}
 % nette Listing-Formatierung
 %\usepackage[backend=bibtex]{biblatex}
 \usepackage[sorting=none, style=nature]{biblatex}
@@ -40,14 +41,28 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{listings}
-\usepackage{color}
-
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{blue}{rgb}{0,0,1}
 
-\lstset{frame=tb,
+\lstdefinelanguage{Kotlin}{
+	keywords={package, import, as, typealias, class, interface, this, super, val, var, fun, for, null, true, false, is, in, throw, return, break, continue, object, if, else, while, do, try, when, companion, override, init, constructor, by, catch, finally, where, enum, sealed, annotation, data, inner, tailrec, operator, inline, infix, external, suspend, lateinit, vararg, reified, dynamic, public, private, protected, internal, out},
+	keywordstyle=\color{blue},
+	ndkeywords={@file, @property, @field, @get, @set, @receiver, @param, @setparam, @delegate, file, field, property, get, set, receiver, param, setparam, delegate, import, where},
+	ndkeywordstyle=\color{blue},
+	identifierstyle=\color{black},
+	sensitive=true,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{dkgreen}\ttfamily,
+	stringstyle=\color{mauve}\ttfamily,
+	morestring=[b]",
+	morestring=[b]',
+}
+
+\lstset{
+	frame=tb,
 	language=Java,
 	aboveskip=3mm,
 	belowskip=3mm,
@@ -61,8 +76,10 @@
 	stringstyle=\color{mauve},
 	breaklines=true,
 	breakatwhitespace=true,
-	tabsize=3
+	tabsize=3,
+	morekeywords={var, out} % Hier wurden var und out hinzugefügt
 }
+
 	\DeclareUnicodeCharacter{03BB}{$\lambda$}
 \begin{document}    % hier gehts los
 	\renewcommand{\figurename}{Abb.}
@@ -153,6 +170,9 @@ Hannover, den \today \hfill Unterschrift
 
 \chapter{Einführung}
 
+heutige zeit mehr kommunikation zwischen System als Berechnungen, Systeme warten
+
+
 \section{Motivation}
 
 \section{Ziel der Arbeit}
@@ -219,7 +239,7 @@ Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder d
 
 Das beschriebene Starten(mount) und Parken(unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um enthaltene Aufgabe entweder zum ersten mal zu starten oder sie nach dem parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen(thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren(freez) bezeichnet. Zu letzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfühgung, um zu überprüfen ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen musste neuer Code hinzugefügt werden, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
 
-Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialfall, der nach Möglichkeit vermieden sollte, das sogenannte Festecken(pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread sonder auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Sollte der Code im Synchronized Block lange blockieren, kann es sinnvoll sein das Synchronized durch ein Reentrant Lock zu ersetzen. Die Beschränkung durch Synchronized soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden. Die Beschränkung durch das Aufrufen von nativen Code wird jedoch bestehen bleiben.\cite{Bateman2024}
+Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialfall, der nach Möglichkeit vermieden sollte, das sogenannte Festecken(pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread sonder auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Sollte der Code im Synchronized Block lange blockieren, kann es sinnvoll sein das Synchronized durch ein Reentrant Lock zu ersetzen. Die Beschränkung durch Synchronized, soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden. Die Beschränkung durch das Aufrufen von nativen Code wird jedoch bestehen bleiben.\cite{Bateman2024}
 
 \subsection{Thread per request Model}
 
@@ -251,8 +271,7 @@ Eine weitere Zielsetzung von Virtual Threads war es Softwareentwicklern den umst
 
 Am folgendem Code-Beispiel wird deutlich, es muss lediglich der Aufruf \code{Thread.ofPlatform()} durch \code{Thread.ofVirtual()} ersetzt werden, der restliche Code bleibt unberührt.
 
-\lstset{language=Java}
-\begin{lstlisting}
+\begin{lstlisting}[language=Java]
 	//erstellen eines einzelnen Platform Threads
 	Thread platformThread = Thread.ofPlatform().start(() -> System.out.println("Platform Thread"));
 	platformThread.join();
@@ -264,9 +283,8 @@ Am folgendem Code-Beispiel wird deutlich, es muss lediglich der Aufruf \code{Thr
 
 Für Virtual Threads wurde der neue Executor Service \code{Executors.newVirtualThreadPerTaskExecutor()} entwickelt. Für jeden Aufruf von \code{ExecutorService.submit(Runnable)} wird ein neuer Virtual Thread erstellt, der die ihm zugewiesene Aufgabe ausführt. Der Rückgabewert des Executor Service ist ein Future, welches das Ergebnis der Aufgabe enthält so bald der erstellte Virtual Thread ausgeführt wurde. Mit Hilfe von \code{Executors.newVirtualThreadPerTaskExecutor()} lässt sich bestehender Code leicht von Platform Threads auf Virtual Threads umstellen. Oft wird für das Verwalten von Platform Threads ein Thread Pool erstellt und für das Erstellen eines Thread Pools ein Executor Service verwendet. So könnten die Plattform Threads beispielsweise bisher in \code{Executors.newCachedThreadPool()} verwaltet worden sein. Dieser lässt sich nun leicht durch \code{Executors.newVirtualThreadPerTaskExecutor()} ersetzen. Dies wird auch am folgenden Beispiel deutlich:
 
-\lstset{language=Java}
-\begin{lstlisting}
-    //mehrere Platform Threads mit Executors.newCachedThreadPool() erstellen
+\begin{lstlisting}[language=Java]
+	//mehrere Platform Threads mit Executors.newCachedThreadPool() erstellen
 	try (var cachedPool = Executors.newCachedThreadPool()) {
 		var future1 = cachedPool.submit(() -> powerFunction(task1.base, task1.exponent));
 		var future2 = cachedPool.submit(() -> powerFunction(task2.base, task2.exponent));
@@ -295,7 +313,292 @@ Für Virtual Threads wurde der neue Executor Service \code{Executors.newVirtualT
 
 Dabei wird deutlich das für Virtual Threads kein Thread Pool benötigt wird. Ihre maximal Anzahl ist deutlich größer als die von Platform Threads und die Zeit sie zu erstellen und ihr Speicherverbrauch sind deutlich geringer. Daher sollten Virtual Thread niemals in einem Thread Pool verwaltet werden. Bei der Umstellung auf Virtual Threads werden Platform Threads also nicht direkt durch Virtual Threads ersetzt. Stattdessen werden die Aufgaben durch Virtual Threads ersetzt, beziehungsweise für jede Aufgabe wird ein neuer Virtual Thread erstellt. Falls ein Thread Pool bei Platform Threads bisher verwendet wurde um die Anzahl an maximal nebenläufig ausgeführten Aufgaben zu limitieren, sollte dafür bei Virtual Threads sattdessen auf Semaphore zurückgegriffen werden.
 
-\section{Kotlin: CO-Routinen}
+
+\section{Kotlin: Coroutinen}
+
+Coroutinen sind ein zentrales Konzept in Kotlin, das für asynchrone Programmierung und nebenläufige Prozesse verwendet wird. Coroutinen sind eine Art von leichtgewichtigen Threads, mit denen es möglich ist Funktionen anzuhalten und später wieder fortzusetzen. Dies erlaubt es, komplexe asynchrone Programmabläufe einfacher zu schreiben und leichter zu verstehen. Dieses Kapitel wird die Grundlagen von Coroutinen, deren Implementierung und fortgeschrittene Anwendungsfälle erklären.
+
+\subsection{Motivation}
+
+Bevor es Coroutinen in Kotlin gab, wurde asynchroner Code häufig mit Callbacks umgesetzt. Dabei handelt es sich um ein Programmierkonzept bei dem einer Funktion als Argument eine anderen Funktion übergeben wird, um zu einem späteren Zeitpunkt aufgerufen zu werden. Dies ermöglicht eine flexible und modulare Struktur von Programmen, da verschiedene Operationen oder Ereignisse mit spezifischen Reaktionen verknüpft werden können. Callbacks sind besonders nützlich in der asynchronen Programmierung, wo Operationen wie das Lesen von Dateien, das Abrufen von Daten über das Netzwerk oder das Warten auf Benutzereingaben ohne Blockieren des Hauptprogramms ausgeführt werden können. 
+
+\begin{lstlisting}[language=Kotlin]
+import java.io.File
+import kotlin.concurrent.thread
+
+fun readFileAsync(filename: String, callback: (String) -> Unit) {
+	thread {
+		val content = File(filename).readText()
+		callback(content)
+	}
+}
+
+fun main() {
+	readFileAsync("example.txt") { content ->
+		println("File Content: $content")
+	}
+	println("Read File...")
+}
+\end{lstlisting}
+
+In dem gezeigten Beispiel liest die Funktion \code{readFileAsync} den Inhalt einer Datei in einem separaten Thread ein und verwendet einen Callback, um das Ergebnis zurückzugeben. Der Callback wird als Lambda-Ausdruck an \code{readFileAsync} übergeben und ausgeführt, nachdem das Einlesen abgeschlossen ist. Der Haupt-Thread wird währenddessen nicht blockiert und kann andere Aufgaben ausführen.
+
+Ein Nachteil von Callbacks ist jedoch die Verwendung vieler verschachtelter Callbacks, welche umgangsprachlich als Calback Hell bezeichnet werden. Sie führt dazu das der Code schwer lesbar wird. Was wiederum zu einer erhörten Komplexität bei der Wartbarkeit und dem Debudden führt, da die Rückverfolgung des Programmflusses kompliziert wird. Außerdem wird die Fehlerbehandlung immer aufwendiger, da sie auf jeder Ebene der Verschachtlung stattfinden muss.
+
+\begin{lstlisting}[language=Kotlin]
+fun firstOperation(callback: (String) -> Unit) {
+	// Simulierte asynchrone Operation
+	callback("Result 1")
+}
+
+fun secondOperation(input: String, callback: (String) -> Unit) {
+	// Simulierte asynchrone Operation
+	callback("$input -> Result 2")
+}
+
+fun thirdOperation(input: String, callback: (String) -> Unit) {
+	// Simulierte asynchrone Operation
+	callback("$input -> Result 3")
+}
+
+fun main() {
+	firstOperation { result1 ->
+		secondOperation(result1) { result2 ->
+			thirdOperation(result2) { result3 ->
+				println("Final Result: $result3")
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+In diesem Beispiel werden drei Operationen asynchron mit Callbacks ausgeführt, die jeweils das Ergebnis der vorausgehenden Operation benötigen. Dies führt zu einer Verschachtlung der Aufrufe in der Main-Funktion. Selbst in diesem einfachen Bespiele wird der Code schon deutlich schwerer lesbar im Vergleich zu einer synchronen Programmierweise. Obwohl sogar in diesem Beispiel auf Fehlerbehandelung verzichtet wurde.
+
+Genau an diesem Punkt setzte die Entwicklung von Coroutinen an, welche als Ziel hatten die Nachteile der Callback Hell zu umgehen und dabei trotzdem die Vorteile der Callbacks zu behalten.
+
+
+\subsection{suspend-Modifier}
+
+Um die Nachteile der Callback Hell zu umgehen, verfolgen die Coroutinen den Ansatz, das synchroner Code geschrieben wird, welcher dann asynchron ausgeführt wird. Dafür wurde der Modifier suspend eingeführt. Dadurch kann das Code-Beispiel aus dem vorausgehenden Kapitel folgender maßen optimiert werden:
+
+\begin{lstlisting}[language=Kotlin]
+import kotlinx.coroutines.*
+
+suspend fun firstOperation(): String {
+	// Simulierte asynchrone Operation
+	return "Result 1"
+}
+
+suspend fun secondOperation(input: String): String {
+	// Simulierte asynchrone Operation
+	return "$input -> Result 2"
+}
+
+suspend fun thirdOperation(input: String): String {
+	// Simulierte asynchrone Operation
+	return "$input -> Result 3"
+}
+
+fun main() = runBlocking {
+	val result1 = firstOperation()
+	val result2 = secondOperation(result1)
+	val result3 = thirdOperation(result2)
+	println("Final Result: $result3")
+}
+\end{lstlisting}
+
+In dem Beispiel werden jene Funktionen mit dem suspend-Modifier gekennzeichnet, die als asynchrone Operationen ausgeführt werden solle. Die Funktion runBlocking startet eine Coroutine und blockiert den aktuellen Thread bis die Coroutine beendet ist. Die Coroutine wiederum führt die drei suspend Funktionen aus.
+
+Dadurch ist es möglich in der Main-Funktion eine synchrone Schreibweise zu verwenden, was die Lesbarkeit gegenüber dem Callback-Ansatz deutlich erhöht. Generell ist bei der Verwendung von supend-Funktionen zu beachten, dass sie nur von anderen suspend-Funktionen oder Coroutinen ausgeführt werden können.
+
+\subsection{Coroutinen starten}
+
+Um in Kotlin eine Coroutine zu starten wird ein Coroutinen-Builder verwendet. Dies sind die am häufigsten verwendeten Coroutinen-Builder:
+
+\subsubsection{launch}
+
+lauch ist der am häufigsten verwendete Coroutine-Builder und startet eine neue Coroutine, die kein Ergebnis zurückgibt. Er wird hauptsächlich für nebenläufig auszuführende Aufgaben verwendet, die nach dem fire-and-forget Prinzip gestartet werden.
+
+\subsubsection{async}
+
+async startet ebenfalls eine neue Coroutine, gibt aber ein Deferred-Objekt zurück, das ein zukünftiges Ergebnis repräsentiert. Bei Deferred handelt sich um das Äquivalent eines Promis oder Future in Kotlin. Mit ist es möglich auf das Ergebnis zu warten.
+
+\subsubsection{runBlocking}
+
+runBlocking blockiert den aktuellen Thread, bis der Coroutine-Block abgeschlossen ist. Es wird hauptsächlich in Main-Funktionen und Testfällen verwendet.
+
+\subsubsection{produce}
+
+produce ist ein spezieller Coroutine-Builder, der eine ReceiveChannel erstellt und Werte in diesen Kanal sendet. Es wird hauptsächlich für Producer-Consumer-Muster verwendet.
+
+\subsubsection{run}
+
+run ist ein allgemeiner Coroutine-Builder, der eine Coroutine startet und das Ergebnis des letzten Ausdrucks im Block zurückgibt.
+
+
+\subsection{Coroutinen-Builder}
+
+In diesem Abschnitt wird auf den Aufbau eines Coroutinen-Builders am Beispiel des Builders launch eingegangen. Die Funktionssignatur des Builders sieht folgendermaßen aus:
+
+\begin{lstlisting}[language=Kotlin]
+fun CoroutineScope.launch(
+context: CoroutineContext = EmptyCoroutineContext,
+start: CoroutineStart = CoroutineStart.DEFAULT,
+block: suspend CoroutineScope.() -> Unit
+): Job
+\end{lstlisting}
+
+
+\subsection{Stichpunkte}
+
+coro starten mit builder
+hat rückgabe wert zB future
+optionaler übergabewert: context
+invoker weiss dann welcher executioncontext genutzt wird
+
+
+
+Context: auf welchem Thread soll Code Laufen?
+Dispatcher?
+-Main: optimiert fur UI/ non-blocking Code (kurze laufzeit)
+-IO: optimiert für Netzwerk oder Disk operationen
+-Default: CPU-intensive / große Berechnungen
+
+Coro laufen auf Threads
+können suspended werden
+-pausiert, aus Thread entfernt, in SPeicher gelegt
+-Thread wieder frei
+
+Coro Scope?
+jede Coro muss in einen Scope ausgeführt werden
+-1 GlobaleScope: für TopLevel Coro, lebt so lange wie die ANwendung, Risiko Memory leaks
+-2 lifeCicleScope:verknüpft mit lifecycle von Fragment oder activity, wen Frag zerstört onDestroy()
+-3 ViewModleScop: lifeCycle of viewModel, onClear()
+
+2,3: automatische Cancellation, keine memory leaks, räumt hinter sich auf
+
+Beispiel:
+val scope = CoroutineScope(CoroutineName("myScope"))
+Scope.launch{
+	this.coroutineContext.toString()
+}
+Ausgabe: Name, Job, Dispatcher
+
+CoroScope(CoroContext)
+CoroContext = Job + Dispatcher +CoroName
+Beispiel: wenn Coro 2 im Scope von Coro1 gestartet wird
+dann -erbt Context -Job2 Kind von Job1 (vererbung)
+wenn Coro1 abgebrochen dan Coro2 abgebrochen
+Vererbung VOrteil leichter aufräumen da wenn elter abgebrochen auch kinder
+
+Job?
+-Coro lifecycle
+-Cacellation
+-Parent-child relations
+
+mehere Coro in einem Scope ausfürhren
+wenn Scope canceled alle (child)Cror canceled
+
+delay()? -> sleep?
+yield()?
+suspend fun aus kotlinx
+
+kotlinx?
+
+JobStates:
+-isActive
+-isCompleted
+-isCancelled
+
+cooperative? -> make canclebel
+-isActive
+-ensureActive
+-uspend fun aus kotlinx
+
+Chanelles
+Mehrere Producer möglich
+Mehrere Reciver möglich
+Daten bleiben in Reihenfolge
+TODO: Bild Channel
+
+Channel Types:
+Buffered: Max Capacity festlegen, suspend bis Platz
+Conflated: MaxCap = 1, neu Elemente ersetzen alte
+Rendezvou: Default, Buffered, MaxCap = 0, wird nur gesendet wenn es Empfänger gibt
+Unlimited: Buffered, unbegrenzte Buffered Capa, Risiko für outOfMemoryEx.
+
+Futures/Promises/Rx, Problem viele Combinators
+für jede Futur bibliothek unterschiedliche Combinators
+
+
+Countinuation Passing Style(CPS)
+eigentlich Callbacks, zu viele Verschachtelungen
+
+Direct Style: Code bleibt gleich -> Coroutinen unterstützen das
+
+CPS Transformation(passiert im Compiler, also Byte Code-Ebene)
+von:
+Kotlin, direct Style, suspedn function
+
+zu:
+Java/JVM, CPS, Continuation(Callback)
+
+Continuations is generic callback interface
+Aufzählung Methoden?!
+
+1. State: object(Aktueller Stand)->State Machine(ist eine Continuation)
+	enthält lable, Rückgabewerte
+2. Label: was als nächstes, Suspend Punkte im Code markiert?!
+...?!
+
+State Machine:
+wiederverweten von closure und stateobject
+einfach für loops
+
+vs.
+
+Callbacks:
+für jede Verschachtelung neues Closure
+loops sehr schwer umzusetzen?! warum?
+
+call with current continuation kommt aus Scheme (WIkipedia?!)
+suspend Coroutine
+suspend fun (reguläre Function)
+
+Coroutine Context
+interface Continution Intercepter
+auf welchem Thread soll ausgeführt werden
+
+Dispatcher(bei invoke oder resume)
+dispatches execution to another thread
+normalerweise UI oder Thread Pool
+
+
+job canncellaiton
+launch builder gibt job object zurück
+kann coro manipulieren
+job.join()
+job.cancel()
+
+cooperative cancellation
+muss abbrechbar sein an erwartbaren pubkten
+
+code beispiel 
+while true/isActive nicht/ist
+spending fun aus öibrary alle caneble zB delay()
+
+Communicating sequentail Process (CSP)
+named Channels / prozesse annonyme
+viele prozesse die nebenläufig sind, prozesse im inneren sequentiel
+
+kein shared mutable state
+
+actors
+actor= named coro + inbox chanel
+es wir dierect an actor statt an chanell gesendet
+
+beides gut für skalierbarkeit
+
 
 \section{Kotlin: Threads}
 
