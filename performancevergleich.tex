@@ -313,6 +313,7 @@ Für Virtual Threads wurde der neue Executor Service \code{Executors.newVirtualT
 
 Dabei wird deutlich das für Virtual Threads kein Thread Pool benötigt wird. Ihre maximal Anzahl ist deutlich größer als die von Platform Threads und die Zeit sie zu erstellen und ihr Speicherverbrauch sind deutlich geringer. Daher sollten Virtual Thread niemals in einem Thread Pool verwaltet werden. Bei der Umstellung auf Virtual Threads werden Platform Threads also nicht direkt durch Virtual Threads ersetzt. Stattdessen werden die Aufgaben durch Virtual Threads ersetzt, beziehungsweise für jede Aufgabe wird ein neuer Virtual Thread erstellt. Falls ein Thread Pool bei Platform Threads bisher verwendet wurde um die Anzahl an maximal nebenläufig ausgeführten Aufgaben zu limitieren, sollte dafür bei Virtual Threads sattdessen auf Semaphore zurückgegriffen werden.
 
+\newpage
 
 \section{Kotlin: Coroutinen}
 
@@ -323,22 +324,22 @@ Coroutinen sind ein zentrales Konzept in Kotlin, das für asynchrone Programmier
 Bevor es Coroutinen in Kotlin gab, wurde asynchroner Code häufig mit Callbacks umgesetzt. Dabei handelt es sich um ein Programmierkonzept bei dem einer Funktion als Argument eine anderen Funktion übergeben wird, um zu einem späteren Zeitpunkt aufgerufen zu werden. Dies ermöglicht eine flexible und modulare Struktur von Programmen, da verschiedene Operationen oder Ereignisse mit spezifischen Reaktionen verknüpft werden können. Callbacks sind besonders nützlich in der asynchronen Programmierung, wo Operationen wie das Lesen von Dateien, das Abrufen von Daten über das Netzwerk oder das Warten auf Benutzereingaben ohne Blockieren des Hauptprogramms ausgeführt werden können. 
 
 \begin{lstlisting}[language=Kotlin]
-import java.io.File
-import kotlin.concurrent.thread
-
-fun readFileAsync(filename: String, callback: (String) -> Unit) {
-	thread {
-		val content = File(filename).readText()
-		callback(content)
+	import java.io.File
+	import kotlin.concurrent.thread
+	
+	fun readFileAsync(filename: String, callback: (String) -> Unit) {
+		thread {
+			val content = File(filename).readText()
+			callback(content)
+		}
 	}
-}
-
-fun main() {
-	readFileAsync("example.txt") { content ->
-		println("File Content: $content")
+	
+	fun main() {
+		readFileAsync("example.txt") { content ->
+			println("File Content: $content")
+		}
+		println("Read File...")
 	}
-	println("Read File...")
-}
 \end{lstlisting}
 
 In dem gezeigten Beispiel liest die Funktion \code{readFileAsync} den Inhalt einer Datei in einem separaten Thread ein und verwendet einen Callback, um das Ergebnis zurückzugeben. Der Callback wird als Lambda-Ausdruck an \code{readFileAsync} übergeben und ausgeführt, nachdem das Einlesen abgeschlossen ist. Der Haupt-Thread wird währenddessen nicht blockiert und kann andere Aufgaben ausführen.
@@ -346,30 +347,30 @@ In dem gezeigten Beispiel liest die Funktion \code{readFileAsync} den Inhalt ein
 Ein Nachteil von Callbacks ist jedoch die Verwendung vieler verschachtelter Callbacks, welche umgangsprachlich als Calback Hell bezeichnet werden. Sie führt dazu das der Code schwer lesbar wird. Was wiederum zu einer erhörten Komplexität bei der Wartbarkeit und dem Debudden führt, da die Rückverfolgung des Programmflusses kompliziert wird. Außerdem wird die Fehlerbehandlung immer aufwendiger, da sie auf jeder Ebene der Verschachtlung stattfinden muss.
 
 \begin{lstlisting}[language=Kotlin]
-fun firstOperation(callback: (String) -> Unit) {
-	// Simulierte asynchrone Operation
-	callback("Result 1")
-}
-
-fun secondOperation(input: String, callback: (String) -> Unit) {
-	// Simulierte asynchrone Operation
-	callback("$input -> Result 2")
-}
-
-fun thirdOperation(input: String, callback: (String) -> Unit) {
-	// Simulierte asynchrone Operation
-	callback("$input -> Result 3")
-}
-
-fun main() {
-	firstOperation { result1 ->
-		secondOperation(result1) { result2 ->
-			thirdOperation(result2) { result3 ->
-				println("Final Result: $result3")
+	fun firstOperation(callback: (String) -> Unit) {
+		// Simulierte asynchrone Operation
+		callback("Result 1")
+	}
+	
+	fun secondOperation(input: String, callback: (String) -> Unit) {
+		// Simulierte asynchrone Operation
+		callback("$input -> Result 2")
+	}
+	
+	fun thirdOperation(input: String, callback: (String) -> Unit) {
+		// Simulierte asynchrone Operation
+		callback("$input -> Result 3")
+	}
+	
+	fun main() {
+		firstOperation { result1 ->
+			secondOperation(result1) { result2 ->
+				thirdOperation(result2) { result3 ->
+					println("Final Result: $result3")
+				}
 			}
 		}
 	}
-}
 \end{lstlisting}
 
 In diesem Beispiel werden drei Operationen asynchron mit Callbacks ausgeführt, die jeweils das Ergebnis der vorausgehenden Operation benötigen. Dies führt zu einer Verschachtlung der Aufrufe in der Main-Funktion. Selbst in diesem einfachen Bespiele wird der Code schon deutlich schwerer lesbar im Vergleich zu einer synchronen Programmierweise. Obwohl sogar in diesem Beispiel auf Fehlerbehandelung verzichtet wurde.
@@ -382,29 +383,29 @@ Genau an diesem Punkt setzte die Entwicklung von Coroutinen an, welche als Ziel 
 Um die Nachteile der Callback Hell zu umgehen, verfolgen die Coroutinen den Ansatz, das synchroner Code geschrieben wird, welcher dann asynchron ausgeführt wird. Dafür wurde der Modifier suspend eingeführt. Dadurch kann das Code-Beispiel aus dem vorausgehenden Kapitel folgender maßen optimiert werden:
 
 \begin{lstlisting}[language=Kotlin]
-import kotlinx.coroutines.*
-
-suspend fun firstOperation(): String {
-	// Simulierte asynchrone Operation
-	return "Result 1"
-}
-
-suspend fun secondOperation(input: String): String {
-	// Simulierte asynchrone Operation
-	return "$input -> Result 2"
-}
-
-suspend fun thirdOperation(input: String): String {
-	// Simulierte asynchrone Operation
-	return "$input -> Result 3"
-}
-
-fun main() = runBlocking {
-	val result1 = firstOperation()
-	val result2 = secondOperation(result1)
-	val result3 = thirdOperation(result2)
-	println("Final Result: $result3")
-}
+	import kotlinx.coroutines.*
+	
+	suspend fun firstOperation(): String {
+		// Simulierte asynchrone Operation
+		return "Result 1"
+	}
+	
+	suspend fun secondOperation(input: String): String {
+		// Simulierte asynchrone Operation
+		return "$input -> Result 2"
+	}
+	
+	suspend fun thirdOperation(input: String): String {
+		// Simulierte asynchrone Operation
+		return "$input -> Result 3"
+	}
+	
+	fun main() = runBlocking {
+		val result1 = firstOperation()
+		val result2 = secondOperation(result1)
+		val result3 = thirdOperation(result2)
+		println("Final Result: $result3")
+	}
 \end{lstlisting}
 
 In dem Beispiel werden jene Funktionen mit dem suspend-Modifier gekennzeichnet, die als asynchrone Operationen ausgeführt werden solle. Die Funktion runBlocking startet eine Coroutine und blockiert den aktuellen Thread bis die Coroutine beendet ist. Die Coroutine wiederum führt die drei suspend Funktionen aus.
@@ -436,9 +437,9 @@ produce ist ein spezieller Coroutine-Builder, der eine ReceiveChannel erstellt u
 run ist ein allgemeiner Coroutine-Builder, der eine Coroutine startet und das Ergebnis des letzten Ausdrucks im Block zurückgibt.
 
 
-\subsection{Coroutinen-Builder}
+\subsubsection{Coroutinen-Builder}
 
-In diesem Abschnitt wird auf den Aufbau eines Coroutinen-Builders am Beispiel des Builders launch eingegangen. Die Funktionssignatur des Builders sieht folgendermaßen aus:
+Das folgende Beispiel zeigt den aufbau eines Coroutinen-Builders, anhand der Funktionssignatur des Builders launch.
 
 \begin{lstlisting}[language=Kotlin]
 fun CoroutineScope.launch(
@@ -447,6 +448,43 @@ start: CoroutineStart = CoroutineStart.DEFAULT,
 block: suspend CoroutineScope.() -> Unit
 ): Job
 \end{lstlisting}
+
+Die Funktionssignatur besteht aus dem Empfänger-Typ CoroutineScope, Funktionsnamen launch, den Parametern context, start, block und dem Rückgabewert Job.
+
+TODO: Verweis auf spätere Kapitel
+
+Der start Parameter gibt an, wann die Coroutine gestartet wird. Dafür kann eine CoroutineStart Enumeration übergeben werden. Der Standardwert ist CoroutineStart.DEFAULT, was bewirkt, dass die Coroutine sofort gestartet wird.
+
+TODO: block erklären 
+
+\subsection{Job}
+
+Ein Job Objekt in Kotlin repräsentiert eine Coroutine und ihreren Lebenszyklus. Ein Job wird dafür verwendet, um den Status einer Coroutine zu überwachen und zu kontrollieren. Der Coroutinen-Builder launch hat zum Beispiel ein Job Objekt als Rückgabewert für genau diesen Zweck. Um den Status der Coroutine zu überwachen stehen folgende Eigenschaften zur Verfügung:
+
+\begin{itemize}
+	\item isActive: Gibt true zurück, wenn der Job aktiv und nicht abgeschlossen oder abgebrochen ist.
+	\item isCompleted: Gibt true zurück, wenn der Job abgeschlossen ist.
+	\item isCancelled: Gibt true zurück, wenn der Job abgebrochen wurde.
+\end{itemize}
+
+Um eine Coroutine zu kontrollieren stellt ein Job folgende Methoden zur Verfügung:
+
+\begin{itemize}
+	\item start(): Startet den Job, falls er noch nicht gestartet wurde.
+	\item cancel(): Bricht den Job ab. Alle untergeordneten Coroutinen werden ebenfalls abgebrochen.
+	\item join(): Eine suspendierende Funktion, die wartet, bis der Job abgeschlossen ist.
+	\item invokeOnCompletion(handler: CompletionHandler): Fügt einen Handler hinzu, der ausgeführt wird, wenn der Job abgeschlossen ist.
+\end{itemize}
+
+TODO: Hierarchische Beziehungen Verweis
+
+Auch das Deferred Objekt ist ein Job Objekt. Es wird beispielsweise von dem async Coroutinen-Builder zurückgeben. Es hat neben den oben genannten Eigenschaften und Methoden, noch folgende weiter Methoden um die Funktionalität eines Futures erfüllen zu können:
+
+\begin{itemize}
+	\item await(): Eine suspendierende Funktion, die auf das Ergebnis der Coroutine wartet und es zurückgibt.
+	\item getCompleted(): Gibt das Ergebnis zurück, wenn die Coroutine abgeschlossen ist, oder wirft eine Ausnahme, wenn die Coroutine noch nicht abgeschlossen ist oder mit einem Fehler beendet wurde.
+\end{itemize}
+
 
 
 \subsection{Stichpunkte}
