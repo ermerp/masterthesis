@@ -344,7 +344,7 @@ Bevor es Coroutinen in Kotlin gab, wurde asynchroner Code häufig mit Callbacks 
 
 In dem gezeigten Beispiel liest die Funktion \code{readFileAsync} den Inhalt einer Datei in einem separaten Thread ein und verwendet einen Callback, um das Ergebnis zurückzugeben. Der Callback wird als Lambda-Ausdruck an \code{readFileAsync} übergeben und ausgeführt, nachdem das Einlesen abgeschlossen ist. Der Haupt-Thread wird währenddessen nicht blockiert und kann andere Aufgaben ausführen.
 
-Ein Nachteil von Callbacks ist jedoch die Verwendung vieler verschachtelter Callbacks, welche umgangsprachlich als Calback Hell bezeichnet werden. Sie führt dazu das der Code schwer lesbar wird. Was wiederum zu einer erhörten Komplexität bei der Wartbarkeit und dem Debuggen führt, da die Rückverfolgung des Programmflusses kompliziert wird. Außerdem wird die Fehlerbehandlung immer aufwendiger, da sie auf jeder Ebene der Verschachtlung stattfinden muss.
+Ein Nachteil von Callbacks ist jedoch die Verwendung vieler verschachtelter Callbacks, welche umgangssprachlich als Callback Hell bezeichnet werden. Sie führt dazu das der Code schwer lesbar wird. Was wiederum zu einer erhörten Komplexität bei der Wartbarkeit und dem Debuggen führt, da die Rückverfolgung des Programmflusses kompliziert wird. Außerdem wird die Fehlerbehandlung immer aufwendiger, da sie auf jeder Ebene der Verschachtelung stattfinden muss.
 
 \begin{lstlisting}[language=Kotlin]
 	fun firstOperation(callback: (String) -> Unit) {
@@ -373,9 +373,9 @@ Ein Nachteil von Callbacks ist jedoch die Verwendung vieler verschachtelter Call
 	}
 \end{lstlisting}
 
-In diesem Beispiel werden drei Operationen asynchron mit Callbacks ausgeführt, die jeweils das Ergebnis der vorausgehenden Operation benötigen. Dies führt zu einer Verschachtlung der Aufrufe in der Main-Funktion. Selbst in diesem einfachen Bespiele wird der Code schon deutlich schwerer lesbar im Vergleich zu einer synchronen Programmierweise. Obwohl in diesem Beispiel sogar schon auf Fehlerbehandelung verzichtet wurde.
+In diesem Beispiel werden drei Operationen asynchron mit Callbacks ausgeführt, die jeweils das Ergebnis der vorausgehenden Operation benötigen. Dies führt zu einer Verschachtelung der Aufrufe in der Main-Funktion. Selbst in diesem einfachen Bespiele wird der Code schon deutlich schwerer lesbar im Vergleich zu einer synchronen Programmierweise. Obwohl in diesem Beispiel sogar schon auf Fehlerbehandelung verzichtet wurde.
 
-Genau an diesem Punkt setzt die Entwicklung von Coroutinen an, welche als Ziel haben die Nachteile der Callback Hell zu umgehen und dabei trotzdem die Vorteile der Callbacks zu behalten.
+Genau an diesem Punkt setzt die Entwicklung von Coroutinen an, welche als Ziel haben die Nachteile der Callback Hell zu umgehen und dabei trotzdem die Vorteile der Callbacks zu behalten. Also das nebenläufige Ausführen von Aufgaben, ohne das Hauptprogramm zu blockieren.
 
 
 \subsection{suspend-Modifier}
@@ -407,10 +407,11 @@ Um die Nachteile der Callback Hell zu umgehen, verfolgen die Coroutinen den Ansa
 		println("Final Result: $result3")
 	}
 \end{lstlisting}
+TODO: Code überprüfen, suspend grau, async nötig?
 
-In dem Beispiel werden jene Funktionen mit dem suspend-Modifier gekennzeichnet, die als asynchrone Operationen ausgeführt werden solle. Die Funktion runBlocking startet eine Coroutine und blockiert den aktuellen Thread bis die Coroutine beendet ist. Die Coroutine wiederum führt die drei suspend Funktionen aus.
+In dem Beispiel werden jene Funktionen mit dem suspend-Modifier gekennzeichnet, die als asynchrone Operationen ausgeführt werden solle. Die Funktion runBlocking startet eine Coroutine und blockiert den aktuellen Thread bis die Coroutine beendet ist. Die Coroutine wiederum führt die drei suspend Funktionen aus. Generell ist bei der Verwendung von supend-Funktionen zu beachten, dass sie nur von anderen suspend-Funktionen oder Coroutinen ausgeführt werden können.
 
-Dadurch ist es möglich in der Main-Funktion eine synchrone Schreibweise zu verwenden, was die Lesbarkeit gegenüber dem Callback-Ansatz deutlich erhöht. Generell ist bei der Verwendung von supend-Funktionen zu beachten, dass sie nur von anderen suspend-Funktionen oder Coroutinen ausgeführt werden können.
+Durch das verwenden des suspend-Modifiers ist es möglich in der Main-Funktion eine synchrone Schreibweise zu verwenden, was die Lesbarkeit gegenüber dem Callback-Ansatz deutlich erhöht. Somit können mit Coroutinen die Vorteile von Callbacks genutzt werden ohne ihre Nachteile zu erben.
 
 \subsection{Coroutinen starten}
 
@@ -426,7 +427,7 @@ Um in Kotlin eine Coroutine zu starten wird ein Coroutinen-Builder verwendet. Di
 
 \subsubsection{Coroutinen-Builder}
 
-Das folgende Beispiel zeigt den aufbau eines Coroutinen-Builders, anhand der Funktionssignatur des Builders launch.
+Das folgende Beispiel zeigt den Aufbau eines Coroutinen-Builders, anhand der Funktionssignatur des Builders launch.
 
 \begin{lstlisting}[language=Kotlin]
 	fun CoroutineScope.launch(
@@ -505,12 +506,12 @@ Beim starten einer Coroutine mittels Coroutinen Builder kann ein sogenannter Dis
 \begin{itemize}
 	\item Führt Coroutinen im aktuellen Thread aus, bis sie suspendiert werden.
 	\item Nach der Suspendierung wird die Coroutine in dem Thread fortgesetzt, der die Wiederaufnahme vornimmt.
-	\item Wird selten verwendet und ist hauptsächlich für spezielle Anwendungsfälle(z.B. Testing) gedacht.
+	\item Wird selten verwendet und ist hauptsächlich für spezielle Anwendungsfälle (z.B. Testing) gedacht.
 \end{itemize}
 
-Die Vorteile des Dispatcher-Ansatzes sind dabei leicht ersichtlich. Mit Hilfe der Dispatcher findet eine Abstrahierung der Thread-Verwaltung statt und es wird Komplexität reduziert. Ein Anwender muss nur noch einen Dispatcher wählen der für die zugewiesen Aufgabe optimiert wurde. Außerdem wird der Code besser lesbar, da für einen Außenstehenden sofort verständlich ist für was für eine Sorte von Aufgabe die Coroutine erstellt wurde. Die Herausforderung für den Anwender ist dabei die Wahl des passenden Dispatchers, da diese für bestimmte Anwendungsfälle optimiert wurden. Außerdem sollte von häufigen Kontextwechseln während der Laufzeit einer Coroutine abgesehen werden, da dies jedes mal zu einem kleinen  Performance-Overhead führt.
+Die Vorteile des Dispatcher-Ansatzes sind dabei leicht ersichtlich. Mit Hilfe der Dispatcher findet eine Abstrahierung der Thread-Verwaltung statt und es wird Komplexität reduziert. Ein Anwender muss nur noch einen Dispatcher wählen der für die zugewiesen Aufgabe optimiert wurde. Außerdem wird der Code besser lesbar, da für einen Außenstehenden sofort verständlich wird um was für eine Sorte von Aufgabe die Coroutine erstellt wurde. Die Herausforderung für den Anwender ist dabei die Wahl des passenden Dispatchers, da diese für bestimmte Anwendungsfälle optimiert wurden. Außerdem sollte von häufigen Kontextwechseln während der Laufzeit einer Coroutine abgesehen werden, da dies jedes Mal zu einem kleinen  Performance-Overhead führt.
 
-Die Zuweisung eines Dispatchers während dem Starten einer Coroutine mit dem Builder launch sieht folgendermaßen aus:
+Die Zuweisung eines Dispatchers während des Startens einer Coroutine mit dem Builder launch sieht folgendermaßen aus:
 
 \begin{lstlisting}[language=Kotlin]
 	launch(Dispatchers.Default) {
@@ -520,7 +521,7 @@ Die Zuweisung eines Dispatchers während dem Starten einer Coroutine mit dem Bui
 
 \subsection{Coroutinen Context}
 
-Das Code-Beispiel aus dem vorangehenden Kapitel für die Zuweisung eines dispatchers ist etwas verkürzt, denn ein Coroutinen-Builder benötigt eigentlich einen Coroutinen Context. Ein Corutinen Context wiederum setzt sich aus einem Job, einem Dispatcher und einem Coroutinen Namen zusammen. Möchte man alle drei Elemente selber vestlegen sähe dies wie folgt aus:
+Das Code-Beispiel aus dem vorangehenden Kapitel für die Zuweisung eines dispatchers ist etwas verkürzt, denn ein Coroutinen-Builder benötigt eigentlich einen Coroutinen Context. Ein Coroutinen Context wiederum setzt sich aus einem Job, einem Dispatcher und einem Coroutinen Namen zusammen. Möchte man alle drei Elemente selber festlegen sähe dies wie folgt aus:
 
 \begin{lstlisting}[language=Kotlin]
 	import kotlinx.coroutines.*
@@ -534,7 +535,7 @@ Das Code-Beispiel aus dem vorangehenden Kapitel für die Zuweisung eines dispatc
 	}
 \end{lstlisting}
 
-Werden beim erstellen eines Coroutinen Context nicht alle Elemente festgelegt, wird für die anderen auf ihre Standartwerte zurück gegriffen. Der Coroutinen Name ist standardmäßig null, da er nur für Debugging-Gründen benötigt wird. Der Standard-Dispatcher ist Dispatchers.Default. Wenn kein Job explizit übergeben wird, wird von launch ein neuer Job erstellt. Dies hat Auswirkungen auf die Coroutinen Hierarchie auf die im Nachfolgenden genauer eingegangen wird.
+Werden beim Erstellen eines Coroutinen Context nicht alle Elemente festgelegt, wird für die anderen auf ihre Standartwerte zurückgegriffen. Der Coroutinen Name ist standardmäßig null, da er nur aus Debugging-Gründen benötigt wird. Der Standard-Dispatcher ist Dispatchers.Default. Wenn kein Job explizit übergeben wird, wird von launch ein neuer Job erstellt. Dies hat Auswirkungen auf die Coroutinen Hierarchie, auf die im Nachfolgenden genauer eingegangen wird.
 
 \subsection{Coroutinen Scope}
 
@@ -571,18 +572,46 @@ Wie bereits im Abschnitt zu Coroutinen Buildern erwähnt, sind Builder als Erwei
 	}
 \end{lstlisting}
 
-Zuerst wird der Coroutinen Scope: parentScope erstellt, mit einem neuen Job und dem Dispatchers.Default. Dieser Scope definiert den Kontext, in dem alle Coroutinen ausgeführt werden, die innerhalb dieses Scopes gestartet werden. Dann wird die Coroutine parentJob im parentScope gestartartet. Innerhalb der Eltern-Coroutine werden zwei weitere Coroutinen (childJob1 und childJob2) gestartet. Diese Kind-Coroutinen erben den Job und den Dispatcher der Eltern-Coroutine, was bedeutet, dass sie im gleichen Scope ausgeführt werden. Da sie den gleichen Job erben, werden sie als Kinder der Eltern-Coroutine betrachtet. Bei der Vererbung von Jobs ist anzumerken, dass der Builder dennoch ein neues Job Element für die Kind-Coroutine erstellt, der neue Job ist jedoch ein Kind des Eltern-Jobs. Daraus folgt wenn der Eltern Job abgebrochen wird, werden auch alle Kinder-Jobs abgebrochen. Das gleiche gilt für den Scope, sollte dieser abgebrochen werden, werden alle Coroutinen die in ihm gestartet wurden, ebenfalls abgebrochen. Möchte man eine Coroutine zwar innerhalb einer anderen Coroutine starten, sie aber unabhängig von ihr laufen lassen ist dies auch möglich, indem man sie explizit im Kontext eines eigenen Scopes startet.
+Zuerst wird der Coroutinen Scope: parentScope erstellt, mit einem neuen Job und dem Dispatchers.Default. Dieser Scope definiert den Kontext, in dem alle Coroutinen ausgeführt werden, die innerhalb dieses Scopes gestartet werden. Dann wird die Coroutine parentJob im parentScope gestartet. Innerhalb der Eltern-Coroutine werden zwei weitere Coroutinen (childJob1 und childJob2) gestartet. Diese Kind-Coroutinen erben den Job und den Dispatcher der Eltern-Coroutine, was bedeutet, dass sie im gleichen Scope ausgeführt werden. Da sie den gleichen Job erben, werden sie als Kinder der Eltern-Coroutine betrachtet. Bei der Vererbung von Jobs ist anzumerken, dass der Builder dennoch ein neues Job Element für die Kind-Coroutine erstellt, der neue Job ist jedoch ein Kind des Eltern-Jobs. Daraus folgt wenn der Eltern Job abgebrochen wird, werden auch alle Kinder-Jobs abgebrochen. Das gleiche gilt für den Scope, sollte dieser abgebrochen werden, werden alle Coroutinen die in ihm gestartet wurden, ebenfalls abgebrochen. Möchte man eine Coroutine zwar innerhalb einer anderen Coroutine starten, sie aber unabhängig von ihr laufen lassen ist dies auch möglich, indem man sie explizit im Kontext eines eigenen Scopes startet.
 
 Außerdem gibt es bereits vordefinierte Scopes für spezifische Anwendungsfälle. Die drei häufigsten sind: Lifecycle Scope, View Model Scope und Globale Scope.
 
-Der Lifecycle Scope kommt in der Android-Entwicklung zum Einsatz. Dabei ist der Scope mit den Lebenszyklus einer Komponete(z.B. Activity oder Fragment) verknüpft. Dies stellt sicher, dass Coroutinen, die im LifecycleScope gestartet werden, automatisch abgebrochen werden, wenn die Komponente zerstört wird. Dies stellt sicher, dass keine Ressourcen verschwendet werden, wenn die Komponente nicht mehr aktiv ist.
+Der Lifecycle Scope kommt in der Android-Entwicklung zum Einsatz. Dabei ist der Scope mit den Lebenszyklus einer Komponete(z.B. Activity oder Fragment) verknüpft. Dies stellt sicher, dass Coroutinen, die im LifecycleScope gestartet werden, automatisch abgebrochen werden, wenn die Komponente zerstört wird. Somit werden keine Ressourcen verschwendet, wenn die Komponente nicht mehr aktiv ist.
 
-Der View Model Scope ist speziell für ViewModels in Android entwickelt wurden. Coroutines, die in ViewModelScope gestartet werden, werden automatisch abgebrochen, wenn das ViewModel gelöscht wird. Dies ist nützlich für Aufgaben, die nur ausgeführt werden sollen, solange das ViewModel aktiv ist, wie z.B. das Laden von Daten für eine Benutzeroberfläche.
+Der View Model Scope wurde speziell für ViewModels in Android entwickelt. Coroutinen, die in ViewModelScope gestartet werden, werden automatisch abgebrochen, wenn das ViewModel gelöscht wird. Dies ist nützlich für Aufgaben, die nur ausgeführt werden sollen, solange das ViewModel aktiv ist, wie z.B. das Laden von Daten einer Benutzeroberfläche.
 
-Zuletzt gibt es noch den Global Scope. Dieser wird verwendet, um Top-Level-Coroutines zu starten, die während der gesamten Lebensdauer der Anwendung laufen sollen und nicht vorzeitig abgebrochen werden. GlobalScope ist als "delicate API" (heikle API) markiert, da er leicht zu Ressourcen- oder Speicherlecks führen kann, wenn er nicht richtig verwendet wird. Das rührt daher, dass Corutienen die im GlobalScope erstellt werden, außerhalb der Hierarchie der anderen Scopes laufen und so nicht automatisch abgebrochen werden.
+Zuletzt gibt es noch den Global Scope. Dieser wird verwendet, um Top-Level-Coroutines zu starten, die während der gesamten Lebensdauer der Anwendung laufen sollen und nicht vorzeitig abgebrochen werden. GlobalScope ist als "delicate API" (heikle API) markiert, da er leicht zu Ressourcen- oder Speicherlecks führen kann, wenn er nicht richtig verwendet wird. Das rührt daher, dass Coroutinen, die im GlobalScope erstellt werden, außerhalb der Hierarchie der anderen Scopes laufen und so nicht automatisch abgebrochen werden.
 
+\subsection{Cancellation}
 
+Es kann dazu kommen, dass eine Coroutine vorzeitig abgebrochen werden soll, dies wird als Cancellation bezeichnetet. Eine Cancellation kann viele Ursachen haben, zum Beispiel wurde die Coroutine direkt über die Methode cancel() abgebrochen oder es wurde die Eltern-Coroutine abgebrochen. Das gleiche gilt wenn der Scope, in dem die Coroutine läuft, abgebrochen wurde oder in der Coroutine eine unbehandelte Ausnahme auftritt.
 
+Kommt es in einer Coroutine zu einer Cancellation, wird auf das Konzept der cooperative Cancellation zurückgegriffen. Das bedeutet eine Coroutine muss an erwartbaren Punkten abrechenbar sein. Im Detail heißt das, dass eine Coroutine in regelmäßigen Abständen selbständig überprüfen muss ob sie noch aktiv ist oder abgebrochen wurde. Dies geschieht zum Beispiel indem in der Coroutine der Zustand von isActive überprüft wird oder die Methode ensureActive() aufgerufen wird.
+
+\begin{lstlisting}[language=Kotlin]
+    //nicht abbrechbare Coroutine
+	launch {
+		while (true) {
+			//do something
+		}
+	}
+
+	//abbrechbare Coroutine
+	launch {
+		while (this.isActive) {
+			//do something
+		}
+	}
+\end{lstlisting}
+
+Alternativ kann auch jede suspend-Funktion aus der kotlinx-Bibliothek verwendet werden, zum Beispiel delay() oder yield(). Alle suspend-Funktion aus der kotlinx-Bibliothek sind abbrechbar (cancelable) und  durch ihre Verwendung wird auch die aufrufende Coroutine abbrechebar. Letztendlich liegt es jedoch in der Verantwortung der entwickelnden Person die Coroutine so zu gestalten, dass sie cooperative cancelable ist.
+
+\subsection{Continuations}
+
+Coro laufen auf Threads
+können suspended werden
+-pausiert, aus Thread entfernt, in SPeicher gelegt
+-Thread wieder frei
 
 \newpage
 
@@ -645,41 +674,10 @@ Dispatcher(bei invoke oder resume)
 dispatches execution to another thread
 normalerweise UI oder Thread Pool
 
-\subsection{Cancellation}
 
-Coro laufen auf Threads
-können suspended werden
--pausiert, aus Thread entfernt, in SPeicher gelegt
--Thread wieder frei
-
-delay()? -> sleep?
-yield()?
-suspend fun aus kotlinx
-
-cooperative? -> make canclebel
--isActive
--ensureActive
--uspend fun aus kotlinx
-
-job canncellaiton
-launch builder gibt job object zurück
-kann coro manipulieren
-job.join()
-job.cancel()
-
-cooperative cancellation
-muss abbrechbar sein an erwartbaren pubkten
-
-code beispiel 
-while true/isActive nicht/ist
-spending fun aus öibrary alle caneble zB delay()
-
-\subsection{Continuations}
 
 
 \section{Kotlin: Threads}
-
-\section{Go: Go-Routinen}
 
 \section{C\#: async/await}
 
