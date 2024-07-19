@@ -44,4 +44,88 @@
   publisher = {Institute for Operations Research and the Management Sciences (INFORMS)},
 }
 
+@Article{Leger2021,
+  author    = {Paul Leger and Hiroaki Fukuda and Ismael Figueroa},
+  journal   = {JUCS - Journal of Universal Computer Science},
+  title     = {Continuations and Aspects to Tame Callback Hell on the Web},
+  year      = {2021},
+  issn      = {0948-695X},
+  number    = {9},
+  pages     = {955-978},
+  volume    = {27},
+  abstract  = {JavaScript is one of the main programming languages to develop highly rich responsive and interactive Web applications. In these kinds of applications, the use of asynchronous operations that execute callbacks is crucial. However, the dependency among nested callbacks, known as callback hell, can make it difficult to understand and maintain them, which will eventually mix concerns. Unfortunately, current solutions for JavaScript do not fully address the aforementioned issue. This paper presents Sync/cc, a JavaScript package that works on modern browsers. This package is a proof-of-concept that uses continuations and aspects that allow developers to write event handlers that need nested callbacks in a synchronous style, preventing callback hell. Unlike current solutions, Sync/cc is modular, succinct, and customizable because it does not require ad-hoc and scattered constructs, code refactoring, or adding ad-hoc implementations such as state machines. In practice, our proposal uses a) continuations to only suspend the current handler execution until the asynchronous operation is resolved, and b) aspects to apply continuations in a non-intrusive way. We test Sync/cc with a management information system that administers courses at a university in Chile.},
+  doi       = {10.3897/jucs.72205},
+  eprint    = {https://doi.org/10.3897/jucs.72205},
+  publisher = {Journal of Universal Computer Science},
+  url       = {https://doi.org/10.3897/jucs.72205},
+}
+
+@Manual{Akhin2024,
+  title  = {Kotlin language specification: Asynchronous programming with coroutines},
+  author = {Akhin,Marat and Belyaev,Mikhail},
+  month  = jul,
+  year   = {2024},
+  url    = {https://kotlinlang.org/spec/asynchronous-programming-with-coroutines.html},
+}
+
+@Misc{Elizarov2017a,
+  author = {Elizarov,Roman},
+  month  = nov,
+  title  = {Introduction to Coroutines - KotlinConf 2017},
+  year   = {2017},
+  url    = {https://de.slideshare.net/elizarov/introduction-to-coroutines-kotlinconf-2017},
+}
+
+@Misc{Elizarov2017b,
+  author = {Elizarov,Roman},
+  month  = nov,
+  title  = {Deep Dive into Coroutines on JVM - KotlinConf 2017},
+  year   = {2017},
+  url    = {https://de.slideshare.net/slideshow/deep-dive-into-coroutines-on-jvm-kotlinconf-2017/82126166},
+}
+
+@Manual{Cancellation2024,
+  title = {Cancellation and timeouts},
+  month = jul,
+  year  = {2024},
+  url   = {https://kotlinlang.org/docs/cancellation-and-timeouts.html#cancelling-coroutine-execution},
+}
+
+@InProceedings{Elizarov2021,
+  author    = {Elizarov, Roman and Belyaev, Mikhail and Akhin, Marat and Usmanov, Ilmir},
+  booktitle = {Proceedings of the 2021 ACM SIGPLAN International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software},
+  title     = {Kotlin coroutines: design and implementation},
+  year      = {2021},
+  address   = {New York, NY, USA},
+  pages     = {68–84},
+  publisher = {Association for Computing Machinery},
+  series    = {Onward! 2021},
+  abstract  = {Asynchronous programming is having its “renaissance” moment in recent years. Created in the 1980s, it was in use for quite some time, but with the advent of multi-core processors, it has been sidestepped by multi-threaded programming, which was&nbsp;(for a long time) the de facto standard of performing concurrent computations. However, since the 2000s, more and more programming languages have begun to include the support for asynchronous programming, some built around asynchronicity from the start, others including it later in their evolution. In this paper, we explore the design and implementation of asynchronous programming in Kotlin, a multiplatform programming language from JetBrains, which uses coroutines for asynchronicity. Kotlin provides a compact built-in API for coroutine support, thus giving a lot of implementation freedom to the developer; this flexibility allows to transparently support different flavours of asynchronous programming within the same language. We overview existing approaches to asynchronous programming, zoom in and talk about coroutines in detail, and describe how they are used in Kotlin as the basis for asynchronous computations. Along the way, we show the flexibility of Kotlin coroutines, highlight several existing problems with asynchronicity, how they are fixed or worked-around in Kotlin, and also mention future directions asynchronous programming might explore.},
+  doi       = {10.1145/3486607.3486751},
+  isbn      = {9781450391108},
+  keywords  = {Kotlin, asynchronous programming, continuations, coroutines, language design},
+  location  = {Chicago, IL, USA},
+  numpages  = {17},
+  url       = {https://doi.org/10.1145/3486607.3486751},
+}
+
+@TechReport{sus75,
+  author      = {Sussman, Gerald Jay and Steele, Guy Lewis},
+  institution = {{Massachusetts Institute of Technology}},
+  title       = {Scheme: An Interpreter for Extended Lambda Calculus},
+  year        = {1975},
+  address     = {Cambridge, UK},
+  month       = {December},
+  number      = {AI Memo No. 349},
+  added-at    = {2009-01-14T00:43:43.000+0100},
+  biburl      = {https://www.bibsonomy.org/bibtex/20791595946db59db3d4abf3430c44658/dret},
+  description = {dret'd bibliography},
+  interhash   = {d7eb64f0ef5c49d3ef18e16ce111b371},
+  intrahash   = {0791595946db59db3d4abf3430c44658},
+  keywords    = {imported},
+  timestamp   = {2009-01-14T00:44:00.000+0100},
+  topic       = {scheme[1]},
+  uri         = {https://dspace.mit.edu/handle/1721.1/5794},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
