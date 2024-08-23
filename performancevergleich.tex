@@ -172,15 +172,44 @@ Hannover, den \today \hfill Unterschrift
 \chapter{Einführung}
 
 \section{Motivation}
-%heutige zeit mehr kommunikation zwischen System als Berechnungen, Systeme warten
+
+In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Softwareentwicklung erheblich zugenommen. Mit dem Anstieg der Anforderungen an die Performance und Effizienz von Softwareanwendungen, insbesondere im Bereich von Echtzeit- und Cloud-basierten Systemen, sind robuste und leistungsfähige Nebenläufigkeitskonzepte unerlässlich geworden. Dabei ist es nicht ungewöhnlich, dass mehr Zeit mit der Kommunikation zwischen Systemen verbracht wird, als mit den eigentlichen Berechnungen und System deshalb mehr warten als arbeiten. Dadurch entsteht die Anforderung an Anwendungen eine hohe Parallelität und Nebenläufigkeit zu gewährleisten. Programmiersprachen wie Java, Kotlin und Go tragen dieser neuen Entwicklung Rechnung und bieten unterschiedliche Ansätze zur Umsetzung von Nebenläufigkeit, die jeweils ihre eigenen Vor- und Nachteile haben. Als Motivation für diese Arbeit dient die aktuelle Veröffentlichung von Virtual Threads für Java im September 2023. Diese diente als Anlass für eine fundierte Bewertung der Performance von aktuellen Nebenläufigkeitskonzepten in den ausgewählten Programmiersprachen, da es bislang nur begrenzte vergleichende Analysen, für die Performance dieser Konzepte gab. Die Arbeit soll ein besseres Verständnis dafür schaffen, welche Technologien sich für spezifische Anwendungsfälle am besten eignen.
 
 \section{Ziel der Arbeit}
 
+Das Ziel dieser Arbeit ist es, eine umfassende Performanceanalyse der verschiedenen Nebenläufigkeitskonzepte in den Programmiersprachen Java, Kotlin und Go durchzuführen. Die Auswahl ist auf diese Sprachen gefallen, da als Ausgangspunkt für diese Arbeit die aktuelle Veröffentlichung von Virtual Threads für Java diente. Als zweite Sprache wurde Kotlin gewählt, da diese ebenfalls in der Java Virtual Machine (JVM) läuft und somit eine dierekte Konkurrenz zu Java darstellt. Zuletzt wurde Go als eine weiter zu untersuchende Sprache gewählt, da es sich bei Go um eine Sprache handelt die von Beginn an mit dem Fokus auf Nebenläufigkeit entwickelt wurde und somit als ein guter Vergleichspunkt für Nebenläufigkeit dient. Die zu vergleichenden Nebenläufigkeitskonzepte sind dabei im Detail: Java Threads (Platform Threads), Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen. Diese unterschiedlichen Ansätze sollen hinsichtlich ihrer Effizienz, Skalierbarkeit und Ressourcennutzung verglichen werden.
+
+Um dieses Ziel zu erreichen, werden spezifische Benchmarks entwickelt und implementiert, die die Leistung der einzelnen Nebenläufigkeitskonzepte unter verschiedenen Bedingungen messen. Die Ergebnisse dieser Benchmarks sollen Aufschluss darüber geben, welches Nebenläufigkeitskonzepte für bestimmte Anwendungsfälle am besten geeignet sind und welche Vor- und Nachteile die jeweiligen Modelle bieten.
+
+Ein weiteres Ziel dieser Arbeit ist es, praktische Empfehlungen für Entwickler zu erarbeiten, die ihnen helfen sollen, das passende Nebenläufigkeitskonzepte für ihre spezifischen Anforderungen auszuwählen. Durch die Analyse der Stärken und Schwächen der einzelnen Konzepte soll ein tiefgehendes Verständnis dafür geschaffen werden, wie sich die Wahl der Nebenläufigkeitskonzepte auf die Gesamtperformance und die Effizienz einer Anwendung auswirkt.
+
 \section{Verwandte Arbeiten}
+
+TODO
 
 \section{Gliederung und Aufbau}
 
+Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Nebenläufigkeitskonzepte und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go zu ermöglichen.
 
+\subsubsection{Kapitel 2: Nebenläufigkeitskonzepte}
+
+Dieses Kapitel bildet die theoretische Grundlage der Arbeit. Es werden die spezifischen Nebenläufigkeitskonzepte in den für diese Arbeit ausgewählten Programmiersprachen vorgestellt: Java (Platform Threads und Virtual Threads), Kotlin (Coroutinen) und Go (Goroutinen). Abschließend erfolgt ein theoretischer Vergleich dieser Konzepte, um die Gemeinsamkeiten und Unterschiede zu verdeutlichen, die in den späteren Benchmarks untersucht werden.
+
+\subsubsection{Kapitel 3: Testaufbau}
+
+In diesem Kapitel wird die methodische Herangehensweise der Arbeit erläutert. Es beschreibt den Testaufbau, sowie die verwendeten Hard- und Software. Besondere Aufmerksamkeit wird den Performancefaktoren gewidmet, anhand derer die Leistung der Nebenläufigkeitskonzepte in den Benchmarks verglichen wird. Darüber hinaus werden die Werkzeuge zur Datenerhebung vorgestellt und ihre Funktionsweise erläutert. Dieses Kapitel stellt somit die methodische Basis für die Durchführung der Benchmarks dar und sichert die Reproduzierbarkeit der Ergebnisse.
+
+\subsubsection{Kapitel 4: Benchmarks}
+
+In diesem Kapitel werden die durchgeführten Benchmarks im Detail beschrieben. Für jeden Benchmark wird das zugrundeliegende Szenario vorgestellt, die Motivation für den Benchmarkt erläutert und der Aufbau des Benchmarks erklärt. Außerdem wird auf Besonderheiten bei der Implementierung der Benchmarks eingegangen. Die Ergebnisse der einzelnen Tests werden anschließend präsentiert, wobei der Fokus auf der Messung von den Performancefaktoren liegt. Um eine nachvollziehbare Übersicht über die Ergebnisse zu bieten, werden die Daten grafisch aufbereitet.
+
+\subsubsection{Kapitel 5: Auswertung}
+
+Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapitel eine Analyse der Benchmark-Ergebnisse. Es wird untersucht, wie die unterschiedlichen Nebenläufigkeitskonzepte der Programmiersprachen die Performance beeinflussen. Besonderes Augenmerk liegt auf der Identifikation von Stärken und Schwächen der jeweiligen Konzepte in verschiedenen Anwendungsszenarien. Abschließend wird ein Vergleich zwischen den Sprachen gezogen, um allgemeine Aussagen zur Eignung der einzelnen Konzepte für bestimmte Einsatzgebiete zu treffen.
+
+\subsubsection{Kapitel 6: Zusammenfassung und Ausblick}
+
+Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird es ein Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie offene Fragen und Herausforderungen eingegangen.
 
 \chapter{Nebenläufigkeitskonzepte}
 
@@ -704,7 +733,7 @@ Dieser Ablauf wiederholt sich so erneut für den \texttt{case 2}. Zuletzt wird i
 
 \newpage
 
-\section{Go: Goroutines}
+\section{Go: Goroutinen}
 
 \section{Vergleich der Konzepte}
 
