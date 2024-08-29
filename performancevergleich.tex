@@ -185,7 +185,13 @@ Ein weiteres Ziel dieser Arbeit ist es, praktische Empfehlungen für Entwickler 
 
 \section{Verwandte Arbeiten}
 
-TODO
+Es gibt bereits eine breite Auswahl an Arbeiten die sich mit dem Vergleich von Nebenhäufigkeitskonzepten in unterschiedlichen Programmiersprachen beschäftigen. Jedoch handelt es sich dabei um Momentaufnahmen die nur den aktuellen Stand der Technik vergleichen. So können die Ergebnisse, durch die Einführung einer neuen Technologie wie Virtual Threads, schnell überholt sein. Deshalb folgt in diesem Kapitel eine Auswahl an Arbeiten, die am nächsten mit dem Thema dieser Arbeit verwandt sind.
+
+In dem Paper \textbf{Concurrency in Go and Java: Performance Analysis} \cite{Togashi2014} von Naohiro Togashi und Vitaly Klyuev wird die Performance von Nebenläufigkeit in Go und Java verglichen. Dafür werden als Benchmark Matrix-Multiplikationen verwendet. Go erzielt dabei deutlich bessere Ergebnisse als Java, jedoch ist das Paper aus dem Jahr 2014 und deshalb kommen bei Java klassische Threads zum Einsatz, bei Go hingegen Goroutinen. Es wird also interessant sein wie die neueren Virtual Threads im Vergleich zu den Goroutinen abschneiden werden.
+
+In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Thread in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet werden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtuel Threads, jeweils dicht bei einander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also intressant sein ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird interessant sein wie sich die Performance bei anderen Benchmarks verhält.
+
+Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Arbeit versucht diese Lücke zu schließen.
 
 \section{Gliederung und Aufbau}
 
