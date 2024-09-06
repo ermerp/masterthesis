@@ -62,6 +62,21 @@
 	morestring=[b]',
 }
 
+\lstdefinelanguage{Go}{
+	keywords={break, case, chan, const, continue, default, defer, else, fallthrough, for, func, go, goto, if, import, interface, map, package, range, return, select, struct, switch, type, var},
+	keywordstyle=\color{blue},
+	ndkeywords={append, cap, close, complex, copy, delete, imag, len, make, new, panic, print, println, real, recover},
+	ndkeywordstyle=\color{blue},
+	identifierstyle=\color{black},
+	sensitive=true,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{dkgreen}\ttfamily,
+	stringstyle=\color{mauve}\ttfamily,
+	morestring=[b]",
+	morestring=[b]',
+}
+
 \lstset{
 	frame=tb,
 	language=Java,
@@ -79,6 +94,17 @@
 	breakatwhitespace=true,
 	tabsize=3,
 	morekeywords={var, out} % Hier wurden var und out hinzugefügt
+}
+
+\lstset{
+	literate=%
+	{ä}{{\"a}}1
+	{ö}{{\"o}}1
+	{ü}{{\"u}}1
+	{Ä}{{\"A}}1
+	{Ö}{{\"O}}1
+	{Ü}{{\"U}}1
+	{ß}{{\ss}}1
 }
 
 	\DeclareUnicodeCharacter{03BB}{$\lambda$}
@@ -189,7 +215,7 @@ Es gibt bereits eine breite Auswahl an Arbeiten die sich mit dem Vergleich von N
 
 In dem Paper \textbf{Concurrency in Go and Java: Performance Analysis} \cite{Togashi2014} von Naohiro Togashi und Vitaly Klyuev wird die Performance von Nebenläufigkeit in Go und Java verglichen. Dafür werden als Benchmark Matrix-Multiplikationen verwendet. Go erzielt dabei deutlich bessere Ergebnisse als Java, jedoch ist das Paper aus dem Jahr 2014 und deshalb kommen bei Java klassische Threads zum Einsatz, bei Go hingegen Goroutinen. Es wird also interessant sein wie die neueren Virtual Threads im Vergleich zu den Goroutinen abschneiden werden.
 
-In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Thread in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet werden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtuel Threads, jeweils dicht bei einander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also intressant sein ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird interessant sein wie sich die Performance bei anderen Benchmarks verhält.
+In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Thread in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet werden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtuel Threads, jeweils dicht bei einander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also interessant sein ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert hat. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird interessant sein wie sich die Performance bei anderen Benchmarks verhält.
 
 Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Arbeit versucht diese Lücke zu schließen.
 
@@ -215,7 +241,7 @@ Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapit
 
 \subsubsection{Kapitel 6: Zusammenfassung und Ausblick}
 
-Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird es ein Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie offene Fragen und Herausforderungen eingegangen.
+Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird es ein Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie auf offene Fragen und Herausforderungen eingegangen.
 
 \chapter{Nebenläufigkeitskonzepte}
 
@@ -736,10 +762,230 @@ Als erstes im \texttt{case 1} wird wieder der Wert der Variable \texttt{lable} e
 Dieser Ablauf wiederholt sich so erneut für den \texttt{case 2}. Zuletzt wird im \texttt{case 3} das finale Ergebnis ausgegeben und \texttt{lable} auf den Wert -1 gesetzt, da die Coroutine beendet ist.
 
 %\section{Kotlin: Threads}
-
 \newpage
 
 \section{Go: Goroutinen}
+
+Goroutinen sind ein Grundlegendes Konzept der Programmiersprache Go. Zusammen mit Channels bilden Goroutinen das Rückgrat von Go's Konzept für nebenläufige Programmierung. Sie sind seit Beginn ein Teil von Go, da Go schon mit dem Fokus auf effiziente und leicht zu handhabende Nebenläufigkeit entwickelt wurde. Goroutinen und Channels sind ein direkter Bestandteil von Go und nicht Teil einer Bibliothek. Das hat den Vorteil, dass sich die Syntax für Nebenläufigkeit in Go auf wenige Schlüsselwörter und Operatoren begrenzt. Dadurch lässt sich effizienter und leicht zu lesender Code schreiben.
+
+Goroutinen wurden von ihrem Designer Rob Pike als ''independently executing function'' bezeichnet. Damit wollte er unterstreichen das Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
+
+\begin{lstlisting}[language=Go,extendedchars=true]
+	package main
+	
+	import (
+	"fmt"
+	"time"
+	)
+	
+	func hello(name string) {
+		fmt.Printf("Hallo, %s!\n", name)
+	}
+	
+	func main() {
+		// Starteten der Goroutine
+		go hello("Philipp")
+		// Warten, damit Goroutine ausgeführt werden kann
+		time.Sleep(time.Second)
+	}
+\end{lstlisting}
+TODO:Ausgabe
+
+In dem gezeigten Beispiel gibt es ein herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird. Wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werde, der von der Go runtime gestartet und verwaltet wird.
+
+TODO:
+Paper Communicating Sequential Processes Tony Haare 1978
+Go: Branch of Newsqueck-Alef-Limbo
+Go: Talks tochannels
+CSP: talks to processes
+
+TODO:
+Goruntime(Vorteil!)
+detect when system is deadlocked
+gut für unit tests
+
+TODO:
+mit panic lässt sich stac trace anzeigen
+es werden auch alle aktiven goroutinen angezeigt
+
+TODO:
+goroutinen haben shared adress space? gut schlecht?
+Racedetector
+go run -race
+gut für große test wo viele goroutinen viele Daten austauschen und zugreifen
+
+\subsection{Channels}
+
+Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen ist es sowohl möglich Daten an einen Goroutine zu senden, als auch Daten von einer Goroutine zu empfanden. Dafür wird in go der Operator \texttt{<-} verwendet. Der Pfeil zeigt dabei den Datenfluss an. Ein Channel kann als ein Leitung mit einem spezifischen Datentyp betrachtet werden. Bei Senden und Empfangen handelt es sich um blockierende Operation. Da der Sender oder Empfänger wartet bis die Gegenseite bereit ist. Dadurch haben Channels auch eine synchronisierende Funktion. Alternativ gibt es auch Buffered Channels, diese sind jedoch unüblich und auch nicht synchronisierend. Mit Hilfe von \texttt{close(ch)} lässt sich ein Channel schließen. So wird der Gegenseite mitgeteilt, dass keine weiteren Daten gesendet werden. Das folgende Beispiel Zeigt wie Verwendung eines Channels um mit einer Goroutine zu kommunizieren:
+
+\begin{lstlisting}[language=Go,extendedchars=true]
+	package main
+
+	import (
+	"fmt"
+	)
+
+	func helloCounter(recevCh chan<- string) {
+		for i := 0; i < 10; i++ {
+			// Senden der Nachrichten über den Channel
+			recevCh <- fmt.Sprintf("Hallo, %d!\n", i)
+		}
+		// Schließen des Channels
+		close(recevCh)
+	}
+
+	func main() {
+		// Erstellen des Channels
+		recevCh := make(chan string)
+		// Starten der Goroutine und Übergabe des Channels
+		go helloCounter(recevCh)
+		// Empfangen der Nachrichten über den Channel
+		for value := range recevCh {
+			fmt.Print(value)
+		}
+	}
+\end{lstlisting}
+TODO:Ausgabe
+
+In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben. Welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt zehn Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel bis dieser geschlossen wird. Alternativ könnte die Nachricht beziehungsweise der Status des Channels auch folgender maßen abgefragt werden: \texttt{v, ok := <-c}. Jedes mal wenn eine Nachricht übermittelt wird synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehn mal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion bendet.
+
+In diesem Beispiel wurden Daten über einen Channel von einer Goroutine empfangenen, selbstverständlich ist es auch möglich auf gleiche Weise Daten an eine Goroutine zu senden.
+
+\subsection{Select}
+
+Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt{select}-Anweisung. Sie lässt sich mit einer \texttt{switch}-Anweisung vergleichen, die so lange blockiert bis einer ihrer Fälle (\texttt{case}) vorgesetzt werden kann. Bei den Fällen handelt es sich dabei entweder um das Senden oder Empfangen von Daten über Channels. Somit ist es möglich in einer Goroutine auf mehrere Channel-Operatinen gleichzeitig zu warten und innerhalb einer Goroutine Daten aus unterschiedlichen Channels zu verarbeiten. Außerdem können so Deadlocks vermieden werden, indem ein Abbruchsignal gesendet werden kann (TODO: Siehe Pattern) oder ein Timeout-Channel erstellt wird.
+
+\begin{lstlisting}[language=Go,extendedchars=true]
+	select {
+		case msg1 := <-ch1:
+			fmt.Println("Received from ch1:", msg1)
+		case msg2 := <-ch2:
+			fmt.Println("Received from ch2:", msg2)
+		case ch3 <- "message3":
+			fmt.Println("Send message3 to ch3")
+		case <-time.After(time.Second):
+			fmt.Println("Timeout after 1 second")
+	}
+\end{lstlisting}
+
+In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht Gesendet werden kann. Bei dem vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde. Die hat zur Folge, dass falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab, der vierte Fall ausgeführt wird. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen, dieser würde ausgeführt werden wenn keiner der anderen Fälle bereit ist, dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
+
+\subsection{Goroutine}
+
+Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber einen Strukturtyp mit dem Namen g der in der \texttt{runtime2.go} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps g bei dem sich auf die wichtigsten Parameter beschenkt wird:
+
+\begin{lstlisting}[language=Go,extendedchars=true]
+	type g struct {
+		stack	    stack   // Goroutinen-Stack
+		m       	 *m      // aktueller BS-Thread (m)
+		sched   	 gobuf   // Goroutinen-Buffer
+		atomicstatus atomic.Uint32 // Goroutinen-Status
+	}
+\end{lstlisting}
+
+\subsubsection{Goroutinen-Stack}
+
+ Der Goroutinen-Stack ist ein separater Speicherbereich der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur 2kb Speicher. Falls der Speicher nicht ausreicht ruft die Goroutine den Befehl morestack auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert der die doppelte Größe des alten stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug speicher reserviert wurde.
+ 
+\subsubsection{BS-Thread}
+ Der Parameter m verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler erläutert TODO:Verweis
+
+\subsubsection{Goroutinen-Buffer}
+Der Zweck des Goroutinen-Buffer ist es, den Zustand einer Goroutine zu speichern, wenn sie unterbrochen wird, und ihn wiederherzustellen, wenn die Ausführung fortgesetzt wird. Es ermöglicht dem Scheduler, effizient zwischen Goroutinen zu wechseln, indem er den Zustand jeder Goroutine schnell speichern und wiederherstellen kann.
+ 
+\subsubsection{Goroutinen-Status}
+
+Eine Goroutine hat in der Regel einen der drei Zustände:
+
+\begin{itemize}
+	\item \textbf{Running:} Die Goroutine wird gerade ausgeführt.
+	\item \textbf{Runnable:} Die Goroutine ist bereit zur Ausführung, aber läuft noch nicht.
+	\item \textbf{Waiting:} Die Goroutine ist blockiert und wartet auf ein Ereignis.
+\end{itemize}	
+	
+\subsection{scheduler}
+schnelles context sitwiching
+
+aus programmierer sich leichtgewichtige threads
+
+eigentlich ein struct das von dem schedulter verwaltet wird
+
+dadurch hardware unabhängig
+
+type g struct 5:09 besiepl
+
+effiziente auslastung des ausführenden systems
+
+schlüssel konzepte
+
+G goroutine der code der ausgeführt wird
+
+M os thread wo der code ausgeführt wird
+
+P logical processor hat die rechte und resourcen um code auszuführen
+
+M:N scheduler
+
+M Goro für N os threads
+
+flexible architektur die die system unabhängig ist und system auslastet
+G states
+
+pauesed ist blockiert
+
+runnable bereit zum ausführen
+
+running wird ausgeführt
+
+P anazahl logical prcessors ist gleich der anzahl der prozessorkerne des ausführenden systems GOMAXPROCS go umgebungsvariable
+
+hat eine local run queue LRQ
+
+ablauf(video)
+
+was blockiert goro typischerweise
+
+channel, network calls, systemcalls
+
+checkpoints?! für blockieren?!
+
+\subsection{Pattern}
+
+Launching Goroutine inside a function
+
+Code:
+...
+go func() {
+	...
+}()
+return channel
+
+ermöglicht es mehrer instanzen eines "Services" zu haben
+
+Multiplexing
+
+Fan In Function mit select 22:25
+
+service/reply Channel
+
+channel auf channel senden
+
+Cancelation, closing channel
+
+Code:
+chan chan err
+
+Dialog: für CleanUp
+
+long lived systems -> clean up um dinge loszuwerden die nicht mehr benötigt werden
+
+Techniques 26:17
+
+
+%Mutex lock
+conurrebcy as a first classing language?! was bedeutet das?
+Was sind Gophers?
+
 
 \section{Vergleich der Konzepte}
 
