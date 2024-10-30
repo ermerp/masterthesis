@@ -199,37 +199,37 @@ Hannover, den \today \hfill Unterschrift
 
 \section{Motivation}
 
-In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Softwareentwicklung erheblich zugenommen. Mit dem Anstieg der Anforderungen an die Performance und Effizienz von Softwareanwendungen, insbesondere im Bereich von Echtzeit- und Cloud-basierten Systemen, sind robuste und leistungsfähige Nebenläufigkeitskonzepte unerlässlich geworden. Dabei ist es nicht ungewöhnlich, dass mehr Zeit mit der Kommunikation zwischen Systemen verbracht wird, als mit den eigentlichen Berechnungen und System deshalb mehr warten als arbeiten. Dadurch entsteht die Anforderung an Anwendungen eine hohe Parallelität und Nebenläufigkeit zu gewährleisten. Programmiersprachen wie Java, Kotlin und Go tragen dieser neuen Entwicklung Rechnung und bieten unterschiedliche Ansätze zur Umsetzung von Nebenläufigkeit, die jeweils ihre eigenen Vor- und Nachteile haben. Als Motivation für diese Arbeit dient die aktuelle Veröffentlichung von Virtual Threads für Java im September 2023. Diese diente als Anlass für eine fundierte Bewertung der Performance von aktuellen Nebenläufigkeitskonzepten in den ausgewählten Programmiersprachen, da es bislang nur begrenzte vergleichende Analysen, für die Performance dieser Konzepte gab. Die Arbeit soll ein besseres Verständnis dafür schaffen, welche Technologien sich für spezifische Anwendungsfälle am besten eignen.
+In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Softwareentwicklung erheblich zugenommen. Mit dem Anstieg der Anforderungen an die Performance und Effizienz von Softwareanwendungen, insbesondere im Bereich von Echtzeit- und Cloud-basierten Systemen, sind robuste und leistungsfähige Nebenläufigkeitskonzepte unerlässlich geworden. Dabei ist es nicht ungewöhnlich, dass mehr Zeit mit der Kommunikation zwischen Systemen verbracht wird, als mit den eigentlichen Berechnungen und das Systeme deshalb mehr warten als arbeiten. Dadurch entsteht die Anforderung an Anwendungen eine hohe Parallelität und Nebenläufigkeit zu gewährleisten. Programmiersprachen wie Java, Kotlin und Go tragen dieser neuen Entwicklung Rechnung und bieten unterschiedliche Ansätze zur Umsetzung von Nebenläufigkeit, die jeweils ihre eigenen Vor- und Nachteile haben. Als Motivation für diese Arbeit dient die aktuelle Veröffentlichung von Virtual Threads in Java im September 2023. Diese diente als Anlass für eine fundierte Bewertung der Performance von aktuellen Thread-Abstraktionen in den ausgewählten Programmiersprachen, da es bislang nur begrenzte vergleichende Analysen, für die Performance dieser Konzepte gibt. Diese Masterarbeit soll ein besseres Verständnis dafür schaffen, welche Technologien sich für spezifische Anwendungsfälle am besten eignen.
 
 \section{Ziel der Arbeit}
 
-Das Ziel dieser Arbeit ist es, eine umfassende Performanceanalyse der verschiedenen Nebenläufigkeitskonzepte in den Programmiersprachen Java, Kotlin und Go durchzuführen. Die Auswahl ist auf diese Sprachen gefallen, da als Ausgangspunkt für diese Arbeit die aktuelle Veröffentlichung von Virtual Threads für Java diente. Als zweite Sprache wurde Kotlin gewählt, da diese ebenfalls in der Java Virtual Machine (JVM) läuft und somit eine dierekte Konkurrenz zu Java darstellt. Zuletzt wurde Go als eine weiter zu untersuchende Sprache gewählt, da es sich bei Go um eine Sprache handelt die von Beginn an mit dem Fokus auf Nebenläufigkeit entwickelt wurde und somit als ein guter Vergleichspunkt für Nebenläufigkeit dient. Die zu vergleichenden Nebenläufigkeitskonzepte sind dabei im Detail: Java Threads (Platform Threads), Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen. Diese unterschiedlichen Ansätze sollen hinsichtlich ihrer Effizienz, Skalierbarkeit und Ressourcennutzung verglichen werden.
+Das Ziel dieser Arbeit ist es, eine umfassende Leistungsanalyse der verschiedenen Thread-Abstraktionen in den Programmiersprachen Java, Kotlin und Go durchzuführen. Die Auswahl ist auf diese Sprachen gefallen, da als Ausgangspunkt für diese Arbeit die aktuelle Veröffentlichung von Virtual Threads in Java diente. Als zweite Sprache wurde Kotlin gewählt, da diese ebenfalls in der Java Virtual Machine (JVM) läuft und somit eine direkte Konkurrenz zu Java darstellt. Zuletzt wurde Go als eine weitere zu untersuchende Sprache gewählt, da es sich bei Go um eine Sprache handelt die von Beginn an mit dem Fokus auf Nebenläufigkeit entwickelt wurde und somit als ein guter Vergleichspunkt für Nebenläufigkeit dient. Die zu vergleichenden Nebenläufigkeitskonzepte sind dabei im Detail: Java Threads (Platform Threads), Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen. Diese unterschiedlichen Ansätze sollen hinsichtlich ihrer Effizienz, Skalierbarkeit und Ressourcennutzung verglichen werden.
 
-Um dieses Ziel zu erreichen, werden spezifische Benchmarks entwickelt und implementiert, die die Leistung der einzelnen Nebenläufigkeitskonzepte unter verschiedenen Bedingungen messen. Die Ergebnisse dieser Benchmarks sollen Aufschluss darüber geben, welches Nebenläufigkeitskonzepte für bestimmte Anwendungsfälle am besten geeignet sind und welche Vor- und Nachteile die jeweiligen Modelle bieten.
+Um dieses Ziel zu erreichen, werden, im Rahmen dieser Masterarbeit, spezifische Benchmarks konzeptioniert und implementiert , die die Leistung der einzelnen Neben\-läufig\-keits\-konzepte unter verschiedenen Bedingungen messen. Die Ergebnisse dieser Benchmarks sollen Aufschluss darüber geben, welches Nebenläufigkeitskonzepte für bestimmte Anwendungsfälle am besten geeignet sind und welche Vor- und Nachteile die jeweiligen Modelle bieten.
 
-Ein weiteres Ziel dieser Arbeit ist es, praktische Empfehlungen für Entwickler zu erarbeiten, die ihnen helfen sollen, das passende Nebenläufigkeitskonzepte für ihre spezifischen Anforderungen auszuwählen. Durch die Analyse der Stärken und Schwächen der einzelnen Konzepte soll ein tiefgehendes Verständnis dafür geschaffen werden, wie sich die Wahl der Nebenläufigkeitskonzepte auf die Gesamtperformance und die Effizienz einer Anwendung auswirkt.
+Ein weiteres Ziel dieser Arbeit ist es, praktische Empfehlungen für Entwickler zu erarbeiten, die ihnen helfen sollen, das passende Thread-Abstraktion für ihre spezifischen Anforderungen auszuwählen. Durch die Analyse der Stärken und Schwächen der einzelnen Konzepte soll ein tiefgehendes Verständnis dafür geschaffen werden, wie sich die Wahl einer Thread-Abstraktion auf die Gesamtperformance und die Effizienz einer Anwendung auswirkt.
 
 \section{Verwandte Arbeiten}
 
-Es gibt bereits eine breite Auswahl an Arbeiten die sich mit dem Vergleich von Nebenhäufigkeitskonzepten in unterschiedlichen Programmiersprachen beschäftigen. Jedoch handelt es sich dabei um Momentaufnahmen die nur den aktuellen Stand der Technik vergleichen. So können die Ergebnisse, durch die Einführung einer neuen Technologie wie Virtual Threads, schnell überholt sein. Deshalb folgt in diesem Kapitel eine Auswahl an Arbeiten, die am nächsten mit dem Thema dieser Arbeit verwandt sind.
+Zwar gibt es bereits eine breite Auswahl an Arbeiten die sich mit dem Vergleich von Thread-Abstraktionen in unterschiedlichen Programmiersprachen beschäftigen. Jedoch handelt es sich dabei um Momentaufnahmen, die nur den aktuellen Stand der Technik vergleichen. So können die Ergebnisse, durch die Einführung einer neuen Technologie wie Virtual Threads, schnell überholt sein. Deshalb folgt in diesem Kapitel eine Auswahl an Arbeiten, die am nächsten mit dem Thema dieser Arbeit verwandt sind.
 
 In dem Paper \textbf{Concurrency in Go and Java: Performance Analysis} \cite{Togashi2014} von Naohiro Togashi und Vitaly Klyuev wird die Performance von Nebenläufigkeit in Go und Java verglichen. Dafür werden als Benchmark Matrix-Multiplikationen verwendet. Go erzielt dabei deutlich bessere Ergebnisse als Java, jedoch ist das Paper aus dem Jahr 2014 und deshalb kommen bei Java klassische Threads zum Einsatz, bei Go hingegen Goroutinen. Es wird also interessant sein wie die neueren Virtual Threads im Vergleich zu den Goroutinen abschneiden werden.
 
-In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Thread in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet werden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtuel Threads, jeweils dicht bei einander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also interessant sein ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert hat. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird interessant sein wie sich die Performance bei anderen Benchmarks verhält.
+In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Thread in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet werden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtuel Threads, jeweils dicht bei einander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also interessant sein, ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert hat. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird also ebenfalls interessant sein, wie sich die Performance bei anderen Benchmarks verhält.
 
-Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Arbeit versucht diese Lücke zu schließen.
+Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Masterarbeit versucht diese Lücke zu schließen.
 
 \section{Gliederung und Aufbau}
 
-Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Nebenläufigkeitskonzepte und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go zu ermöglichen.
+Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Thread-Abstraktionen und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go zu ermöglichen.
 
-\subsubsection{Kapitel 2: Nebenläufigkeitskonzepte}
+\subsubsection{Kapitel 2: Thread-Abstraktionen}
 
-Dieses Kapitel bildet die theoretische Grundlage der Arbeit. Es werden die spezifischen Nebenläufigkeitskonzepte in den für diese Arbeit ausgewählten Programmiersprachen vorgestellt: Java (Platform Threads und Virtual Threads), Kotlin (Coroutinen) und Go (Goroutinen). Abschließend erfolgt ein theoretischer Vergleich dieser Konzepte, um die Gemeinsamkeiten und Unterschiede zu verdeutlichen, die in den späteren Benchmarks untersucht werden.
+Dieses Kapitel bildet die theoretische Grundlage der Arbeit. Es werden die spezifischen Thread-Abstraktionen in den für diese Arbeit ausgewählten Programmiersprachen vorgestellt: Java (Platform Threads und Virtual Threads), Kotlin (Coroutinen) und Go (Goroutinen). Abschließend erfolgt ein theoretischer Vergleich dieser Konzepte, um die Gemeinsamkeiten und Unterschiede zu verdeutlichen, die in den späteren Benchmarks untersucht werden.
 
 \subsubsection{Kapitel 3: Testaufbau}
 
-In diesem Kapitel wird die methodische Herangehensweise der Arbeit erläutert. Es beschreibt den Testaufbau, sowie die verwendeten Hard- und Software. Besondere Aufmerksamkeit wird den Performancefaktoren gewidmet, anhand derer die Leistung der Nebenläufigkeitskonzepte in den Benchmarks verglichen wird. Darüber hinaus werden die Werkzeuge zur Datenerhebung vorgestellt und ihre Funktionsweise erläutert. Dieses Kapitel stellt somit die methodische Basis für die Durchführung der Benchmarks dar und sichert die Reproduzierbarkeit der Ergebnisse.
+In diesem Kapitel wird die methodische Herangehensweise dieser Arbeit erläutert. Es beschreibt den Testaufbau, sowie die verwendeten Hard- und Software. Besondere Aufmerksamkeit wird den Performancefaktoren gewidmet, anhand derer die Leistung der Nebenläufigkeitskonzepte in den Benchmarks verglichen wird. Darüber hinaus werden die Werkzeuge zur Datenerhebung vorgestellt und ihre Funktionsweise erläutert. Dieses Kapitel stellt somit die methodische Basis für die Durchführung der Benchmarks dar und sichert die Reproduzierbarkeit der Ergebnisse.
 
 \subsubsection{Kapitel 4: Benchmarks}
 
@@ -241,11 +241,11 @@ Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapit
 
 \subsubsection{Kapitel 6: Zusammenfassung und Ausblick}
 
-Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird es ein Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie auf offene Fragen und Herausforderungen eingegangen.
+Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird es einen Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie auf offene Fragen und Herausforderungen eingegangen.
 
-\chapter{Nebenläufigkeitskonzepte}
+\chapter{Thread-Abstraktionen}
 
-Im folgenden Kapitel werden die unterschiedlichen Nebenläufigkeits-Konzepte der verschiedenen Programmiersprachen vorgestellt, welche im Rahmen der Master-Arbeit verglichen wurden. Dabei werden ihre Funktionsweisen, so wie ihre Stärken und Schwächen beleuchtet.
+Im folgenden Kapitel werden die unterschiedlichen Thread-Abstraktionen der verschiedenen Programmiersprachen vorgestellt, welche im Rahmen der Master-Arbeit verglichen wurden. Dabei werden ihre Funktionsweisen, so wie ihre Stärken und Schwächen beleuchtet.
 
 \section{Java: Platform Threads}
 
@@ -762,11 +762,12 @@ Als erstes im \texttt{case 1} wird wieder der Wert der Variable \texttt{lable} e
 Dieser Ablauf wiederholt sich so erneut für den \texttt{case 2}. Zuletzt wird im \texttt{case 3} das finale Ergebnis ausgegeben und \texttt{lable} auf den Wert -1 gesetzt, da die Coroutine beendet ist.
 
 %\section{Kotlin: Threads}
+% TODO: oder skip
 \newpage
 
 \section{Go: Goroutinen}
 
-Goroutinen sind ein Grundlegendes Konzept der Programmiersprache Go. Zusammen mit Channels bilden Goroutinen das Rückgrat von Go's Konzept für nebenläufige Programmierung. Sie sind seit Beginn ein Teil von Go, da Go schon mit dem Fokus auf effiziente und leicht zu handhabende Nebenläufigkeit entwickelt wurde. Goroutinen und Channels sind ein direkter Bestandteil von Go und nicht Teil einer Bibliothek. Das hat den Vorteil, dass sich die Syntax für Nebenläufigkeit in Go auf wenige Schlüsselwörter und Operatoren begrenzt. Dadurch lässt sich effizienter und leicht zu lesender Code schreiben.
+Goroutinen sind ein grundlegendes Konzept der Programmiersprache Go. Zusammen mit Channels bilden Goroutinen das Rückgrat von Go's Thread-Abstraktion zur nebenläufigen Programmierung. Sie sind seit Beginn ein Teil von Go, da Go schon mit dem Fokus auf effiziente und leicht zu handhabende Nebenläufigkeit entwickelt wurde. Goroutinen und Channels sind ein direkter Bestandteil von Go und nicht Teil einer Bibliothek. Das hat den Vorteil, dass sich die Syntax für Nebenläufigkeit in Go auf wenige Schlüsselwörter und Operatoren begrenzt. Dadurch lässt sich ein effizienter und leicht zu lesender Code schreiben.
 
 Goroutinen wurden von ihrem Designer Rob Pike als ''independently executing function'' bezeichnet. Damit wollte er unterstreichen das Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
 
@@ -789,34 +790,17 @@ Goroutinen wurden von ihrem Designer Rob Pike als ''independently executing func
 		time.Sleep(time.Second)
 	}
 \end{lstlisting}
-TODO:Ausgabe
+% TODO:Ausgabe
 
-In dem gezeigten Beispiel gibt es ein herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird. Wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werde, der von der Go runtime gestartet und verwaltet wird.
+In dem gezeigten Beispiel gibt es eine herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird. Wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werde, der von der Go Runtime gestartet und verwaltet wird. 
 
-TODO:
-Paper Communicating Sequential Processes Tony Haare 1978
-Go: Branch of Newsqueck-Alef-Limbo
-Go: Talks tochannels
-CSP: talks to processes
+Das hat verschiedene Vorteile, so hat die Runtime unter anderem eine eingebaute Deadlock-Erkennung. Sie kann einfache globale Deadlocks erkennen, bei denen alle Goroutinen blockiert sind. Dies funktioniert automatisch ohne zusätzlichen Code oder Konfiguration.
 
-TODO:
-Goruntime(Vorteil!)
-detect when system is deadlocked
-gut für unit tests
-
-TODO:
-mit panic lässt sich stac trace anzeigen
-es werden auch alle aktiven goroutinen angezeigt
-
-TODO:
-goroutinen haben shared adress space? gut schlecht?
-Racedetector
-go run -race
-gut für große test wo viele goroutinen viele Daten austauschen und zugreifen
+Ein wesentliches Merkmal von Goroutinen ist ihr gemeinsamer Adressraum, der sowohl Vor- als auch Nachteile mit sich bringt. Einerseits ermöglicht dieser geteilte Speicherbereich eine effiziente Kommunikation und Ressourcennutzung zwischen Goroutinen. Andererseits birgt er das Risiko einer Wettlaufsituation (Race Condition), wenn mehrere Goroutinen gleichzeitig auf dieselben Speicherbereiche zugreifen und mindestens ein Zugriff schreibend erfolgt. Um potenzielle Wettlaufsituationen zu identifizieren, bietet die Go-Runtime einen integrierten Race Detector, der durch die Kompilierungs-Flag \texttt{-race} aktiviert werden kann. Dieses Tool überwacht zur Laufzeit Speicherzugriffe und meldet verdächtige Zugriffsmuster, die auf Wettlaufsituationen hindeuten könnten. Eine effektive Strategie zur Reduzierung der Wahrscheinlichkeit von Wettlaufsituationen ist die Verwendung von Channels. Welche im folgenden Abschnitt genauer beleuchtet werden.
 
 \subsection{Channels}
 
-Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen ist es sowohl möglich Daten an einen Goroutine zu senden, als auch Daten von einer Goroutine zu empfanden. Dafür wird in go der Operator \texttt{<-} verwendet. Der Pfeil zeigt dabei den Datenfluss an. Ein Channel kann als ein Leitung mit einem spezifischen Datentyp betrachtet werden. Bei Senden und Empfangen handelt es sich um blockierende Operation. Da der Sender oder Empfänger wartet bis die Gegenseite bereit ist. Dadurch haben Channels auch eine synchronisierende Funktion. Alternativ gibt es auch Buffered Channels, diese sind jedoch unüblich und auch nicht synchronisierend. Mit Hilfe von \texttt{close(ch)} lässt sich ein Channel schließen. So wird der Gegenseite mitgeteilt, dass keine weiteren Daten gesendet werden. Das folgende Beispiel Zeigt wie Verwendung eines Channels um mit einer Goroutine zu kommunizieren:
+Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen ist es sowohl möglich Daten an einen Goroutine zu senden, als auch Daten von einer Goroutine zu empfanden. Dafür wird in go der Operator \texttt{<-} verwendet. Der Pfeil zeigt dabei den Datenfluss an. Ein Channel kann als eine Leitung mit einem spezifischen Datentyp betrachtet werden. Beim Senden und Empfangen handelt es sich um eine blockierende Operation, da der Sender oder Empfänger wartet bis die Gegenseite bereit ist. Dadurch haben Channels auch eine synchronisierende Funktion. Alternativ gibt es auch Buffered Channels, diese sind jedoch unüblich und auch nicht synchronisierend. Mit Hilfe von \texttt{close(ch)} lässt sich ein Channel schließen. So wird der Gegenseite mitgeteilt, dass keine weiteren Daten gesendet werden. Das folgende Beispiel Zeigt wie Verwendung eines Channels um mit einer Goroutine zu kommunizieren:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	package main
@@ -845,15 +829,17 @@ Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen is
 		}
 	}
 \end{lstlisting}
-TODO:Ausgabe
+% TODO:Ausgabe
 
-In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben. Welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt zehn Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel bis dieser geschlossen wird. Alternativ könnte die Nachricht beziehungsweise der Status des Channels auch folgender maßen abgefragt werden: \texttt{v, ok := <-c}. Jedes mal wenn eine Nachricht übermittelt wird synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehn mal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion bendet.
+In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben. Welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt zehn Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes mal wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehnmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
 
-In diesem Beispiel wurden Daten über einen Channel von einer Goroutine empfangenen, selbstverständlich ist es auch möglich auf gleiche Weise Daten an eine Goroutine zu senden.
+Alternativ könnte die Nachricht beziehungsweise der Status des Channels auch folgender maßen abgefragt werden: \texttt{v, ok := <-c}. Der Ausdruck liest einen Wert aus dem Channel \texttt{c} und weist ihn der Variablen \texttt{v} zu, während die boolesche Variable \texttt{ok} angibt, ob der Empfang erfolgreich war (true) oder der Channel geschlossen ist (false).
+
+In dem gezeigten Code-Beispiel wurden Daten über einen Channel von einer Goroutine empfangenen, selbstverständlich ist es auch möglich auf gleiche Weise Daten an eine Goroutine zu senden.
 
 \subsection{Select}
 
-Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt{select}-Anweisung. Sie lässt sich mit einer \texttt{switch}-Anweisung vergleichen, die so lange blockiert bis einer ihrer Fälle (\texttt{case}) vorgesetzt werden kann. Bei den Fällen handelt es sich dabei entweder um das Senden oder Empfangen von Daten über Channels. Somit ist es möglich in einer Goroutine auf mehrere Channel-Operatinen gleichzeitig zu warten und innerhalb einer Goroutine Daten aus unterschiedlichen Channels zu verarbeiten. Außerdem können so Deadlocks vermieden werden, indem ein Abbruchsignal gesendet werden kann (TODO: Siehe Pattern) oder ein Timeout-Channel erstellt wird.
+Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt{select}-Anweisung. Sie lässt sich mit einer \texttt{switch}-Anweisung vergleichen, die so lange blockiert bis einer ihrer Fälle (\texttt{case}) vorgesetzt werden kann. Bei den Fällen handelt es sich dabei entweder um das Senden oder Empfangen von Daten über Channels. Somit ist es möglich in einer Goroutine auf mehrere Channel-Operationen gleichzeitig zu warten und innerhalb einer Goroutine Daten aus unterschiedlichen Channels zu verarbeiten. Außerdem können so Deadlocks vermieden werden, indem ein Abbruchsignal gesendet werden kann (TODO: Siehe Pattern) oder ein Timeout-Channel erstellt wird.
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	select {
@@ -868,11 +854,11 @@ Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt
 	}
 \end{lstlisting}
 
-In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht Gesendet werden kann. Bei dem vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde. Die hat zur Folge, dass falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab, der vierte Fall ausgeführt wird. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen, dieser würde ausgeführt werden wenn keiner der anderen Fälle bereit ist, dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
+In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht gesendet werden kann. Im vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde, dies hat zur Folge, dass falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab, der vierte Fall ausgeführt wird. Damit wird verhinder, dass das Programm unbegrenzt auf eine Channel-Operation wartet. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen, dieser würde ausgeführt werden, wenn keiner der anderen Fälle bereit ist, dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
 
 \subsection{Goroutine}
 
-Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber einen Strukturtyp mit dem Namen g der in der \texttt{runtime2.go} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps g bei dem sich auf die wichtigsten Parameter beschenkt wird:
+Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend, um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber einen Strukturtyp mit dem Namen \texttt{g} der in der \texttt{runtime2.go} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps \texttt{g} bei dem sich auf die wichtigsten Parameter beschenkt wird:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	type g struct {
@@ -885,10 +871,10 @@ Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese
 
 \subsubsection{Goroutinen-Stack}
 
- Der Goroutinen-Stack ist ein separater Speicherbereich der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur 2kb Speicher. Falls der Speicher nicht ausreicht ruft die Goroutine den Befehl morestack auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert der die doppelte Größe des alten stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug speicher reserviert wurde.
+ Der Goroutinen-Stack ist ein separater Speicherbereich, der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur 2kb Speicher. Falls der Speicher nicht ausreicht, ruft die Goroutine den Befehl \texttt{morestack} auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert, der die doppelte Größe des alten stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug Speicher reserviert wurde.
  
 \subsubsection{BS-Thread}
- Der Parameter m verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler erläutert TODO:Verweis
+ Der Parameter \texttt{m} verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler erläutert. TODO:Verweis
 
 \subsubsection{Goroutinen-Buffer}
 Der Zweck des Goroutinen-Buffer ist es, den Zustand einer Goroutine zu speichern, wenn sie unterbrochen wird, und ihn wiederherzustellen, wenn die Ausführung fortgesetzt wird. Es ermöglicht dem Scheduler, effizient zwischen Goroutinen zu wechseln, indem er den Zustand jeder Goroutine schnell speichern und wiederherstellen kann.
@@ -919,17 +905,32 @@ Dafür ist es wichtig das die Betriebssystem-Threads möglichts durchgehend Grou
 
 \subsubsection{Channel-Kommunikation}
 
-Die Anzahl der logischen Prozessoren P ist gleich der Anzahl an Prozessorkernen des ausführenden Systems. Für dieses Beispiel wird zum leichteren Verständnis von einem System mit nur einem Prozessorkern ausgegangen. Dementsprechend wird auch nur ein Logischer Prozessor P1 erstellt. Diesem wird vom Scheduler die Goroutine G1 als auszuführende Aufgabe zugewiesen und der Betriebssystem Thread M1 also Ort wo die Aufgabe ausgeführt werden soll. Außerdem besitzt ein logischer Prozessor noch eine local Run Queue (LRQ), dieser werden vom Scheduler weiter Goroutinen hinzugefügt, die vom logischen Prozessor als nächstes bearbeitet werden sollen. In diesem fall enthält die LRQ von P1 die Groutinen G2 und G3.
+Die Anzahl der logischen Prozessoren P ist gleich der Anzahl an Prozessorkernen des ausführenden Systems. Für dieses Beispiel wird zum leichteren Verständnis von einem System mit nur einem Prozessorkern ausgegangen. Dementsprechend wird auch nur ein Logischer Prozessor P1 erstellt. Diesem wird vom Scheduler die Goroutine G1 als auszuführende Aufgabe zugewiesen und der Betriebssystem Thread M1 also Ort wo die Aufgabe ausgeführt werden soll. Außerdem besitzt ein logischer Prozessor noch eine local Run Queue (LRQ), dieser werden vom Scheduler weiter Goroutinen hinzugefügt, die vom logischen Prozessor als nächstes bearbeitet werden sollen. In diesem Fall enthält die LRQ von P1 die Groutinen G2 und G3.
 
-TODO: Bild 1
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineChannel1.png}
+	\caption{Ausgangssituation: G1 wird ausgeführt und blockiert}
+	\label{fig:GoroutineChannel1}
+\end{figure}
 
 Auf der Abbildung ist die oben beschrieben Ausgangssituation zu sehen. P1 führt aktuell G1 aus. G1 möchte die Nachricht \texttt{msg1} an den Channel \texttt{ch1} senden. Da es aktuell keinen Empfänger gibt blockiert G1 und wechselt in den Status Waiting. Dies registriert der Scheduler und entnimmt G1 aus P1. Wie in der nächsten Abbildung deutlich wird.
 
-TODO: Bild 2
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineChannel2.png}
+	\caption{G1 wird entfernt, G2 wird ausgeführt}
+	\label{fig:GoroutineChannel2}
+\end{figure}
 
 Der Scheduler hat G1 aus P1 entfernt und Empfänger-Warteschlange \texttt{recvq} des Channels \texttt{ch1} zugewiesen. Dort wartet G1 auf einen Empfänger für die Nachricht. Da P1 jetzt keine Goroutine mehr ausführt entnimmt er die vorderste Goroutine aus seiner LRQ und beginnt mit der Bearbeitung. In diesem Fall ist dies G2. Dafür wird weiterhin der Betriebssystem Thread M1 genutzt der P1 bereits zugewiesen war. Der Status von G2 wird dementsprechend von runnable auf running geändert. G2 wiederum empfängt eine Nachricht vom Channel \texttt{ch1}, was zur Folge hat, dass G1 nicht länger blockiert ist. Zu sehen in der folgenden Abbildung.
 
-TODO: Bild 3
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineChannel3.png}
+	\caption{G1 ist nicht mehr blockiert und wird in die LRQ verschoben}
+	\label{fig:GoroutineChannel3}
+\end{figure}
 
 Da G2 die Nachricht von G1 empfangen hat ist G1 nicht mehr blockiert und wechselt auf den Status runnable. Deshalb verschiebt der Scheduler G1 in die LRQ von P1.
 
@@ -939,15 +940,30 @@ Diese Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht die
 
 In dem folgenden Beispiel wird gezeigt wie der Scheduler mit Systemaufrufen innerhalb von Goroutinen umgeht. In diesem Beispiel gehen wir wieder von einem System mit einem Prozessorkern aus, deshalb gibt auch wieder nur einen logischen Prozessor P1. Dieser für die Goroutine G1 auf dem Betriebssystemthread M1 aus. Außerdem wartet eine zweite Goroutine G2 in derLRQ von P1 daruaf ausgeführt zu werden. Schlussendlich gibt es noch einen zweiten untätigen Betriebssystemthread M2 der aktuell nicht genutzt wird.
 
-TODO: Bild1
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe1.png}
+	\caption{Ausgangssituation: G1 ist auf Grund eines Systemaufrufs blockiert}
+	\label{fig:GoroutineSystemaufrufe1}
+\end{figure}
 
 G1 führt einen Systemaufruf aus der dazu führt, dass G1 blockiert. Dies könnte zu beispielsweise eine I/O-Operation sein. Go hat keine direkte Kontrolle über die Ausführung von Systemaufrufen auf Betriebssystemebene. Sobald ein Systemaufruf initiiert wird, liegt die Kontrolle beim Betriebssystem. Deshalb blockiert nicht nur G1 sonder auch der ausführende Betriebssystemthread M1. Damit P1 weiterhin ausgelastet werden sowohl G1 als auch M1 vom Scheduler freigegeben. P1 wird dann ein neuer Betriebssystemthread, in diesem Fall M2, zugewiesen und P1 kann die nächste Goroutine aus der LRQ ausführen, in diesem Fall G2.
 
-TODO: Bild2
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe2.png}
+	\caption{G1 wird mit M1 aus P1 entfernt, G2 wird auf M2 ausgeführt}
+	\label{fig:GoroutineSystemaufrufe2}
+\end{figure}
 
 Wenn G1 nicht mehr blockiert ist, überprüft der Scheduler ob es einen freien logischen Prozessor gibt, der G1 auf M1 ausführen kann. In diesem Beispiel ist P1 aber mit der Ausführung von G2 beschäftigt. Deshalb wird G1 in die Global Run Queue (GRQ) verschoben. Dort gespeicherte Goroutinen werden von den logischen Prozessoren abgearbeitet sollte ihre eigene LRQ leer sein. M1 hingegen wird zu einem untätigen Thread.
 
-TODO: Bild3
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe3.png}
+	\caption{G1 ist nicht mehr blockiert und wird in die GRQ verschoben}
+	\label{fig:GoroutineSystemaufrufe3}
+\end{figure}
 
 Der Vorteil diese Verfahrens ist, dass die logischen Prozessoren nicht mit den Goroutinen blockieren. Sie können weiterhin Goroutinen ausführen.
 
@@ -963,11 +979,21 @@ Der Net Poller ermöglicht es, eine große Anzahl von gleichzeitigen Netzwerkver
 
 In diesem letzten Abschnitt soll gezeigt werden wie der Work-Stealing-Algorithmus im Goroutinen-Scheduler funktioniert. Er sorgt für eine effiziente Verteilung der Arbeitslast zwischen den verfügbaren logischen Prozessoren (P). Jeder Prozessor (P) hat eine eigene lokale Warteschlange für Goroutinen. Neue Goroutinen werden normalerweise in die lokale Warteschlange des erzeugenden P gelegt. Ein P arbeitet primär an Goroutinen aus seiner eigenen lokalen Warteschlange. In diesem Beispiel gibt es zwei Prozessorkerne und damit zwei logische Prozessoren P1 und P2. Diese arbeiten die ihnen zugewiesenen Goroutinen ab.
 
-TODO: Bild 1
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing1.png}
+	\caption{P1 und P2 führen Gs aus und haben gefüllte LRQs}
+	\label{fig:GoroutineWorkstealing1}
+\end{figure}
 
 Wenn ein P keine Goroutinen mehr in seiner LRQ hat, versucht er, Goroutinen zu ``stehlen''. Er wählt zufällig einen anderen P aus und versucht, Goroutinen aus dessen LRQ zu entnehmen. In diesem Fall hat P1 alle seine Goroutinen abgearbeitet währen P2 immer noch beschäftigt ist.
 
-TODO: Bild2
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing2.png}
+	\caption{P1 hat keine Gs mehr und stiehlt die Hälfte der Gs aus der LRQ von P2}
+	\label{fig:GoroutineWorkstealing2}
+\end{figure}
 
 Deshalb stiehlt P1 die hintere Hälfte der LRQ von P2 und verschiebt sie in seine eigene LRQ. Wenn das Stehlen von anderen Ps nicht erfolgreich ist, greift der P auf die GRQ zurück.
 
@@ -1134,6 +1160,22 @@ In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \te
 \section{Benchmark 2}
 
 \subsection{Beschreibung: Benchmark 2}
+
+PostgreSQL bietet ein robustes Transaktionskonzept, das die ACID-Eigenschaften (Atomicity, Consistency, Isolation, Durability) gewährleistet.
+
+Eine Transaktion in PostgreSQL ist eine Sequenz von Datenbankoperationen, die als eine einzige, unteilbare Einheit behandelt wird1. Sie beginnt mit dem Befehl BEGIN und endet entweder mit COMMIT, um die Änderungen zu speichern, oder mit ROLLBACK, um sie rückgängig zu machen
+
+PL/pgSQL-Funktionen laufen bereits in einem Transaktionskontext, daher ist die explizite Transaktionskontrolle innerhalb der Funktion nicht erforderlich
+
+Die Fehlerbehandlung mit EXCEPTION ist korrekt implementiert. Sie fängt alle Fehler ab und führt ein ROLLBACK durch, bevor der Fehler weitergegeben wird. Dies ist eine gute Praxis zur Sicherstellung der Datenintegrität.,
+
+Bei der Verwendung von PostgREST sollten Sie beachten, dass es automatisch Transaktionen für jede HTTP-Anfrage verwaltet. Ihre Funktion wird also in diesem Kontext korrekt funktionieren, ohne dass Sie sich um die explizite Transaktionskontrolle kümmern müssen.
+
+Sperren und Wartezeiten:
+PostgreSQL verwendet Zeilensperren, um konkurrierende Zugriffe zu verwalten. Wenn eine andere Transaktion bereits Sperren auf den betroffenen Konten hält, wird Ihre transfer\_balance Funktion warten, bis diese Sperren freigegeben werden
+
+Deadlock-Erkennung:
+Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den Deadlock und bricht eine der Transaktionen ab
 
 \subsection{Messung: Benchmark 2}
 
