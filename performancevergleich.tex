@@ -10,6 +10,7 @@
 % schöne PDF-Schrift
 \usepackage{graphicx,hyperref,amssymb}
 \hypersetup{pdfborder=0 0 0}
+\usepackage{float}
 %Graphikeinbindung, Hyperref (alles klickbar, Bookmarks),
 %Math. Symbole aus AmsTeX
 \usepackage[utf8]{inputenc}
@@ -303,7 +304,7 @@ Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialf
 
 Ein typischer Anwendungsfall für Virtual Threads ist eine Server-Anwendung die Anfragen im Thread per request Model bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt, der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig berarbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread, sondern auch ein neuer Betriebssystem Threads erstellt werden muss. Da die Anzahl an Betriebssystem Thread aber für ein System stark limitiert ist, in der Regel auf einige Tausend Stück, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Platform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfügung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen Stück.
 
-Der Vorteil von Virtual Thread gegenüber Platform Threads bei dem Thread per request Model, lässt sich gut an Littels Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind wie hoch der Durchsatz($\lambda$) und die Durchlautzeit (W) sind.\cite{Little_1961}
+Der Vorteil von Virtual Thread gegenüber Platform Threads bei dem Thread per request Model, lässt sich gut an Littels Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind wie hoch der Durchsatz($\lambda$) und die Durchlautzeit (W) sind.\cite{Little1961}
 
 \begin{eqnarray}
 	L = \lambda \cdot W \nonumber
@@ -769,7 +770,7 @@ Dieser Ablauf wiederholt sich so erneut für den \texttt{case 2}. Zuletzt wird i
 
 Goroutinen sind ein grundlegendes Konzept der Programmiersprache Go. Zusammen mit Channels bilden Goroutinen das Rückgrat von Go's Thread-Abstraktion zur nebenläufigen Programmierung. Sie sind seit Beginn ein Teil von Go, da Go schon mit dem Fokus auf effiziente und leicht zu handhabende Nebenläufigkeit entwickelt wurde. Goroutinen und Channels sind ein direkter Bestandteil von Go und nicht Teil einer Bibliothek. Das hat den Vorteil, dass sich die Syntax für Nebenläufigkeit in Go auf wenige Schlüsselwörter und Operatoren begrenzt. Dadurch lässt sich ein effizienter und leicht zu lesender Code schreiben.
 
-Goroutinen wurden von ihrem Designer Rob Pike als ''independently executing function'' bezeichnet. Damit wollte er unterstreichen das Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
+Goroutinen wurden von ihrem Designer Rob Pike als eine ''independently executing function, launched by a go statement''\cite{Pike2012} bezeichnet. Damit wollte er unterstreichen, dass Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	package main
@@ -792,15 +793,16 @@ Goroutinen wurden von ihrem Designer Rob Pike als ''independently executing func
 \end{lstlisting}
 % TODO:Ausgabe
 
-In dem gezeigten Beispiel gibt es eine herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird. Wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werde, der von der Go Runtime gestartet und verwaltet wird. 
+In dem gezeigten Beispiel gibt es eine herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird. Wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werden, der von der Go Runtime gestartet und verwaltet wird. 
 
 Das hat verschiedene Vorteile, so hat die Runtime unter anderem eine eingebaute Deadlock-Erkennung. Sie kann einfache globale Deadlocks erkennen, bei denen alle Goroutinen blockiert sind. Dies funktioniert automatisch ohne zusätzlichen Code oder Konfiguration.
 
-Ein wesentliches Merkmal von Goroutinen ist ihr gemeinsamer Adressraum, der sowohl Vor- als auch Nachteile mit sich bringt. Einerseits ermöglicht dieser geteilte Speicherbereich eine effiziente Kommunikation und Ressourcennutzung zwischen Goroutinen. Andererseits birgt er das Risiko einer Wettlaufsituation (Race Condition), wenn mehrere Goroutinen gleichzeitig auf dieselben Speicherbereiche zugreifen und mindestens ein Zugriff schreibend erfolgt. Um potenzielle Wettlaufsituationen zu identifizieren, bietet die Go-Runtime einen integrierten Race Detector, der durch die Kompilierungs-Flag \texttt{-race} aktiviert werden kann. Dieses Tool überwacht zur Laufzeit Speicherzugriffe und meldet verdächtige Zugriffsmuster, die auf Wettlaufsituationen hindeuten könnten. Eine effektive Strategie zur Reduzierung der Wahrscheinlichkeit von Wettlaufsituationen ist die Verwendung von Channels. Welche im folgenden Abschnitt genauer beleuchtet werden.
+Ein wesentliches Merkmal von Goroutinen ist ihr gemeinsamer Adressraum, der sowohl Vor- als auch Nachteile mit sich bringt. Einerseits ermöglicht dieser geteilte Speicherbereich eine effiziente Kommunikation und Ressourcennutzung zwischen Goroutinen. Andererseits birgt er das Risiko einer Wettlaufsituation (Race Condition), wenn mehrere Goroutinen gleichzeitig auf dieselben Speicherbereiche zugreifen und mindestens ein Zugriff schreibend erfolgt. Um potenzielle Wettlaufsituationen zu identifizieren, bietet die Go-Runtime einen integrierten Race Detector\cite{DataRace2024}, der durch die Kompilierungs-Flag \texttt{-race} aktiviert werden kann. Dieses Tool überwacht zur Laufzeit Speicherzugriffe und meldet verdächtige Zugriffsmuster, die auf Wettlaufsituationen hindeuten könnten. Eine effektive Strategie zur Reduzierung der Wahrscheinlichkeit von Wettlaufsituationen ist die Verwendung von Channels. Welche im folgenden Abschnitt genauer beleuchtet werden.
 
 \subsection{Channels}
+\label{subsec:channel}
 
-Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen ist es sowohl möglich Daten an einen Goroutine zu senden, als auch Daten von einer Goroutine zu empfanden. Dafür wird in go der Operator \texttt{<-} verwendet. Der Pfeil zeigt dabei den Datenfluss an. Ein Channel kann als eine Leitung mit einem spezifischen Datentyp betrachtet werden. Beim Senden und Empfangen handelt es sich um eine blockierende Operation, da der Sender oder Empfänger wartet bis die Gegenseite bereit ist. Dadurch haben Channels auch eine synchronisierende Funktion. Alternativ gibt es auch Buffered Channels, diese sind jedoch unüblich und auch nicht synchronisierend. Mit Hilfe von \texttt{close(ch)} lässt sich ein Channel schließen. So wird der Gegenseite mitgeteilt, dass keine weiteren Daten gesendet werden. Das folgende Beispiel Zeigt wie Verwendung eines Channels um mit einer Goroutine zu kommunizieren:
+Um in Go mit Goroutinen zu kommunizieren werden Channels\cite{donovan2015} verwendet. Mit ihnen ist es sowohl möglich Daten an einen Goroutine zu senden, als auch Daten von einer Goroutine zu empfanden. Dafür wird in go der Operator \texttt{<-} verwendet. Der Pfeil zeigt dabei den Datenfluss an. Ein Channel kann als eine Leitung mit einem spezifischen Datentyp betrachtet werden. Beim Senden und Empfangen handelt es sich um eine blockierende Operation, da der Sender oder Empfänger wartet bis die Gegenseite bereit ist. Dadurch haben Channels auch eine synchronisierende Funktion. Alternativ gibt es auch Buffered Channels, diese sind jedoch unüblich und auch nicht synchronisierend. Mit Hilfe von \texttt{close(ch)} lässt sich ein Channel schließen. So wird der Gegenseite mitgeteilt, dass keine weiteren Daten gesendet werden. Das folgende Beispiel Zeigt die Verwendung eines Channels um mit einer Goroutine zu kommunizieren:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	package main
@@ -831,7 +833,7 @@ Um in Go mit Goroutinen zu kommunizieren werden Channels verwendet. Mit ihnen is
 \end{lstlisting}
 % TODO:Ausgabe
 
-In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben. Welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt zehn Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes mal wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehnmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
+In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben. Welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt fünf Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes mal wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehnmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
 
 Alternativ könnte die Nachricht beziehungsweise der Status des Channels auch folgender maßen abgefragt werden: \texttt{v, ok := <-c}. Der Ausdruck liest einen Wert aus dem Channel \texttt{c} und weist ihn der Variablen \texttt{v} zu, während die boolesche Variable \texttt{ok} angibt, ob der Empfang erfolgreich war (true) oder der Channel geschlossen ist (false).
 
@@ -839,7 +841,7 @@ In dem gezeigten Code-Beispiel wurden Daten über einen Channel von einer Gorout
 
 \subsection{Select}
 
-Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt{select}-Anweisung. Sie lässt sich mit einer \texttt{switch}-Anweisung vergleichen, die so lange blockiert bis einer ihrer Fälle (\texttt{case}) vorgesetzt werden kann. Bei den Fällen handelt es sich dabei entweder um das Senden oder Empfangen von Daten über Channels. Somit ist es möglich in einer Goroutine auf mehrere Channel-Operationen gleichzeitig zu warten und innerhalb einer Goroutine Daten aus unterschiedlichen Channels zu verarbeiten. Außerdem können so Deadlocks vermieden werden, indem ein Abbruchsignal gesendet werden kann (TODO: Siehe Pattern) oder ein Timeout-Channel erstellt wird.
+Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt{select}-Anweisung\cite{GoSpecification2024}. Sie lässt sich mit einer \texttt{switch}-Anweisung vergleichen, die so lange blockiert bis einer ihrer Fälle (\texttt{case}) fortgesetzt werden kann. Bei den Fällen handelt es sich dabei entweder um das Senden oder Empfangen von Daten über Channels. Somit ist es möglich in einer Goroutine auf mehrere Channel-Operationen gleichzeitig zu warten und innerhalb einer Goroutine Daten aus unterschiedlichen Channels zu verarbeiten. Außerdem können so Deadlocks vermieden werden, indem ein Abbruchsignal gesendet werden kann (Abschnitt: \ref{subsubsec:closingchannel}) oder ein Timeout-Channel erstellt wird.
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	select {
@@ -854,11 +856,11 @@ Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt
 	}
 \end{lstlisting}
 
-In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht gesendet werden kann. Im vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde, dies hat zur Folge, dass falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab, der vierte Fall ausgeführt wird. Damit wird verhinder, dass das Programm unbegrenzt auf eine Channel-Operation wartet. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen, dieser würde ausgeführt werden, wenn keiner der anderen Fälle bereit ist, dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
+In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht gesendet werden kann. Im vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde, dies hat zur Folge, dass falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab, der vierte Fall ausgeführt wird. Damit wird verhinder, dass das Programm unbegrenzt auf eine Channel-Operation wartet und die \texttt{select}-Anweisung unendlich lang blockiert ist. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen, dieser würde ausgeführt werden, wenn keiner der anderen Fälle bereit ist, dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
 
 \subsection{Goroutine}
 
-Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend, um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber einen Strukturtyp mit dem Namen \texttt{g} der in der \texttt{runtime2.go} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps \texttt{g} bei dem sich auf die wichtigsten Parameter beschenkt wird:
+Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend, um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber einen Strukturtyp mit dem Namen \texttt{g} der in der \texttt{runtime2.go} \cite{goruntime2024} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps \texttt{g} bei dem sich auf die wichtigsten Parameter beschenkt wird:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	type g struct {
@@ -866,15 +868,16 @@ Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese
 		m       	 *m      // aktueller BS-Thread (m)
 		sched   	 gobuf   // Goroutinen-Buffer
 		atomicstatus atomic.Uint32 // Goroutinen-Status
+		...
 	}
 \end{lstlisting}
 
 \subsubsection{Goroutinen-Stack}
 
- Der Goroutinen-Stack ist ein separater Speicherbereich, der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur 2kb Speicher. Falls der Speicher nicht ausreicht, ruft die Goroutine den Befehl \texttt{morestack} auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert, der die doppelte Größe des alten stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug Speicher reserviert wurde.
+ Der Goroutinen-Stack ist ein separater Speicherbereich, der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur 2kb Speicher. Falls der Speicher nicht ausreicht, ruft die Goroutine den Befehl \texttt{morestack} auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert, der die doppelte Größe des alten Stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug Speicher reserviert wurde.
  
 \subsubsection{BS-Thread}
- Der Parameter \texttt{m} verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler erläutert. TODO:Verweis
+ Der Parameter \texttt{m} verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler (\ref{subsec:scheduler}) erläutert.
 
 \subsubsection{Goroutinen-Buffer}
 Der Zweck des Goroutinen-Buffer ist es, den Zustand einer Goroutine zu speichern, wenn sie unterbrochen wird, und ihn wiederherzustellen, wenn die Ausführung fortgesetzt wird. Es ermöglicht dem Scheduler, effizient zwischen Goroutinen zu wechseln, indem er den Zustand jeder Goroutine schnell speichern und wiederherstellen kann.
@@ -888,29 +891,32 @@ Eine Goroutine hat in der Regel einen der drei Zustände:
 	\item \textbf{Runnable:} Die Goroutine ist bereit zur Ausführung, aber läuft noch nicht.
 	\item \textbf{Waiting:} Die Goroutine ist blockiert und wartet auf ein Ereignis.
 \end{itemize}	
+
+Es gibt noch weitere spezielle Zustände, die für das verstehen der Funktionsweise einer Goroutine vernachlässigt werden können.
 	
 \subsection{Scheduler}
+\label{subsec:scheduler}
 
-Der Go-Runtime-Scheduler ist dafür verantwortlich, Goroutinen effizient auf verfügbare Prozessorkerne zu verteilen und ihre Ausführung zu koordinieren. Seine Hauptaufgabe besteht darin, die Parallelität und Nebenläufigkeit von Go-Programmen zu optimieren. Dafür nutzt er drei Schlüsselkonzepte zurück:
+Der Go-Runtime-Scheduler \cite{goScheduler2024} ist dafür verantwortlich, Goroutinen effizient auf verfügbare Prozessorkerne zu verteilen und ihre Ausführung zu koordinieren. Seine Hauptaufgabe besteht darin, die Parallelität und Nebenläufigkeit von Go-Programmen zu optimieren. Dafür nutzt er drei Schlüsselkonzepte:
 
 \begin{itemize}
-	\item \textbf{G - Goroutine:} G steht für Goroutine und wurde bereits im vorherigen Abschnitt vorgestellt. Es kann als Repräsentation der nebenläufige Aufgaben betrachtet werden.
+	\item \textbf{G - Goroutine:} G steht für Goroutine und wurde bereits im vorherigen Abschnitt vorgestellt. Sie kann als Repräsentation der nebenläufige Aufgaben betrachtet werden.
 	\item \textbf{M - Machine:} M steht für Machine und repräsentiert einen Betriebssystem-Thread. Diese Threads werden vom Scheduler verwaltet, um Goroutinen auszuführen.
 	\item \textbf{P - Processor:} P steht für Processor und repräsentiert einen logischen Prozessor. Es handelt sich dabei um eine Abstraktionsschicht zwischen Goroutinen und Betriebssystem-Threads. P's dienen als Kontext für die Ausführung von Goroutinen und ermöglichen eine effiziente Verwaltung und Verteilung der Arbeitslast.
 \end{itemize}	
 
-Bei dem Go-Runtime-Scheduler handelt es sich um einen sogenannten M:N Scheduler. M steht dabei für die Anzahl an Goroutinen und N für di Anzahl an Betriebssystem-Threads. Dies ermöglicht das so genannte Multiplexing, also M Aufgaben effizient auf eine begrenzte Anzahl von N Ressourcen zu verteilen. Diese flexible Architektur führt zu einer möglichst optimalen Ressourcenausnutzung, unabhängig vom ausführenden System.
+Bei dem Go-Runtime-Scheduler handelt es sich um einen sogenannten M:N Scheduler. M steht dabei für die Anzahl an Goroutinen und N für di Anzahl an Betriebssystem-Threads. Dies ermöglicht das so genannte Multiplexing, also M Aufgaben effizient auf eine begrenzte Anzahl von N Ressourcen zu verteilen. Diese flexible Architektur führt zu einer möglichst optimalen Ressourcenausnutzung, unabhängig von dem ausführenden System.
 
 Dafür ist es wichtig das die Betriebssystem-Threads möglichts durchgehend Groutinenen ausführen die nicht blockiert sind. Sollte eine Goroutine in den Status waiting wechseln, also blockieren, wird sie aus dem Betriebssystem-Thread entfernt und von dem Scheduler durch eine Goroutine ersetzt die bereit zur Ausführung ist. Typische Situation für das blockieren einer Goroutine könnten das Warten auf die Kommunikation über einen Channel, die Kommunikation über ein Netzwerk oder Systemaufrufe sein. Im folgenden werden diese drei Fälle im Detail beleuchtet um die Arbeitsweise des Schedulers zu erklären.
 
 \subsubsection{Channel-Kommunikation}
 
-Die Anzahl der logischen Prozessoren P ist gleich der Anzahl an Prozessorkernen des ausführenden Systems. Für dieses Beispiel wird zum leichteren Verständnis von einem System mit nur einem Prozessorkern ausgegangen. Dementsprechend wird auch nur ein Logischer Prozessor P1 erstellt. Diesem wird vom Scheduler die Goroutine G1 als auszuführende Aufgabe zugewiesen und der Betriebssystem Thread M1 also Ort wo die Aufgabe ausgeführt werden soll. Außerdem besitzt ein logischer Prozessor noch eine local Run Queue (LRQ), dieser werden vom Scheduler weiter Goroutinen hinzugefügt, die vom logischen Prozessor als nächstes bearbeitet werden sollen. In diesem Fall enthält die LRQ von P1 die Groutinen G2 und G3.
+Dieses Beispiel zeigt wie der Scheduler mit Goroutinen umgeht die aufgrund von Channel-Kommunikation blockieren. Für dieses Beispiel wird zum leichteren Verständnis von einem System mit nur einem Prozessorkern ausgegangen. Die Anzahl der logischen Prozessoren P ist gleich der Anzahl an Prozessorkernen des ausführenden Systems.  Dementsprechend wird auch nur ein Logischer Prozessor P1 erstellt. Diesem wird vom Scheduler die Goroutine G1 als auszuführende Aufgabe zugewiesen und der Betriebssystem Thread M1 also Ort wo die Aufgabe ausgeführt werden soll. Außerdem besitzt ein logischer Prozessor noch eine local Run Queue (LRQ), dieser wird vom Scheduler weiter Goroutinen hinzugefügt, die vom logischen Prozessor als nächstes bearbeitet werden sollen. In diesem Fall enthält die LRQ von P1 die Groutinen G2 und G3.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel1.png}
-	\caption{Ausgangssituation: G1 wird ausgeführt und blockiert}
+	\caption{Channel-Kommunikation: G1 wird ausgeführt und blockiert}
 	\label{fig:GoroutineChannel1}
 \end{figure}
 
@@ -919,7 +925,7 @@ Auf der Abbildung ist die oben beschrieben Ausgangssituation zu sehen. P1 führt
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel2.png}
-	\caption{G1 wird entfernt, G2 wird ausgeführt}
+	\caption{Channel-Kommunikation: G1 wird entfernt, G2 wird ausgeführt}
 	\label{fig:GoroutineChannel2}
 \end{figure}
 
@@ -928,31 +934,31 @@ Der Scheduler hat G1 aus P1 entfernt und Empfänger-Warteschlange \texttt{recvq}
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel3.png}
-	\caption{G1 ist nicht mehr blockiert und wird in die LRQ verschoben}
+	\caption{Channel-Kommunikation: G1 ist nicht mehr blockiert und wird in die LRQ verschoben}
 	\label{fig:GoroutineChannel3}
 \end{figure}
 
-Da G2 die Nachricht von G1 empfangen hat ist G1 nicht mehr blockiert und wechselt auf den Status runnable. Deshalb verschiebt der Scheduler G1 in die LRQ von P1.
+Da G2 die Nachricht von G1 empfangen hat ist G1 nicht mehr blockiert und wechselt auf den Status Runnable. Deshalb verschiebt der Scheduler G1 in die LRQ von P1.
 
-Diese Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht die aufgrund von Channel-Kommunikation blockiert. In der Praxis hat ein System jedoch meist mehr als einen Prozessorkern, was dem Go-Scheduler zusätzliche Möglichkeiten zur Optimierung der Ausführung bietet. Dies wird im Abschnitt Workstealing genauer erläutert. TODO: Verweis
+Diese Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht die aufgrund von Channel-Kommunikation blockiert. In der Praxis hat ein System jedoch meist mehr als einen Prozessorkern, was dem Go-Scheduler zusätzliche Möglichkeiten zur Optimierung der Ausführung bietet. Dies wird im Abschnitt Workstealing(\ref{subsubsec:workstealing}) genauer erläutert.
 
 \subsubsection{Systemaufrufe}
 
-In dem folgenden Beispiel wird gezeigt wie der Scheduler mit Systemaufrufen innerhalb von Goroutinen umgeht. In diesem Beispiel gehen wir wieder von einem System mit einem Prozessorkern aus, deshalb gibt auch wieder nur einen logischen Prozessor P1. Dieser für die Goroutine G1 auf dem Betriebssystemthread M1 aus. Außerdem wartet eine zweite Goroutine G2 in derLRQ von P1 daruaf ausgeführt zu werden. Schlussendlich gibt es noch einen zweiten untätigen Betriebssystemthread M2 der aktuell nicht genutzt wird.
+In dem folgenden Beispiel wird gezeigt wie der Scheduler mit Systemaufrufen innerhalb von Goroutinen umgeht. In diesem Beispiel gehen wir wieder von einem System mit einem Prozessorkern aus, deshalb gibt auch wieder nur einen logischen Prozessor P1. Dieser fürt die Goroutine G1 auf dem Betriebssystemthread M1 aus. Außerdem wartet eine zweite Goroutine G2 in derLRQ von P1 daruaf ausgeführt zu werden. Schlussendlich gibt es noch einen zweiten untätigen Betriebssystemthread M2 der aktuell nicht genutzt wird.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe1.png}
-	\caption{Ausgangssituation: G1 ist auf Grund eines Systemaufrufs blockiert}
+	\caption{Systemaufrufe: G1 ist auf Grund eines Systemaufrufs blockiert}
 	\label{fig:GoroutineSystemaufrufe1}
 \end{figure}
 
-G1 führt einen Systemaufruf aus der dazu führt, dass G1 blockiert. Dies könnte zu beispielsweise eine I/O-Operation sein. Go hat keine direkte Kontrolle über die Ausführung von Systemaufrufen auf Betriebssystemebene. Sobald ein Systemaufruf initiiert wird, liegt die Kontrolle beim Betriebssystem. Deshalb blockiert nicht nur G1 sonder auch der ausführende Betriebssystemthread M1. Damit P1 weiterhin ausgelastet werden sowohl G1 als auch M1 vom Scheduler freigegeben. P1 wird dann ein neuer Betriebssystemthread, in diesem Fall M2, zugewiesen und P1 kann die nächste Goroutine aus der LRQ ausführen, in diesem Fall G2.
+G1 führt einen Systemaufruf aus der dazu führt, dass G1 blockiert. Dies könnte zu beispielsweise eine I/O-Operation sein. Go hat keine direkte Kontrolle über die Ausführung von Systemaufrufen auf Betriebssystemebene. Sobald ein Systemaufruf initiiert wird, liegt die Kontrolle beim Betriebssystem. Deshalb blockiert nicht nur G1 sonder auch der ausführende Betriebssystemthread M1. Damit P1 weiterhin ausgelastet ist, werden sowohl G1 als auch M1 vom Scheduler freigegeben. P1 wird dann ein neuer Betriebssystemthread, in diesem Fall M2, zugewiesen und P1 kann die nächste Goroutine aus der LRQ ausführen, in diesem Fall G2.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe2.png}
-	\caption{G1 wird mit M1 aus P1 entfernt, G2 wird auf M2 ausgeführt}
+	\caption{Systemaufrufe: G1 wird mit M1 aus P1 entfernt, G2 wird auf M2 ausgeführt}
 	\label{fig:GoroutineSystemaufrufe2}
 \end{figure}
 
@@ -965,24 +971,25 @@ Wenn G1 nicht mehr blockiert ist, überprüft der Scheduler ob es einen freien l
 	\label{fig:GoroutineSystemaufrufe3}
 \end{figure}
 
-Der Vorteil diese Verfahrens ist, dass die logischen Prozessoren nicht mit den Goroutinen blockieren. Sie können weiterhin Goroutinen ausführen.
+Der Vorteil diese Verfahrens ist, dass die logischen Prozessoren nicht mit den Goroutinen blockieren. Sie können weiterhin Goroutinen ausführen. Jedoch wird für jeden Systemaufruf ein eigener Betriebssystemthread benötigt.
 
 \subsubsection{Netzwerk-Kommunikation}
 
-Eine weitere Kategorie von häufig blockierende Operationen ist die Kommunikation über Netzwerke. Für die Fall stellt Go den Net Poller zur Verfügung. Er ist ein spezieller Goroutinen-Scheduler, der für die effiziente Verwaltung von Netzwerk-I/O-Operationen zuständig ist. Er nutzt betriebssystemspezifische Mechanismen wie \texttt{epoll} (Linux), \texttt{kqueue} (BSD) oder \texttt{IOCP} (Windows), um asynchrone I/O-Operationen zu ermöglichen.
+Eine weitere Kategorie von häufig blockierende Operationen ist die Kommunikation über Netzwerke. Für diesen Fall stellt Go den Net Poller\cite{netpoll2024} zur Verfügung. Er ist ein spezieller Goroutinen-Scheduler, der für die effiziente Verwaltung von Netzwerk-I/O-Operationen zuständig ist. Er nutzt betriebssystemspezifische Mechanismen wie \texttt{epoll} (Linux), \texttt{kqueue} (BSD) oder \texttt{IOCP} (Windows), um asynchrone I/O-Operationen zu ermöglichen.
 
 Wenn eine Goroutine eine potenziell blockierende Netzwerkoperation durchführt (z.B. Lesen von einem Socket), übergibt sie die Kontrolle an den Net Poller. Der Net Poller registriert die Operation beim Betriebssystem und überwacht sie asynchron, ohne einen OS-Thread zu blockieren. Während der Net Poller auf die Fertigstellung der I/O-Operation wartet, kann der Go-Scheduler andere Goroutinen auf dem verfügbaren OS-Thread ausführen. Sobald die I/O-Operation abgeschlossen ist, benachrichtigt das Betriebssystem den Net Poller. Der Net Poller setzt die ursprüngliche Goroutine zur Ausführung fort, sobald ein Thread verfügbar ist.
 
 Der Net Poller ermöglicht es, eine große Anzahl von gleichzeitigen Netzwerkverbindungen mit einer begrenzten Anzahl von Betriebssystemthreads zu verwalten. Durch die Vermeidung von blockierten Betriebssystemthreads wird die CPU-Auslastung optimiert. Programmierer können blockierende I/O-Operationen in Goroutinen schreiben, ohne sich um die zugrunde liegende asynchrone Implementierung kümmern zu müssen. Da der Net Poller tief in die Go-Laufzeitumgebung integriert ist. Er arbeitet eng mit dem Goroutine-Scheduler zusammen, um eine nahtlose Integration von Netzwerk-I/O und Goroutinen-Ausführung zu gewährleisten. 
 
 \subsubsection{Work-Stealing}
+\label{subsubsec:workstealing}
 
-In diesem letzten Abschnitt soll gezeigt werden wie der Work-Stealing-Algorithmus im Goroutinen-Scheduler funktioniert. Er sorgt für eine effiziente Verteilung der Arbeitslast zwischen den verfügbaren logischen Prozessoren (P). Jeder Prozessor (P) hat eine eigene lokale Warteschlange für Goroutinen. Neue Goroutinen werden normalerweise in die lokale Warteschlange des erzeugenden P gelegt. Ein P arbeitet primär an Goroutinen aus seiner eigenen lokalen Warteschlange. In diesem Beispiel gibt es zwei Prozessorkerne und damit zwei logische Prozessoren P1 und P2. Diese arbeiten die ihnen zugewiesenen Goroutinen ab.
+In diesem letzten Abschnitt soll gezeigt werden wie der Work-Stealing-Algorithmus im Goroutinen-Scheduler funktioniert. Er sorgt für eine effiziente Verteilung der Arbeitslast zwischen den verfügbaren logischen Prozessoren (P). Jeder Prozessor (P) hat eine eigene lokale Warteschlange (LRQ) für Goroutinen. Neue Goroutinen werden normalerweise in die lokale Warteschlange des erzeugenden P gelegt. Ein P arbeitet primär an Goroutinen aus seiner eigenen lokalen Warteschlange. In diesem Beispiel gibt es zwei Prozessorkerne und damit zwei logische Prozessoren P1 und P2. Diese arbeiten die ihnen zugewiesenen Goroutinen ab.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing1.png}
-	\caption{P1 und P2 führen Gs aus und haben gefüllte LRQs}
+	\caption{Work-Stealing: P1 und P2 führen Gs aus und haben gefüllte LRQs}
 	\label{fig:GoroutineWorkstealing1}
 \end{figure}
 
@@ -991,21 +998,22 @@ Wenn ein P keine Goroutinen mehr in seiner LRQ hat, versucht er, Goroutinen zu `
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing2.png}
-	\caption{P1 hat keine Gs mehr und stiehlt die Hälfte der Gs aus der LRQ von P2}
+	\caption{Work-Stealing: P1 hat keine Gs mehr und stiehlt die Hälfte der Gs aus der LRQ von P2}
 	\label{fig:GoroutineWorkstealing2}
 \end{figure}
 
 Deshalb stiehlt P1 die hintere Hälfte der LRQ von P2 und verschiebt sie in seine eigene LRQ. Wenn das Stehlen von anderen Ps nicht erfolgreich ist, greift der P auf die GRQ zurück.
 
-Der Work-Stealing-Algorithmus ist ein Schlüsselelement, das zur hohen Effizienz und Skalierbarkeit von Go's Nebenläufigkeitsmodell beiträgt. Er ermöglicht es Go, eine große Anzahl von Goroutinen effizient auf einer begrenzten Anzahl von Betriebssystem-Threads zu verwalten.
+Der Work-Stealing-Algorithmus ist ein Schlüsselelement, das zur hohen Effizienz und Skalierbarkeit von Go's Nebenläufigkeitsmodell beiträgt. Er ermöglicht es, eine große Anzahl von Goroutinen effizient auf einer begrenzten Anzahl von Betriebssystem-Threads zu verwalten.
 
-\subsection{Goroutinen-Pattern}
+\subsection{Goroutinen-Programmiermuster}
 
-Um das volle Potenzial von Goroutinen auszuschöpfen und typische Herausforderungen der nebenläufigen Programmierung zu bewältigen, haben sich in der Go-Community verschiedene Programmierpatterns etabliert. Die Verwendung dieser Patterns trägt dazu bei, komplexe Probleme in überschaubare Teilaufgaben zu zerlegen und die Kommunikation zwischen Goroutinen zu strukturieren. Die im folgenden vorgestellten Pattern stammen dabei aus den Vorträgen x und y TODO:Zitat
+Um das volle Potenzial von Goroutinen auszuschöpfen und typische Herausforderungen der nebenläufigen Programmierung zu bewältigen, haben sich in der Go-Community verschiedene Programmiermuster (Pattern) etabliert. Die Verwendung dieser Muster trägt dazu bei, komplexe Probleme in überschaubare Teilaufgaben zu zerlegen und die Kommunikation zwischen Goroutinen zu strukturieren. Die im folgenden vorgestellten Programmiermuster stammen dabei aus den Vorträgen ''Go Concurrency Patterns''\cite{Pike2012} und ''Advanced Go Concurrency Patterns''\cite{Ajmani2013}.
 
-\subsubsection{Generator-Pattern}
+\subsubsection{Generator-Programmiermuster}
+\label{subsubsec:generator}
 
-Das Generator-Pattern ermöglicht die Erstellung von Funktionen, die Sequenzen von Werten produzieren, ohne alle Werte auf einmal im Speicher zu halten. Stattdessen werden die Werte bei Bedarf generiert und über einen Channel zurückgegeben. Bei dem folgenden Code-Beispiel handel es sich um eine Modifizierung des Codes aus dem Channel-Abschnitts. TODO:Verweis
+Das Generator-Muster ermöglicht das Erstellen von Funktionen, die Sequenzen von Werten produzieren, ohne alle Werte auf einmal im Speicher zu halten. Stattdessen werden die Werte bei Bedarf generiert und über einen Channel zurückgegeben. Bei dem folgenden Code-Beispiel handel es sich um eine Modifizierung des Codes aus dem Channel-Abschnitts (\ref{subsec:channel}).
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	package main
@@ -1039,9 +1047,9 @@ Das Generator-Pattern ermöglicht die Erstellung von Funktionen, die Sequenzen v
 
 Die auffälligste Veränderung ist, dass die Funktion \texttt{helloCounter} in der \texttt{main}-Funktion nicht mehr mit dem Schlüsselwort \texttt{go} als Goroutine gestartet werden muss. Stattdessen wird die Goroutine in der Funktion \texttt{helloCounter} intern gestartet. Außerdem wird auch der Channel von \texttt{helloCounter} erstellt und als Rückgabewert zurückgegeben. Das hat den Vorteil, dass sich leicht mehrere Instanzen der Generatorfunktion nebenläufigstarten lassen, wie im Beispiel gezeigt. Im Prinzip lässt sich eine Generatorfunktion als Service betrachten bei dem sich der Anwender nicht mehr um die Nebenläufigkeit kümmern muss, da sie bereits intern sichergestellt wurde.
 
-\subsubsection{Fan-In-Pattern}
+\subsubsection{Fan-In-Programmiermuster}
 
-Die Aufgabe einer Fan-In-Funktion ist es Ausgaben mehrerer Goroutinen zu sammeln und sie in einem einzigen Datenstrom zusammenzuführen. Durch die Zusammenführung mehrerer Datenströme in einen einzelnen Kanal wird die Verarbeitung der Ergebnisse effizienter gestaltet. In der Praxis wird die Fan-In-Funktion oft in Szenarien eingesetzt, wo Daten parallel verarbeitet werden müssen und die Ergebnisse anschließend zusammengeführt werden sollen, wie beispielsweise bei verteilten Berechnungen oder bei der Verarbeitung großer Datenmengen. Das nachfolgende Beispiel stellt eine Modifizierung des Codes aus dem Generator-Pattern Abschnitt dar. TODO:Verweis
+Die Aufgabe einer Fan-In-Funktion ist es Ausgaben mehrerer Goroutinen zu sammeln und sie in einem einzigen Datenstrom zusammenzuführen. Durch die Zusammenführung mehrerer Datenströme in einem einzelnen Kanal wird die Verarbeitung der Ergebnisse effizienter gestaltet. In der Praxis wird die Fan-In-Funktion oft in Szenarien eingesetzt, wo Daten parallel verarbeitet werden müssen und die Ergebnisse anschließend zusammengeführt werden sollen, wie beispielsweise bei verteilten Berechnungen oder bei der Verarbeitung großer Datenmengen. Das nachfolgende Beispiel stellt eine Modifizierung des Codes aus dem Generator-Muster Abschnitt (\ref{subsubsec:generator}) dar.
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	func fanIn(ch1, ch2 <-chan string) <-chan string {
@@ -1079,13 +1087,14 @@ Die Aufgabe einer Fan-In-Funktion ist es Ausgaben mehrerer Goroutinen zu sammeln
 	}
 \end{lstlisting}
 
-In dem Beispiel wurde der Code um eine Fan-In-Funktion erweiter. Dieser wird in der \texttt{main}-Funktion die beiden Channels der \texttt{helloCounter}-Funktionen übergeben. Die Aufgabe der Fan-In-Funktion die Ausgaben der beiden Channels zusammenzufassen und in einem neuen Channel (\texttt{new\_ch}) gebündelt an die \texttt{main}-Funktion weiter zugeben. Dafür wird in der Fan-In-Funktion das Generator-Pattern verwendet. Es wird innerhalb der Funktion eine Goroutine gestartet. In der Goroutine wird ein Select-Statement verwendet um auf beiden Channels parallel auf eine Antwort zu warten. Diese Antworten werden dann auf den \texttt{new\_ch} weiter geleitet. Dies geschieht so lange bis beide Channels der \texttt{helloCounter}-Funktionen geschlossen sind. Dann wird auch der \texttt{new\_ch} geschlossen. Der Vorteil der Verwendung einer Fan-In-Funktion in der \texttt{main}-Funktion, wird schnell deutlich. Es ist möglich nun mehrere Nachrichten hintereinander von der gleichen \texttt{helloCounter}-Funktionen zu empfangen. Außerdem muss in der \texttt{main}-Funktion auch nur noch ein Channel verarbeitet werden. 
+In dem Beispiel wurde der Code um eine Fan-In-Funktion erweiter. Dieser Funktion werden in der \texttt{main}-Funktion die beiden Channels der \texttt{helloCounter}-Funktionen übergeben. Die Aufgabe der Fan-In-Funktion ist es, die Ausgaben der beiden Channels zusammenzufassen und in einem neuen Channel (\texttt{new\_ch}) gebündelt an die \texttt{main}-Funktion weiter zugeben. Dafür wird in der Fan-In-Funktion das Generator-Muster verwendet. Es wird innerhalb der Funktion eine Goroutine gestartet. In der Goroutine wird eine \texttt{select}-Anweisung verwendet um auf beiden Channels parallel auf eine Antwort zu warten. Diese Antworten werden dann auf den \texttt{new\_ch} weiter geleitet. Dies geschieht so lange bis beide Channels der \texttt{helloCounter}-Funktionen geschlossen sind. Dann wird auch der \texttt{new\_ch} geschlossen. Der Vorteil der Verwendung einer Fan-In-Funktion in der \texttt{main}-Funktion, wird schnell deutlich. Es ist möglich nun mehrere Nachrichten hintereinander von der gleichen \texttt{helloCounter}-Funktionen zu empfangen. Außerdem muss in der \texttt{main}-Funktion auch nur noch ein Channel verarbeitet werden. 
 
-Als Gegestück zum Fan-In-Pattern gibt es das Fan-Out-Pattern. Bei diesem werden Nachrichten aus einer einzelen Quelle auf mehrere Goroutinen verteilt.
+Als Gegenstück zum Fan-In-Muster gibt es das Fan-Out-Muster. Bei diesem werden Nachrichten aus einer einzelnen Quelle auf mehrere Goroutinen verteilt.
 
-\subsubsection{Closing Channels-Pattern}
+\subsubsection{Closing Channels-Programmiermuster}
+\label{subsubsec:closingchannel}
 
-Das Closing Channels-Pattern ist ein wichtiges Konzept in Go, um Goroutinen sauber zu beenden und Ressourcen freizugeben. Das grundlegende Prinzip lautet: Der Sender eines Channels sollte den Channel schließen, nicht der Empfänger. Dies verhindert Panics durch das Senden auf bereits geschlossene Kanäle. Das folgende Beispiel zeigt eine mögliche Implementierung des Closing Channels-Pattern:
+Das Closing Channels-Muster ist ein wichtiges Konzept in Go, um Goroutinen sauber zu beenden und Ressourcen freizugeben. Das grundlegende Prinzip lautet: Der Sender eines Channels sollte den Channel schließen, nicht der Empfänger. Dies verhindert Ausnahmen (Panic) durch das Senden auf bereits geschlossene Kanäle. Das folgende Beispiel zeigt eine mögliche Implementierung des Closing Channels-Muster:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 package main
@@ -1132,7 +1141,11 @@ func main() {
 }
 \end{lstlisting}
 
-In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \texttt{done} erstellt, dies ist der so genannte Closing Channel. Danach werden drei \texttt{worker}-Goroutinen gestartet. Diese erhalten Werte über den Channel \texttt{c} und sie aus. Nachdem die Hauptroutine alle Werte gesendet hat schließt sie den Closing Channel. Dies Signalisiert \texttt{worker}-Goroutinen, dass keine weiteren Werte gesendet werden und sie beenden sich selbst.
+In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \texttt{done} erstellt, dies ist der so genannte Closing Channel. Danach werden drei \texttt{worker}-Goroutinen gestartet. Diese erhalten Werte über den Channel \texttt{c} und sie auf der Konsole aus. Nachdem die Hauptroutine alle Werte gesendet hat schließt sie den Closing Channel. Dies Signalisiert \texttt{worker}-Goroutinen, dass keine weiteren Werte gesendet werden und sie beenden sich selbst.
+
+\subsection{Zusammenfassung}
+
+Abschließend läss sich zusammenfassen, bei Goroutinen handelt es sich um leichtgewichtige Threads, die nebenläufige Ausführungen ermöglichen. Sie lassen sich durch das Schlüsselwort \texttt{go} starten und laufen unabhängig von der Hauptfunktion, wobei sie einen gemeinsamen Adressraum teilen. Die Kommunikation und Synchronisation zwischen Goroutinen erfolgt über Channels, die den sicheren Datenaustausch ermöglichen. Die Go-Laufzeitumgebung enthält einen Scheduler, der Goroutinen effizient verwaltet. Um eine ausgewogene Auslastung der Prozessoren zu gewährleisten, nutzt der Scheduler verschiedene Warteschlangen(LRQ und GRQ) und einen Work-Stealing-Algorithmus. Verschiedene Programmiermuster, wie das Fan-In-Muster und das gezielte Schließen von Channels, unterstützen eine strukturierte Handhabung der Nebenläufigkeit und optimieren die Gesamtleistung der Programme.
 
 
 \section{Vergleich der Konzepte}
