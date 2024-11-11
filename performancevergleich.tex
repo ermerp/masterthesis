@@ -1147,20 +1147,77 @@ In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \te
 
 Abschließend läss sich zusammenfassen, bei Goroutinen handelt es sich um leichtgewichtige Threads, die nebenläufige Ausführungen ermöglichen. Sie lassen sich durch das Schlüsselwort \texttt{go} starten und laufen unabhängig von der Hauptfunktion, wobei sie einen gemeinsamen Adressraum teilen. Die Kommunikation und Synchronisation zwischen Goroutinen erfolgt über Channels, die den sicheren Datenaustausch ermöglichen. Die Go-Laufzeitumgebung enthält einen Scheduler, der Goroutinen effizient verwaltet. Um eine ausgewogene Auslastung der Prozessoren zu gewährleisten, nutzt der Scheduler verschiedene Warteschlangen(LRQ und GRQ) und einen Work-Stealing-Algorithmus. Verschiedene Programmiermuster, wie das Fan-In-Muster und das gezielte Schließen von Channels, unterstützen eine strukturierte Handhabung der Nebenläufigkeit und optimieren die Gesamtleistung der Programme.
 
-
 \section{Vergleich der Konzepte}
 
 
 
 \chapter{Testaufbau}
 
+Das folgende Kapitel beschreibt den Testaufbau für die praktische Umsetzung der Leistungsanalyse der verschiedener Thread-Abstraktionen in Java, Kotlin und Go. 
+
+Um eine fundierte und aussagekräftige Bewertung der Per\-for\-mance\-un\-ter\-schiede zu erzielen, wurde ein sorgfältig konzipierter Testaufbau entwickelt. Dieser Aufbau gewährleistet nicht nur die Vergleichbarkeit der Ergebnisse zwischen den verschiedenen Programmiersprachen und ihren Thread-Implementierungen, sondern stellt auch die Reproduzierbarkeit der Messungen sicher.
+
+In den folgenden Abschnitten  zunächst die verwendete Testumgebung, einschließlich der Hardware- und Software-Konfiguration, beschrieben. Anschließend werden die für die Leistungsanalyse relevanten Performancefaktoren erläutert und begründet. Diese Faktoren bilden die Grundlage für die quantitative Bewertung der verschiedenen Thread-Abstraktionen. Abschließend werden die speziell für diese Untersuchung entwickelten Werkzeuge zur Datenerhebung vorgestellt. Diese maßgeschneiderten Tools ermöglichen eine präzise und konsistente Erfassung der Leistungsdaten über alle getesteten Implementierungen hinweg.
+
 \section{Testumgebung}
+
+Um eine konsistente und reproduzierbare Testumgebung für die Leistungsanalyse der verschiedenen Thread-Abstraktionen zu gewährleisten, wurde eine spezifische Hard- und Software-Konfiguration verwendet. Diese Konfiguration wurde für alle durchgeführten Benchmarks beibehalten, um vergleichbare Ergebnisse zu erzielen.
+
+Alle Tests wurden in einer kontrollierten Umgebung durchgeführt, wobei darauf geachtet wurde, dass keine anderen ressourcenintensiven Prozesse parallel liefen. Das System wurde vor jedem Testlauf neu gestartet, um konsistente Ausgangsbedingungen zu gewährleisten. Zudem wurden alle Netzwerkverbindungen deaktiviert, um mögliche Interferenzen durch externe Faktoren zu minimieren.
+
+\subsection{Hardware}
+
+\begin{itemize}
+	\item \textbf{Prozessor:} Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz
+	\item[] \hspace{0.8cm}\textbf{Kerne:} 4 physische Kerne, 8 logische Prozessoren
+	\item[] \hspace{0.8cm}\textbf{Basistakt:} 2.30GHz
+	\item \textbf{Arbeitsspeicher:} 16,0 GB (15,9 GB verwendbar)
+	\item \textbf{Festplatte:} SSD 256 GB
+\end{itemize}
+
+\subsection{Software}
+
+\begin{itemize}
+	\item \textbf{Betriebssystem:} Microsoft Windows 11 Home (Version 26100.2161, 64-Bit)
+	\item \textbf{Java Development Kit (JDK):} xxx
+	\item \textbf{Kotlin:} xxx
+	\item \textbf{Go:} xxx
+\end{itemize}
+%TODO:aktuelle Versionen
 
 \section{Performancefaktoren}
 
+Bei der Analyse und dem Vergleich verschiedener Thread-Abstraktionen ist es entscheidend, aussagekräftige und messbare Kriterien heranzuziehen. Diese Kriterien, die als Performancefaktoren bezeichnet werden, ermöglichen eine objektive Bewertung der Leistungsfähigkeit und Effizienz der unterschiedlichen Implementierungen. In dieser Masterarbeit liegt der Fokus auf vier Faktoren: Zeitmessung, CPU-Auslastung, Arbeitsspeicherverbrauch und Thread-Anzahl. Jeder dieser Faktoren beleuchtet einen spezifischen Aspekt der Leistung und trägt zu einem umfassenden Verständnis der Stärken und Schwächen der jeweiligen Thread-Abstraktionen bei. Die Performancefaktoren ermöglichen es, die Effizienz, Skalierbarkeit und Ressourcennutzung der verschiedenen Thread-\-Imple\-mentie\-rungen detailliert zu untersuchen und zu vergleichen. Im Folgenden wird jeder dieser Faktoren genauer betrachtet und erläutert:
+
+\subsubsection{Zeitmessung}
+
+Die Ausführungszeit ist einer der wichtigsten Indikatoren für die Leistungsfähigkeit der Thread-Abstraktionen. Durch präzise Zeitmessungen können verschiedene Implementierungen objektiv miteinander verglichen werden, um die effizienteste Lösung zu identifizieren. In der Praxis ist die Einhaltung von zeitlichen Vorgaben in Systemen mit Echtzeitanforderungen kritisch. Durch Zeitmessungen mit unterschiedlichen Eingabegrößen oder Lastszenarien kann die Skalierbarkeit eines Systems analysiert werden. So lässt sich abschätzen, wie sich die Leistung bei wachsenden Anforderungen entwickelt.
+
+\subsubsection{CPU-Auslastung}
+
+Die CPU-Auslastung gibt direkten Aufschluss darüber, wie effizient die verfügbaren Prozessorressourcen von den Threads genutzt werden. Eine hohe Auslastung deutet auf eine gute Ausnutzung der Rechenkapazität hin, während eine niedrige Auslastung auf Ineffizienzen oder Engpässe in anderen Bereichen hinweisen kann. Durch die Analyse der CPU-Auslastung lässt sich der Grad der Parallelisierung eines multithreaded Systems beurteilen. Eine gleichmäßige Auslastung über mehrere Kerne hinweg zeigt, dass die Arbeitslast effektiv auf die verfügbaren Ressourcen verteilt wird.
+
+\subsubsection{Arbeitsspeicherverbrauch}
+
+Ein effizienter Umgang mit dem Arbeitsspeicher ist entscheidend für die Gesamtleistung eines multithreaded Programms. Jeder Thread benötigt Speicher für seinen Stack und andere thread-spezifische Daten. Ein hoher Speicherverbrauch kann zu einer Verlangsamung des Systems führen und die Anzahl der möglichen gleichzeitigen Threads begrenzen. Der Speicherverbrauch beeinflusst direkt die Skalierbarkeit eines multithreaded Programms. Ein geringer Speicherverbrauch pro Thread ermöglicht mehr gleichzeitige Threads, während ein hoher Speicherbedarf die maximale Anzahl der Threads und damit die Parallelisierung limitiert. Schließlich schont ein effizienter Speicherverbrauch die Systemressourcen, indem mehr verfügbarer Speicher für andere Prozesse und den Betriebssystem-Cache bleibt und die Belastung des Speichermanagements des Betriebssystems geringer ausfällt.
+
+\subsubsection{Thread-Anzahl}
+
+Die Anzahl der Betriebssystemthreads ist ein bedeutender Performancefaktor bei der Messung der Benchmarks. Betriebssystemthreads sind eine begrenzte Ressource. Jeder Thread benötigt Speicher und andere Systemressourcen, was bedeutet, dass eine zu hohe Anzahl von Threads zu Ressourcenengpässen führen und die Gesamtleistung des Systems beeinträchtigen kann. Mit steigender Anzahl von Threads erhöht sich auch der Aufwand für das Betriebssystem, diese zu verwalten und zu planen. Dieser erhöhte Scheduling-Overhead kann zu einem höheren CPU-Verbrauch für Verwaltungsaufgaben und häufigeren Kontextwechseln führen, was die Effizienz des Gesamtsystems beeinträchtigt. Ab einem bestimmten Punkt kann eine Erhöhung der Threadanzahl sogar zu Leistungseinbußen führen, da die Threads um begrenzte Ressourcen konkurrieren.
+
 \section{Werkzeuge zur Datenerhebung}
-%jcmd
-%jfr
+
+Für die Durchführung der Benchmarks und die Erhebung der relevanten Performancedaten wurden zwei speziell für diese Masterarbeit entwickelten Python-Skripte verwendet. Diese Skripte ermöglichen eine präzise und konsistente Messung der Leistungsparameter über alle getesteten Thread-Abstraktionen hinweg.
+
+\subsubsection{monitoring}
+%TODO: Richtigen Namen einsetzen
+
+TODO:...
+
+\subsubsection{plotting}
+%TODO: Richtigen Namen einsetzen
+
+TODO:...
 
 \chapter{Benchmarks}
 
