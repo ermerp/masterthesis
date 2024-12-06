@@ -17,6 +17,16 @@
 % Umlaute und über Tastatur einzugeben
 \usepackage{listings}
 \usepackage{xcolor}
+
+\usepackage[table]{xcolor}
+\usepackage{colortbl}      % Für Hintergrundfarben
+\usepackage{array}         % Für Tabellenanpassungen
+\usepackage{booktabs}      % Für \Xhline
+\usepackage{tabularx} % Dynamische Anpassung von Tabellenbreiten
+
+
+\setlength{\arrayrulewidth}{0.8pt} % Globale Dicke für alle Linien in der Tabelle
+
 % nette Listing-Formatierung
 %\usepackage[backend=bibtex]{biblatex}
 \usepackage[sorting=none, style=nature]{biblatex}
@@ -1328,6 +1338,64 @@ Abschließend läss sich zusammenfassen, bei Goroutinen handelt es sich um leich
 
 \section{Vergleich der Konzepte}
 
+Im folgendem werden die Erkenntnisse die über Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen gesammelt wurden, miteinander verglichen, um so sowohl Gemeinsamkeiten als auch Unterschiede hervorzuheben.
+
+\subsubsection{Unterstützte Sprachen}
+
+Platform Threads sind in Java, Kotlin und anderen JVM-Sprachen verfügbar, was ihre breite Anwendbarkeit unterstreicht. Virtual Threads hingegen sind eine neuere Entwicklung und stehen ab Java Version 21 zur Verfügung. Kotlin Coroutinen sind spezifisch für die Kotlin-Sprache konzipiert, während Goroutinen exklusiv in Go implementiert sind.
+
+\subsubsection{Ausführungskontrolle und Blockierverhalten}
+
+Der Mechanismus zur Ausführungskontrolle variiert stark zwischen den Konzepten. Platform Threads nutzen betriebssystembasiertes Scheduling, was zu einer direkten Blockierung des BS-Threads führt. Im Gegensatz dazu verwenden Virtual Threads, Coroutinen und Goroutinen fortschrittlichere Mechanismen, die es ermöglichen, den BS-Thread freizugeben, wenn eine Operation blockiert. Virtual Threads und Kotlin Coroutinen basieren auf Continuations, während Go einen eigenen Goroutinen-Scheduler implementiert.
+
+\subsubsection{Thread-Pool-Nutzung und Ressourcenverbrauch}
+
+Bei der Thread-Pool-Nutzung zeigen sich Unterschiede: Platform Threads und Coroutinen erfordern eine explizite Nutzung, während Virtual Threads und Goroutinen dies implizit handhaben. Der Ressourcenverbrauch ist bei Platform Threads deutlich höher (schwergewichtig), während die anderen drei Konzepte als leichtgewichtig gelten.
+
+\subsubsection{Stackgröße und maximale Anzahl}
+
+Die Stackgröße variiert erheblich, von großen Stacks bei Platform Threads (oft 1 MB oder mehr) bis zu sehr kleinen bei Virtual Threads und Go Goroutinen. Kotlin Coroutinen nutzen keinen eigenen Stack, sondern den Hauptstack kurzzeitig. Diese Unterschiede wirken sich direkt auf die maximale Anzahl aus, die bei Platform Threads einige tausend begrenzt, bei den anderen Konzepten jedoch mit mehreren Millionen sehr hoch ist.
+
+\subsubsection{Synchronisationsmechanismen}
+
+Die Synchronisationsmechanismen reichen von klassischen Locks, Monitoren und Futures bei Platform und Virtual Threads bis zu spezialisierten Konzepten wie suspend und Scope bei Kotlin Coroutinen oder Channels bei Go Goroutinen. 
+
+\subsubsection{Anwenderfreundlichkeit}
+
+Die Bewertung der Anwenderfreundlichkeit ist subjektiv und kann je nach Nutzer unterschiedlich ausfallen. 
+
+Platform und Virtual Threads werden als einfach  eingestuft. Sie nutzen beide das bekannte Thread-Modell von Java und haben haben mit dem ExecutorService eine einheitliche API die nur wenig konfiguriert werden muss. 
+
+Kotlin Coroutinen werden was die Anwenderfreundlichkeit betrifft als mittel eingeschätzt, da sie viele neue Begriffe einführen die vorher nicht geläufig waren. Außerdem ist der Konfigurationsaufwand größer und bietet mehr Möglichkeiten für Fehler, zum Beispiel mit der richtigen Wahl des Builders oder Dispatchers. 
+
+Auch Go Goroutinen werden als mittel bewertet. Zwar werden für die Nutzung nur wenige Schlüsselwörter benötige. Für einen effizienten Einsatz von Goroutinen sollte ein Entwickler aber auch die in dieser Arbeit vorgestellten Programmiermuster kennen, was sie deutlich weniger einsteigerfreundlich macht.
+
+\begin{table}[h]
+	\centering
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabularx}{\textwidth}{p{4cm}XXXX}
+		\toprule
+		\rowcolor{gray!20}
+		\textbf{Eigenschaft} & \textbf{Platform Threads} & \textbf{Virtual Threads} & \textbf{Kotlin Coroutinen} & \textbf{Go Goroutinen} \\
+		\midrule
+		\raggedright Unterstützte Sprachen & Java, Kotlin, JVM-Sprachen & Java (ab Version 21) & Kotlin & Go \\
+		\rowcolor{gray!10}
+		\raggedright Mechanismus zur Ausführungskontrolle & BS-basiertes Scheduling & Continuations (Scheduling durch JVM) & Continuations (Kotlin Runtime) & Goroutinen-Scheduler (Go Runtime) \\
+		\raggedright Blockierverhalten & Blockiert BS-Thread & Gibt BS-Thread frei & Gibt BS-Thread frei & Gibt BS-Thread frei \\
+		\rowcolor{gray!10}
+		\raggedright Thread-Pool-Nutzung & Explizit & Implizit & Explizit (Dispatcher) & Implizit \\
+		\raggedright Ressourcenverbrauch & Schwer\-gewichtig & Leicht\-gewichtig & Leicht\-gewichtig & Leicht\-gewichtig \\
+		\rowcolor{gray!10}
+		\raggedright Stackgröße & Groß (oft 1 MB oder mehr) & Klein (oft ein paar KB) & Kein eigener Stack, nutzt Hauptstack kurz & Klein (einige KB, wächst dynamisch) \\
+		\raggedright Maximale Anzahl & Begrenzt & Hoch & Sehr hoch & Sehr hoch \\
+		\rowcolor{gray!10}
+		\raggedright Synchronisations\-mechanismen & Locks, Monitore, Future & Locks, Monitore, Future & suspend, Scope & Channels \\
+		\raggedright Anwender\-freundlichkeit & Einfach & Einfach & Mittel & Mittel \\
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Vergleich von Thread-Abstraktionen in verschiedenen Programmiersprachen}}
+	\label{tab:thread-comparison}
+\end{table}
 
 
 \chapter{Testaufbau}
@@ -1405,11 +1473,89 @@ TODO:...
 
 \chapter{Benchmarks}
 
-\section{Benchmark 1}
+\section{Benchmark 1: Mergesort}
 
-\subsection{Beschreibung: Benchmark 1}
+\subsection{Motivation: Mergesort}
+Mergesort eignet sich hervorragend als Benchmark für den Vergleich verschiedener Thread-Abstraktionen. Der Algorithmus basiert auf dem Teile-und-herrsche-Prinzip, was eine natürliche Parallelisierung ermöglicht. Durch seine rekursive Struktur lässt sich Mergesort in kleinere, unabhängige Teilaufgaben zerlegen, die ideal für die parallele Verarbeitung geeignet sind. Dies macht den Algorithmus zu einem aussagekräftigen Testfall für die Effizienz und Skalierbarkeit verschiedener Nebenläufigkeitsimplementierungen.
 
-\subsection{Messung: Benchmark 1}
+Ein weiterer Vorteil von Mergesort als Benchmark ist seine vorhersehbare Zeitkomplexität von $\Theta(n\log{}n)$ für alle Eingabegrößen. Diese Eigenschaft ermöglicht es, die Leistung der verschiedenen Thread-Abstraktionen unter kontrollierten Bedingungen zu vergleichen. Zudem erfordert Mergesort sowohl Rechenoperationen als auch Speicherzugriffe, was eine umfassende Bewertung der Leistungsfähigkeit der untersuchten Technologien erlaubt.
+
+Die Wahl von Mergesort als Benchmark bietet auch praktische Relevanz, da der Algorithmus häufig in realen Anwendungen zum Einsatz kommt, insbesondere bei der Verarbeitung großer Datenmengen. Somit können die gewonnenen Erkenntnisse direkt auf praxisnahe Szenarien übertragen werden. Durch die Verwendung von Mergesort als Benchmark lassen sich wertvolle Einblicke in die Stärken und Schwächen der verschiedenen Thread-Abstraktionen und Nebenläufigkeitskonzepte gewinnen, was für die Auswahl der geeigneten Technologie in spezifischen Anwendungsfällen von großer Bedeutung ist.
+
+\subsection{Theoretische Grundlagen: Mergesort}
+
+Mergesort ist ein effizienter, auf dem Prinzip "Teile und herrsche" basierender Sortieralgorithmus. Er wurde 1945 von John von Neumann entwickelt und zeichnet sich durch seine stabile Sortierung und vorhersagbare Leistung aus.
+
+\subsubsection{Funktionsweise}
+
+Der Mergesort-Algorithmus lässt sich in zwei Hauptphasen unterteilen: die Teilungsphase und die Zusammenführungsphase.
+
+In der Teilungsphase wird die zu sortierende Liste rekursiv in immer kleinere Teillisten zerlegt, bis jede Teilliste nur noch ein Element enthält. Dies geschieht, indem die Liste in der Mitte geteilt wird, wodurch zwei etwa gleich große Hälften entstehen.
+
+In der Zusammenführungsphase werden die sortierten Teillisten schrittweise wieder zusammengeführt. Dabei werden jeweils zwei benachbarte, sortierte Teillisten zu einer größeren sortierten Liste verschmolzen. Dieser Prozess wird fortgesetzt, bis die gesamte Liste sortiert ist.
+
+Die rekursive Natur des Mergesort-Algorithmus lässt sich anschaulich als Baumstruktur darstellen, die während der Teilungsphase entsteht. Die Wurzel des Baums repräsentiert die ursprüngliche, unsortierte Liste. Jeder innere Knoten stellt eine Teilung der Liste dar. Die Blätter des Baums sind die einzelnen Elemente der Liste. Die Tiefe des Baums entspricht der Anzahl der rekursiven Teilungen, die durchgeführt werden müssen, um zu einzelnen Elementen zu gelangen. Sie beträgt etwa $\log_2(n)$, wobei $n$ die Anzahl der Elemente in der ursprünglichen Liste ist.
+
+Beim Aufstieg im Baum, also während der Zusammenführungsphase, werden die sortierten Teillisten schrittweise verschmolzen. Jede Ebene im Baum repräsentiert dabei einen Schritt im Sortierprozess, bei dem längere sortierte Sequenzen entstehen.
+
+Diese Baumstruktur verdeutlicht nicht nur die Arbeitsweise des Algorithmus, sondern auch sein Parallelisierungspotenzial: Unterschiedliche Zweige des Baums können unabhängig voneinander bearbeitet werden, was eine effiziente parallele Implementierung ermöglicht.
+
+\subsubsection{Komplexität}
+
+Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Zeitkomplexität von $\Theta(n \log n)$ auf, wobei $n$ die Anzahl der zu sortierenden Elemente ist. Dies macht Mergesort zu einem sehr effizienten Sortieralgorithmus, insbesondere für große Datenmengen. Außerdem sind dies sehr gute Voraussetzungen für die Eignung als Benchmark, da die Zeitliche Performance nicht von dem Inhalt der zu verarbeitenden Daten abhängt.\cite{Cormen2022}
+
+Die Speicherkomplexität von Mergesort beträgt $\Theta(n)$, da zusätzlicher Speicherplatz für die temporären Teillisten benötigt wird. Dies kann bei sehr großen Datenmengen zu einem Nachteil werden.
+
+\subsubsection{Parallelisierbarkeit}
+
+Ein bedeutender Vorteil von Mergesort ist seine hervorragende Eignung für die Parallelisierung. Sowohl die Teilungs- als auch die Zusammenführungsphase können parallel ausgeführt werden, was den Algorithmus besonders effizient für Mehrprozessorsysteme macht.
+
+In der Teilungsphase können die rekursiven Aufrufe zur Sortierung der Teillisten unabhängig voneinander auf verschiedenen Threads ausgeführt werden.
+
+In der Zusammenführungsphase kann das Verschmelzen der sortierten Teillisten ebenfalls parallel erfolgen, was die Gesamtleistung weiter verbessert.
+Diese Eigenschaften machen Mergesort zu einem idealen Kandidaten für die Implementierung mit verschiedenen Thread-Abstraktionen und Nebenläufigkeitskonzepten, was ihn zu einem wertvollen Benchmark für den Vergleich dieser Technologien macht.
+
+\subsection{Implementierung: Mergesort}
+
+Gerne erkläre ich Ihnen im Detail, was die Funktion findSplitPoint macht:
+Zweck der Funktion:
+Die Funktion findSplitPoint sucht in einem sortierten Teilarray (von left bis right) nach der Position, an der das pivot-Element eingefügt werden sollte, um die Sortierung beizubehalten.
+Initialisierung:
+low = left: Startindex des zu durchsuchenden Bereichs.
+high = right + 1: Endindex des Bereichs plus eins.
+Binäre Suche:
+Die Funktion verwendet einen binären Suchalgorithmus, der den Suchbereich in jeder Iteration halbiert.
+Schleifendurchlauf:
+Die while-Schleife läuft, solange low < high ist, also solange der Suchbereich mehr als ein Element enthält.
+Berechnung des Mittelpunkts:
+val mid = (low + high) / 2 berechnet den Mittelpunkt des aktuellen Suchbereichs.
+Vergleich und Eingrenzung:
+Wenn pivot <= array[mid], bedeutet das, dass der Splitpunkt in der linken Hälfte (einschließlich mid) liegen muss. Daher wird high = mid gesetzt.
+Andernfalls muss der Splitpunkt in der rechten Hälfte liegen, und low = mid + 1 wird gesetzt.
+Ergebnis:
+Nach Beendigung der Schleife gibt low den Index zurück, an dem das pivot-Element eingefügt werden sollte.
+Besonderheiten:
+Wenn alle Elemente kleiner als pivot sind, wird right + 1 zurückgegeben.
+Wenn pivot kleiner als alle Elemente ist, wird left zurückgegeben.
+Diese Funktion ist besonders nützlich für den parallelen Merge-Sort-Algorithmus, da sie effizient den Punkt findet, an dem zwei sortierte Teilarrays zusammengefügt werden können.
+
+\subsubsection{Basisimplementierung: Mergesort}
+
+\subsubsection{Virtual Threads: Mergesort}
+
+\subsubsection{Platform Threads: Mergesort}
+
+\subsubsection{Coroutinen: Mergesort}
+
+\subsubsection{Goroutinen: Mergesort}
+
+global scope doppelt so schnell
+
+\subsection{Messungen: Mergesort}
+
+\subsubsection{Messung1: Mergesort - Baumebenen}
+
+\subsubsection{Messung2: Mergesort - Listenlänge}
 
 \section{Benchmark 2}
 
@@ -1430,14 +1576,6 @@ PostgreSQL verwendet Zeilensperren, um konkurrierende Zugriffe zu verwalten. Wen
 
 Deadlock-Erkennung:
 Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den Deadlock und bricht eine der Transaktionen ab
-
-\subsection{Messung: Benchmark 2}
-
-\section{Benchmark 3}
-
-\subsection{Beschreibung: Benchmark 3}
-
-\subsection{Messung: Benchmark 3}
 
 
 \chapter{Auswertung}
