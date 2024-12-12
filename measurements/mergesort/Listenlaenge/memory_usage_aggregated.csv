@@ -1,0 +1,5 @@
+list_length,virtual_max_memory_usage,virtual_mean_memory_usage,platform_max_memory_usage,platform_mean_memory_usage,coroutines_max_memory_usage,coroutines_mean_memory_usage,goroutines_max_memory_usage,goroutines_mean_memory_usage
+10000,1033,521,486,366,4999,3966,12,12
+100000,2495,2092,2002,1602,4992,4885,14,14
+1000000,1966,1948,1176,1102,5365,5327,54,42
+10000000,2217,2198,2092,2071,6381,6365,489,344

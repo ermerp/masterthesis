@@ -1,0 +1,5 @@
+list_length,virtual_max_cpu_usage,virtual_mean_cpu_usage,platform_max_cpu_usage,platform_mean_cpu_usage,coroutines_max_cpu_usage,coroutines_mean_cpu_usage,goroutines_max_cpu_usage,goroutines_mean_cpu_usage
+10000,54,54,55,50,27,26,42,42
+100000,69,63,64,59,60,55,60,53
+1000000,73,69,71,67,75,72,73,63
+10000000,78,73,77,73,81,76,70,65

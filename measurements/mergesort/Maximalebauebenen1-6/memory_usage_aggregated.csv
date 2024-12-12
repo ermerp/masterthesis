@@ -1,0 +1,7 @@
+max_depth,virtual_max_memory_usage,virtual_mean_memory_usage,platform_max_memory_usage,platform_mean_memory_usage,coroutines_max_memory_usage,coroutines_mean_memory_usage,goroutines_max_memory_usage,goroutines_mean_memory_usage
+1,2210,2199,2207,2194,3844,3842,344,344
+2,2211,2209,2213,2200,3846,3846,448,345
+3,2214,2210,2084,2069,3848,3839,456,347
+4,2215,2208,2085,2078,3853,3843,498,355
+5,2215,2206,2088,2081,3851,3839,486,353
+6,2219,2212,2091,2073,3853,3836,489,354

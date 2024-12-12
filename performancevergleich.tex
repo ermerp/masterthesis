@@ -23,7 +23,21 @@
 \usepackage{array}         % Für Tabellenanpassungen
 \usepackage{booktabs}      % Für \Xhline
 \usepackage{tabularx} % Dynamische Anpassung von Tabellenbreiten
+\usepackage{makecell}
 
+%CSV
+\usepackage{pgfplotstable}
+\usepackage{csvsimple}
+\usepackage{siunitx}
+\sisetup{
+	round-mode = places,
+	round-precision = 4,
+	group-separator = {,},
+	group-minimum-digits = 3
+}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 \setlength{\arrayrulewidth}{0.8pt} % Globale Dicke für alle Linien in der Tabelle
 
@@ -1373,30 +1387,29 @@ Auch Go Goroutinen werden als mittel bewertet. Zwar werden für die Nutzung nur 
 \begin{table}[h]
 	\centering
 	\renewcommand{\arraystretch}{1.2}
-	\begin{tabularx}{\textwidth}{p{4cm}XXXX}
+	\begin{tabularx}{\textwidth}{L{4cm}Y Y Y Y}
 		\toprule
 		\rowcolor{gray!20}
-		\textbf{Eigenschaft} & \textbf{Platform Threads} & \textbf{Virtual Threads} & \textbf{Kotlin Coroutinen} & \textbf{Go Goroutinen} \\
+		\textbf{Eigenschaft} & \textbf{\makecell[l]{Java \\ Platform \\ Threads}} & \textbf{\makecell[l]{Java \\ Virtual \\ Threads}} & \textbf{\makecell[l]{Kotlin \\ Coroutinen}} & \textbf{\makecell[l]{Go \\ Goroutinen}} \\
 		\midrule
-		\raggedright Unterstützte Sprachen & Java, Kotlin, JVM-Sprachen & Java (ab Version 21) & Kotlin & Go \\
+		Unterstützte Sprachen & Java, Kotlin, JVM-Sprachen & Java (ab Version 21) & Kotlin & Go \\
 		\rowcolor{gray!10}
-		\raggedright Mechanismus zur Ausführungskontrolle & BS-basiertes Scheduling & Continuations (Scheduling durch JVM) & Continuations (Kotlin Runtime) & Goroutinen-Scheduler (Go Runtime) \\
-		\raggedright Blockierverhalten & Blockiert BS-Thread & Gibt BS-Thread frei & Gibt BS-Thread frei & Gibt BS-Thread frei \\
+		Mechanismus zur Ausführungskontrolle & BS-basiertes Scheduling & Continuations (Scheduling durch JVM) & Continuations (Kotlin Runtime) & Goroutinen-Scheduler (Go Runtime) \\
+		Blockierverhalten & Blockiert BS-Thread & Gibt BS-Thread frei & Gibt BS-Thread frei & Gibt BS-Thread frei \\
 		\rowcolor{gray!10}
-		\raggedright Thread-Pool-Nutzung & Explizit & Implizit & Explizit (Dispatcher) & Implizit \\
-		\raggedright Ressourcenverbrauch & Schwer\-gewichtig & Leicht\-gewichtig & Leicht\-gewichtig & Leicht\-gewichtig \\
+		Thread-Pool-Nutzung & Explizit & Implizit & Explizit (Dispatcher) & Implizit \\
+		Ressourcenverbrauch & \makecell[l]{Schwer-\\gewichtig} & \makecell[l]{Leicht-\\gewichtig} & \makecell[l]{Leicht-\\gewichtig} & \makecell[l]{Leicht-\\gewichtig} \\
 		\rowcolor{gray!10}
-		\raggedright Stackgröße & Groß (oft 1 MB oder mehr) & Klein (oft ein paar KB) & Kein eigener Stack, nutzt Hauptstack kurz & Klein (einige KB, wächst dynamisch) \\
-		\raggedright Maximale Anzahl & Begrenzt & Hoch & Sehr hoch & Sehr hoch \\
+		Stackgröße & Groß (oft 1 MB oder mehr) & Klein (oft ein paar KB) & Kein eigener Stack, nutzt Hauptstack kurz & Klein (einige KB, wächst dynamisch) \\
+		Maximale Anzahl & Begrenzt & Hoch & Sehr hoch & Sehr hoch \\
 		\rowcolor{gray!10}
-		\raggedright Synchronisations\-mechanismen & Locks, Monitore, Future & Locks, Monitore, Future & suspend, Scope & Channels \\
-		\raggedright Anwender\-freundlichkeit & Einfach & Einfach & Mittel & Mittel \\
+		\makecell[l]{Synchronisations-\\mechanismen} & Locks, Monitore, Future & Locks, Monitore, Future & suspend, Scope & Channels \\
+		Anwenderfreundlichkeit & Einfach & Einfach & Mittel & Mittel \\
 		\bottomrule
 	\end{tabularx}
 	\caption{\textbf{Vergleich von Thread-Abstraktionen in verschiedenen Programmiersprachen}}
 	\label{tab:thread-comparison}
 \end{table}
-
 
 \chapter{Testaufbau}
 
@@ -1517,28 +1530,6 @@ Diese Eigenschaften machen Mergesort zu einem idealen Kandidaten für die Implem
 
 \subsection{Implementierung: Mergesort}
 
-Gerne erkläre ich Ihnen im Detail, was die Funktion findSplitPoint macht:
-Zweck der Funktion:
-Die Funktion findSplitPoint sucht in einem sortierten Teilarray (von left bis right) nach der Position, an der das pivot-Element eingefügt werden sollte, um die Sortierung beizubehalten.
-Initialisierung:
-low = left: Startindex des zu durchsuchenden Bereichs.
-high = right + 1: Endindex des Bereichs plus eins.
-Binäre Suche:
-Die Funktion verwendet einen binären Suchalgorithmus, der den Suchbereich in jeder Iteration halbiert.
-Schleifendurchlauf:
-Die while-Schleife läuft, solange low < high ist, also solange der Suchbereich mehr als ein Element enthält.
-Berechnung des Mittelpunkts:
-val mid = (low + high) / 2 berechnet den Mittelpunkt des aktuellen Suchbereichs.
-Vergleich und Eingrenzung:
-Wenn pivot <= array[mid], bedeutet das, dass der Splitpunkt in der linken Hälfte (einschließlich mid) liegen muss. Daher wird high = mid gesetzt.
-Andernfalls muss der Splitpunkt in der rechten Hälfte liegen, und low = mid + 1 wird gesetzt.
-Ergebnis:
-Nach Beendigung der Schleife gibt low den Index zurück, an dem das pivot-Element eingefügt werden sollte.
-Besonderheiten:
-Wenn alle Elemente kleiner als pivot sind, wird right + 1 zurückgegeben.
-Wenn pivot kleiner als alle Elemente ist, wird left zurückgegeben.
-Diese Funktion ist besonders nützlich für den parallelen Merge-Sort-Algorithmus, da sie effizient den Punkt findet, an dem zwei sortierte Teilarrays zusammengefügt werden können.
-
 \subsubsection{Basisimplementierung: Mergesort}
 
 \subsubsection{Virtual Threads: Mergesort}
@@ -1553,9 +1544,671 @@ global scope doppelt so schnell
 
 \subsection{Messungen: Mergesort}
 
-\subsubsection{Messung1: Mergesort - Baumebenen}
+\subsubsection{Messung 1: Mergesort - Baumebenen:1-6}
 
-\subsubsection{Messung2: Mergesort - Listenlänge}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/cpu_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-6: CPU-Auslastung}
+	\label{fig:ms1-6CPU}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-6: CPU-Auslastung}}
+	\label{tab:ms1-6CPU}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/execution_time_plot.png}
+	\caption{Mergesort max. Baumebenen:1-6: Ausführungszeit}
+	\label{fig:ms1-6Zeit}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-6: Ausführungszeit}}
+	\label{tab:ms1-6Zeit}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/memory_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-6: Arbeitsspeicherverbrauch}
+	\label{fig:ms1-6RAM}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-6: Arbeitsspeicherverbrauch}}
+	\label{tab:ms1-6RAM}
+	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
+	\textit{Einheit: MB}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/num_threads_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-6: Thread-Anzahl}
+	\label{fig:ms1-6Threads}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-6: Thread-Anzahl}}
+	\label{tab:ms1-6Threads}
+\end{table}
+
+\subsubsection{Messung 2: Mergesort - Baumebenen:1-19}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-19: CPU-Auslastung}
+	\label{fig:ms1-19CPU}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-19: CPU-Auslastung}}
+	\label{tab:ms1-19CPU}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/execution_time_plot.png}
+	\caption{Mergesort max. Baumebenen:1-19: Ausführungszeit}
+	\label{fig:ms1-19Zeit}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-19: Ausführungszeit}}
+	\label{tab:ms1-19Zeit}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-19: Arbeitsspeicherverbrauch}
+	\label{fig:ms1-19RAM}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-19: Arbeitsspeicherverbrauch}}
+	\label{tab:ms1-19RAM}
+	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
+	\textit{Einheit: MB}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/num_threads_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-19: Thread-Anzahl}
+	\label{fig:ms1-19Threads}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-19: Thread-Anzahl}}
+	\label{tab:ms1-19Threads}
+\end{table}
+
+\subsubsection{Messung 3: Mergesort - Baumebenen:1-23}
+
+ohne Platform Threads!!!
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-23: CPU-Auslastung}
+	\label{fig:ms1-23CPU}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 7 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} &
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-23: CPU-Auslastung}}
+	\label{tab:ms1-23CPU}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/execution_time_plot.png}
+	\caption{Mergesort max. Baumebenen:1-23: Ausführungszeit}
+	\label{fig:ms1-23Zeit}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-23: Ausführungszeit}}
+	\label{tab:ms1-23Zeit}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/memory_usage_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-23: Arbeitsspeicherverbrauch}
+	\label{fig:ms1-23RAM}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen 1-23: Arbeitsspeicherverbrauch}}
+	\label{tab:ms1-23RAM}
+	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
+	\textit{Einheit: MB}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/num_threads_bar_plot.png}
+	\caption{Mergesort max. Baumebenen:1-23: Thread-Anzahl}
+	\label{fig:ms1-23Threads}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort max. Baumebenen:1-23: Thread-Anzahl}}
+	\label{tab:ms1-23Threads}
+\end{table}
+
+\subsubsection{Messung 4: Mergesort - Listenlänge}
+
+Faktor 10!!!
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/cpu_usage_bar_plot.png}
+	\caption{Mergesort Listenlänge: CPU-Auslastung}
+	\label{fig:mslaengeCPU}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort Listenlänge: CPU-Auslastung}}
+	\label{tab:mslaengeCPU}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/execution_time_plot.png}
+	\caption{Mergesort Listenlänge: Ausführungszeit}
+	\label{fig:mslaengeZeit}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ Gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ Gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort Listenlänge: Ausführungszeit}}
+	\label{tab:mslaengeZeit}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/memory_usage_bar_plot.png}
+	\caption{Mergesort Listenlänge: Arbeitsspeicherverbrauch}
+	\label{fig:mslaengeRAM}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort Listenlänge: Arbeitsspeicherverbrauch}}
+	\label{tab:mslaengeRAM}
+	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
+	\textit{Einheit: MB}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/num_threads_bar_plot.png}
+	\caption{Mergesort Listenlänge: Thread-Anzahl}
+	\label{fig:mslaengeThreads}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.34\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Liste- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{\textbf{Mergesort Listenlänge: Thread-Anzahl}}
+	\label{tab:mslaengeThreads}
+\end{table}
 
 \section{Benchmark 2}
 

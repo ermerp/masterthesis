@@ -1,0 +1,7 @@
+max_depth,virtual_max_num_threads,virtual_mean_num_threads,platform_max_num_threads,platform_mean_num_threads,coroutines_max_num_threads,coroutines_mean_num_threads,goroutines_max_num_threads,goroutines_mean_num_threads
+1,29,26,29,26,29,26,11,10
+2,31,29,31,29,31,29,11,10
+3,36,35,35,34,36,34,11,10
+4,37,36,43,42,37,35,11,10
+5,37,36,60,58,37,36,11,10
+6,37,36,92,84,37,36,12,11

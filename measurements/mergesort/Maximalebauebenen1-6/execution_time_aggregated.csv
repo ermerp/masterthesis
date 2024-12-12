@@ -1,0 +1,7 @@
+max_depth,virtual_execution_time,platform_execution_time,coroutines_execution_time,goroutines_execution_time
+1,134.3,133.4,176.8,117.4
+2,84.4,82.4,89.6,69.5
+3,52.7,50.9,62.8,45.4
+4,37.7,36.5,47.7,35.5
+5,38.2,37.4,48.8,36.1
+6,38.8,38.6,46.6,35.0
