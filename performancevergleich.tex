@@ -18,6 +18,8 @@
 \usepackage{listings}
 \usepackage{xcolor}
 
+\usepackage{tcolorbox}
+
 \usepackage[table]{xcolor}
 \usepackage{colortbl}      % Für Hintergrundfarben
 \usepackage{array}         % Für Tabellenanpassungen
@@ -72,6 +74,7 @@
 \raggedbottom
 \renewcommand{\topfraction}{1}
 \renewcommand{\bottomfraction}{1}
+
 \newcommand{\code}[1]{\texttt{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -156,6 +159,9 @@
 
 	\DeclareUnicodeCharacter{03BB}{$\lambda$}
 \begin{document}    % hier gehts los
+	% Vorspann: Römische Seitenzahlen
+	\pagenumbering{roman}
+	
 	\renewcommand{\figurename}{Abb.}
 	
   \thispagestyle{empty} % Titelseite
@@ -235,12 +241,17 @@ Hannover, den \today \hfill Unterschrift
 \newpage
 
 
-  \pdfbookmark[0]{Inhalt}{contents}
-  \tableofcontents  % Inhaltsverzeichnis
+\pdfbookmark[0]{Inhalt}{contents}
+\tableofcontents  % Inhaltsverzeichnis
 
 \listoffigures      % Abbildungsverzeichnis
 
 \listoftables       % Tabellenverzeichnis
+
+\newpage
+
+% Hauptteil: Arabische Seitenzahlen
+\pagenumbering{arabic}
 
 \chapter{Einführung}
 
@@ -420,7 +431,7 @@ Für Virtual Threads wurde der neue Executor Service \code{Executors.""newVirtua
 		throw new RuntimeException(e);
 	}
 \end{lstlisting}
-Der \code{Executors.newVirtualThreadPerTaskExecutor()} erstellt für jede Aufgabe einen neuen Virtual Thread und dient nicht als klassischer Thread Pool, wie der \code{Executors.""newCachedThreadPool()}. Stattdessen wird jede Aufgabe direkt in einem neuen Virtual Thread ausgeführt. Virtual Threads benötigen keinen von der Anwendung explizit verwalteten Thread Pool, da sie von der JVM automatisch auf Plattform-Threads ausgeführt werden. Diese Plattform-Threads werden intern in einem eigenen Thread Pool verwaltet. Der \code{Executors.newVirtualThreadPerTaskExecutor()} nutzt lediglich die gleiche API wie der \code{Executors.newCachedThreadPool()} um den Wechsel von Platform Threads auf Virtual Threads so unkompliziert wie möglich zu gestalten.
+Der \code{Executors"".new""Virtual""Thread""Per""Task""Executor()} erstellt für jede Aufgabe einen neuen Virtual Thread und dient nicht als klassischer Thread Pool, wie der \code{Executors.""new""Cached""Thread""Pool()}. Stattdessen wird jede Aufgabe direkt in einem neuen Virtual Thread ausgeführt. Virtual Threads benötigen keinen von der Anwendung explizit verwalteten Thread Pool, da sie von der JVM automatisch auf Plattform-Threads ausgeführt werden. Diese Plattform-Threads werden intern in einem eigenen Thread Pool verwaltet. Der \code{Executors.new""Virtual""Thread""Per""Task""Executor()} nutzt lediglich die gleiche API wie der \code{Executors.new""Cached""ThreadPool()} um den Wechsel von Platform Threads auf Virtual Threads so unkompliziert wie möglich zu gestalten.
 
 Die maximale Anzahl von Virtual Threads ist deutlich größer als die von Platform Threads und die Zeit sie zu erstellen sowie ihr Speicherverbrauch sind deutlich geringer. Bei der Umstellung auf Virtual Threads werden Platform Threads also nicht direkt durch Virtual Threads ersetzt. Stattdessen werden die Aufgaben durch Virtual Threads ersetzt, beziehungsweise für jede Aufgabe wird ein neuer Virtual Thread erstellt. 
 
@@ -618,7 +629,7 @@ Um in Kotlin eine Coroutine zu starten wird ein Coroutinen-Builder verwendet. Na
 	\item \textbf{launch} ist der am häufigsten verwendete Coroutinen-Builder und startet eine neue Coroutine, die kein Ergebnis zurückgibt. Er wird hauptsächlich für asynchron auszuführende Aufgaben verwendet, die nach dem fire-and-forget Prinzip gestartet werden.
 	\item \textbf{async} startet ebenfalls eine neue Coroutine, gibt aber ein Deferred-Objekt zurück, das ein zukünftiges Ergebnis repräsentiert. Bei Deferred handelt sich um das Äquivalent eines Promise oder Future in Kotlin. Mit \texttt{await()} ist es möglich, auf das Ergebnis zu warten.
 	\item \textbf{runBlocking} blockiert den aktuellen Thread, bis der Coroutine-Block abgeschlossen ist. Dies ermöglicht es, asynchronen Code in einer synchronen Umgebung auszuführen. Er wird hauptsächlich in Main-Funktionen und Testfällen verwendet.
-	\item \textbf{produce} ist ein spezieller Coroutine-Builder, der einen \texttt{ReceiveChannel} erstellt und Werte in diesen Kanal sendet. Der Kanal wird automatisch geschlossen, wenn die Coroutine beendet wird oder eine Ausnahme auftritt. Der Builder wird hauptsächlich für Producer-Consumer-Muster verwendet.
+	\item \textbf{produce} ist ein spezieller Coroutine-Builder, der einen \texttt{ReceiveChannel} erstellt und Werte in diesen Kanal sendet. Der Kanal wird automatisch geschlossen, wenn die Coroutine beendet wird oder eine Ausnahme auftritt. Der Builder wird haupt\-säch\-lich für Producer-Consumer-Muster verwendet.
 \end{itemize}
 
 
@@ -1498,10 +1509,11 @@ Um die Ausführungszeit zu messen, wird die \texttt{time}-Bibliothek von Python 
 Abschließend werden die so erhobenen Rohdaten in entsprechenden CSV-Dateien gespeichert.
 
 \subsubsection{Überwachung: Bank}
+\label{subsubsec:monibank}
 
 Für die Überwachung des Bank Benchmarks wurde ein weiteres Python-Skript namens \texttt{monitoring""Bank.py} entwickelt.
 
-Zu beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (TODO: Verweis ) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz der von allen Implementierungen genutzt wird. 
+Zu beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (Abschnitt: \ref{para:datagenerator}) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz der von allen Implementierungen genutzt wird. 
 
 Da die unterschiedlichen Implementierungen des Benchmarks in Docker Containern laufen (TODO: siehe Abschnitt xxx für den genauen Aufbau), wird im nächsten Schritt die Datei \texttt{docker-""compose\_""modify"".yaml} erzeugt. In dieser werden die für den Durchlauf wichtige Parameter gesetzt, wie zum Beispiel die Anzahl der Accounts und Transaktionen oder die Wahl der Implementierung. Eine vollständige Auflistung der Parameter befindet sich in Abschnitt xxx TODO:Verweis.
 
@@ -1908,9 +1920,89 @@ logarithmische Y Achse
 
 \subsection{Motivation: Bank}
 
+Um die Leistungsfähigkeit und Praxistauglichkeit der verschiedenen Thread-Abs\-trak\-tio\-nen in einem realitätsnahen Szenario zu untersuchen, wurde ein Bankensystem-Bench\-mark entwickelt. Dieser Benchmark simuliert eine rudimentäre Bank, die nicht den Anspruch erhebt, die Komplexität eines realen Bankensystems abzubilden, sondern vielmehr als anschauliches Beispiel für nebenläufige Operationen in einer typischen Ge\-schäfts\-an\-wen\-dung dient.
+
+Das simulierte Bankensystem verwaltet Konten und führt Überweisungen zwischen diesen Konten durch. Bei jeder Überweisung wird ein Betrag von einem Konto abgebucht und einem anderen gutgeschrieben, wobei die Konsistenz des Datensatzes zu jedem Zeitpunkt gewährleistet sein muss. Diese Anforderung stellt eine klassische Herausforderung für nebenläufige Systeme dar, da gleichzeitige Zugriffe auf dieselben Konten koordiniert werden müssen, um Race Conditions und inkonsistente Zustände zu vermeiden.
+
+Ein wesentlicher Aspekt dieses Benchmarks ist die Integration verschiedener Technologien, die in modernen Softwarearchitekturen häufig zum Einsatz kommen:
+
+\begin{itemize}
+	\item \textbf{PostgreSQL:} Als robuste, relationale Datenbank zur Speicherung der Kontoinformationen.
+	\item \textbf{PostgREST:} Ein RESTful API-Server für PostgreSQL, der eine zusätzliche Abstraktionsebene zwischen Anwendung und Datenbank bietet.
+	\item \textbf{Docker:} Zur Containerisierung und einfachen Bereitstellung der einzelnen Komponenten, so wie zur Zuweisung von Hardwareressourcen.
+	\item \textbf{Datenbanktreiber / Datenbankverbindungspools:} Zur effizienten Verwaltung von Datenbankverbindungen.
+\end{itemize}
+
+Die Verwendung dieser Technologien stellt sicher, dass die Thread-Abstraktionen in einer Umgebung getestet werden, die typischen Produktivsystemen ähnelt. Insbesondere die Interaktion mit der Datenbank repräsentiert eine blockierende I/O-Operation, wie sie in vielen realen Anwendungen vorkommt.
+
+Durch diesen Aufbau kann nicht nur die reine Leistungsfähigkeit der Thread-Abstraktionen gemessen werden, sondern auch ihre Fähigkeit zur effektiven Zusammenarbeit mit externen Systemen und zur Handhabung von I/O-gebundenen Aufgaben evaluieren. Dies ermöglicht eine umfassendere Beurteilung ihrer Praxistauglichkeit und Effizienz in komplexen, verteilten Systemen.
+
+Der Bank-Benchmark wird somit zu einem aussagekräftigen Indikator für die Leistungsfähigkeit und Skalierbarkeit der verschiedenen Thread-Abstraktionen in einem Szenario, das typische Herausforderungen moderner Softwarearchitekturen widerspiegelt.
+
 \subsection{Implementierung: Bank}
 
 \subsubsection{Basisimplementierung: Bank}
+
+\paragraph{Testdatengenerierung:}
+\label{para:datagenerator}
+
+ Vor dem Ausführen des Benchmarks müssen zuerst die Testdaten generiert werden. Konkret sind dies einerseits die Bankkonten (Accounts), welche sich aus einer Kontonummer und einem Kontostand, zusammen setzen, andererseits die Überweisungen (Transaktions) welche aus einem Sender, einem Empfänger und dem zu überweisenden Betrag bestehen. Dieses Daten werden von der separaten Anwendung \texttt{bankDataGenerator.jar} generiert. Diese erhält zwei Übergabeparameter: die Anzahl der Konten und die Anzahl der Überweisungen. Auf dieser Grundlage werden zwei Text Dateien erstellt, welche dann von den unterschiedlichen Implementierungen importiert werden können, so dass gewährleistet ist, dass alle mit den gleichen Daten arbeiten. Das Ausführen von \texttt{bankDataGenerator.jar} findet zu Beginn des Python-Scripts \texttt{monitoring""Bank.py} (Abschnitt: \ref{subsubsec:monibank}) statt.
+ 
+\paragraph{PostgreSQL:}
+
+PostgreSQL dient als robuste, relationale Datenbank zur Speicherung der Kontodaten. Die Kontoinformationen werden in einer Tabelle mit zwei Spalten gespeichert: Kontonummer (accountId) und Kontostand (balance). Ein zentrales Ziel des Benchmarks ist es, die Datenkonsistenz zu wahren, weshalb jede Überweisung als Transaktion behandelt wird.
+
+PostgreSQL bietet ein leistungsfähiges Transaktionskonzept, das die ACID-Eigenschaften (Atomicity, Consistency, Isolation, Durability) gewährleistet. Eine Transaktion in PostgreSQL ist eine Sequenz von Datenbankoperationen, die als eine einzige, unteilbare Einheit behandelt wird. Sie beginnt mit dem Befehl BEGIN und endet entweder mit COMMIT, um die Änderungen zu speichern, oder mit ROLLBACK, um sie rückgängig zu machen.
+
+Für die Verwaltung konkurrierender Zugriffe verwendet PostgreSQL Zeilensperren. Wenn eine Transaktion bereits Sperren auf den betroffenen Konten hält, wartet eine konkurrierende Transaktion, bis diese Sperren freigegeben werden. Dies stellt sicher, dass keine inkonsistenten Zustände entstehen.
+
+PostgreSQL verfügt über eine integrierte Deadlock-Erkennung. Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den Deadlock und bricht eine der Transaktionen ab, um die Blockade aufzulösen.
+Um die Häufigkeit von Deadlocks zu reduzieren, wird eine Strategie implementiert, bei der bei Überweisungen immer zuerst das Konto mit der kleineren Kontonummer gesperrt wird. Dies gewährleistet eine konsistente Reihenfolge beim Sperren von Ressourcen und minimiert das Risiko von Deadlocks.
+
+Durch die Verwendung von PostgreSQL als Datenbank für den Bank-Benchmark wird eine realitätsnahe Umgebung geschaffen, die typische Herausforderungen in Bezug auf Datenkonsistenz und Nebenläufigkeit in Geschäftsanwendungen widerspiegelt. Dies ermöglicht eine aussagekräftige Evaluation der verschiedenen Thread-Abstraktionen in einem praxisnahen Szenario.
+
+\paragraph{PostREST:}
+
+PostgREST ist ein leistungsfähiges Open-Source-Tool, das automatisch eine RESTful-API für PostgreSQL-Datenbanken generiert. Es erstellt dynamisch Endpunkte für Tabellen und Views in der Datenbank, wodurch eine schnelle und flexible Schnittstelle zwischen der Datenbank und den Anwendungen geschaffen wird.
+
+Ein wesentlicher Vorteil von PostgREST ist, dass es PostgreSQL-Funktionen als Remote Procedure Calls (RPC) verfügbar macht. Für den Bank-Benchmark wurden entsprechende Funktionen in der Datei \texttt{init.sql} definiert und in der Datenbank gespeichert. Diese Funktionen sind:
+
+\begin{itemize}
+	\item \texttt{create\_account}: Zum Erstellen neuer Bankkonten
+	\item \texttt{delete\_all\_accounts}: Zum Löschen aller Konten (nützlich für das Zurücksetzen des Benchmarks)
+	\item \texttt{transfer\_balance}: Zur Durchführung von Überweisungen zwischen Konten
+\end{itemize}
+
+Die Verwendung von PostgREST als Schnittstelle wurde mit dem Ziel gewählt, eine faire Vergleichsbasis für alle Implementierungen zu schaffen. Durch die einheitliche REST-Schnittstelle wird sichergestellt, dass alle Thread-Abstraktionen unter gleichen Bedingungen auf die Datenbank zugreifen. Ein weiterer Vorteil ist, dass keine spezifischen Datenbanktreiber für die verschiedenen Programmiersprachen benötigt werden, was die Implementierung vereinfacht und mögliche Unterschiede in der Leistungsfähigkeit der Treiber ausschließt.
+
+In der praktischen Durchführung des Benchmarks hat sich jedoch gezeigt, dass PostgREST zum limitierenden Faktor bei der Skalierung wurde. Eine genauerer Analyse befindet sich im Abschnitt TODO:Verweis. Deshalb ist PostgREST kein Teil der finalen Messungen für diesen Benchmark.
+
+\paragraph{Docker:}
+
+Docker spielt eine zentrale Rolle in der Implementierung des Bank-Benchmarks, indem es ermöglicht, alle Komponenten in isolierten Containern laufen zu lassen. Diese Containerisierung ist heutzutage typisch für moderne Softwarearchitekturen und bietet mehrere Vorteile für den Benchmark-Aufbau.
+
+\begin{itemize}
+	\item Konsistenz: Alle Tests laufen in der gleichen, reproduzierbaren Umgebung.
+	\item Isolation: Jede Komponente läuft in ihrem eigenen Container, was Interferenzen minimiert.
+	\item Portabilität: Der gesamte Benchmark-Stack kann leicht auf verschiedenen Systemen ausgeführt werden.
+\end{itemize}
+
+Die Hauptkomponenten des Benchmarks, die in Docker-Containern laufen, sind:
+
+\begin{itemize}
+	\item Benchmark-Implementierungen: bank-java, bank-go, bank-kotlin
+	\item PostgreSQL-Datenbank
+	\item PostgREST (in der finalen Version nicht mehr verwendet)
+\end{itemize}
+
+Der gesamte Benchmark-Stack wird über eine \texttt{docker-compose.yaml} Datei orchestriert und gestartet. Diese Konfiguration ermöglicht es, die gesamte Benchmark-Umgebung mit einem einzigen Befehl zu starten und zu verwalten.
+Ein wichtiger Aspekt des Setups ist das Python-Skript \texttt{monitoringBank.py}, welches die Möglichkeit bietet die docker-compose-Datei zu modifiziern, um Umgebungsvariablen zu setzen und Messparameter zu verändern. Dies erlaubt es, verschiedene Szenarien für den Benchmark zu konfigurieren und zu testen. Eine detaillierte Auflistung der verfügbaren Messparameter findet sich im Abschnitt TODO:Verweis.
+
+Um sicherzustellen, dass die Benchmark-Implementierungen erst starten, wenn die Post\-greSQL-Datenbank vollständig initialisiert und betriebsbereit ist, wurde ein Healthcheck für den PostgreSQL-Container implementiert. Dies verhindert Fehlstarts und gewährleistet konsistente Testbedingungen.
+
+Ein entscheidender Aspekt des Docker-Setups ist die Zuweisung fester Hardwareressourcen (CPU und RAM) zu den einzelnen Containern. Dies wird über die \texttt{resources}-Konfiguration in der Docker-Compose-Datei realisiert. Durch diese Ressourcenbegrenzung wird simuliert, dass die verschiedenen Komponenten auf getrennten Systemen laufen, was die Realitätsnähe des Benchmarks erhöht und eine fairere Vergleichsbasis für die verschiedenen Implementierungen schafft.
+
+Durch diesen Aufbau wird eine realitätsnahe und gut kontrollierbare Umgebung für den Vergleich der verschiedenen Thread-Abstraktionen geschaffen, die moderne Softwarearchitekturen widerspiegelt und gleichzeitig eine hohe Reproduzierbarkeit der Ergebnisse gewährleistet.
 
 \subsubsection{Platform Threads: Bank}
 
@@ -1923,25 +2015,6 @@ logarithmische Y Achse
 \subsection{Messparameter: Bank}
 
 \subsection{Messungen: Bank}
-
-Notizen / Stichpunkte:
-
-PostgreSQL bietet ein robustes Transaktionskonzept, das die ACID-Eigenschaften (Atomicity, Consistency, Isolation, Durability) gewährleistet.
-
-Eine Transaktion in PostgreSQL ist eine Sequenz von Datenbankoperationen, die als eine einzige, unteilbare Einheit behandelt wird1. Sie beginnt mit dem Befehl BEGIN und endet entweder mit COMMIT, um die Änderungen zu speichern, oder mit ROLLBACK, um sie rückgängig zu machen
-
-PL/pgSQL-Funktionen laufen bereits in einem Transaktionskontext, daher ist die explizite Transaktionskontrolle innerhalb der Funktion nicht erforderlich
-
-Die Fehlerbehandlung mit EXCEPTION ist korrekt implementiert. Sie fängt alle Fehler ab und führt ein ROLLBACK durch, bevor der Fehler weitergegeben wird. Dies ist eine gute Praxis zur Sicherstellung der Datenintegrität.,
-
-Bei der Verwendung von PostgREST sollten Sie beachten, dass es automatisch Transaktionen für jede HTTP-Anfrage verwaltet. Ihre Funktion wird also in diesem Kontext korrekt funktionieren, ohne dass Sie sich um die explizite Transaktionskontrolle kümmern müssen.
-
-Sperren und Wartezeiten:
-PostgreSQL verwendet Zeilensperren, um konkurrierende Zugriffe zu verwalten. Wenn eine andere Transaktion bereits Sperren auf den betroffenen Konten hält, wird Ihre transfer\_balance Funktion warten, bis diese Sperren freigegeben werden
-
-Deadlock-Erkennung:
-Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den Deadlock und bricht eine der Transaktionen ab
-
 
 \chapter{Auswertung}
 
@@ -1958,7 +2031,10 @@ Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den D
 \section{Ausblick}
 %Java VT kein pinning bei Synchronized
 %Structured Concurrency(jeps/preview)
+%Cancellation
 %Scoped Values(jeps/preview)
+%ExceptionHandling
+%Webserver Thread-per-Request
 
 
 
