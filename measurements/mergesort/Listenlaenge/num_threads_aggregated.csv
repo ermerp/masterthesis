@@ -1,5 +1,5 @@
 list_length,virtual_max_num_threads,virtual_mean_num_threads,platform_max_num_threads,platform_mean_num_threads,coroutines_max_num_threads,coroutines_mean_num_threads,goroutines_max_num_threads,goroutines_mean_num_threads
-10000,39,35,51,40,39,35,12,12
-100000,39,36,59,52,38,36,12,11
-1000000,38,35,59,55,37,34,12,11
-10000000,37,34,59,55,37,34,11,10
+10.000,39,35,51,40,39,35,12,12
+100.000,39,36,59,52,38,36,12,11
+1.000.000,38,35,59,55,37,34,12,11
+10.000.000,37,34,59,55,37,34,11,10

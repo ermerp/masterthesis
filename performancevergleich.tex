@@ -25,15 +25,24 @@
 \usepackage{tabularx} % Dynamische Anpassung von Tabellenbreiten
 \usepackage{makecell}
 
+%Pseudo Code
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
 %CSV
+\usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \usepackage{csvsimple}
 \usepackage{siunitx}
+
 \sisetup{
-	round-mode = places,
-	round-precision = 4,
-	group-separator = {,},
-	group-minimum-digits = 3
+	round-mode = places,   % Rundet auf eine festgelegte Anzahl Dezimalstellen
+	round-precision = 4,   % Präzision von 4 Dezimalstellen
+	group-separator = {.}, % Tausendertrennzeichen als Punkt
+	group-minimum-digits = 3, % Mindestens 3 Ziffern pro Gruppe
+	output-decimal-marker = {,}, % Dezimaltrennzeichen als Komma
+	zero-decimal-to-integer = true, % Entfernt die Dezimalstellen bei Ganzzahlen
 }
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -237,7 +246,7 @@ Hannover, den \today \hfill Unterschrift
 
 \section{Motivation}
 
-In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Softwareentwicklung erheblich zugenommen. Mit dem Anstieg der Anforderungen an die Perfor\-mance und Effizienz von Softwareanwendungen, insbesondere im Bereich von Echtzeit- und Cloud-basierten Systemen, sind robuste und leistungsfähige Nebenläufigkeitskonzepte unerlässlich geworden. Dabei ist es nicht ungewöhnlich, dass mehr Zeit mit der Kommunikation zwischen Systemen verbracht wird, als mit den eigentlichen Berechnungen und dass Systeme deshalb mehr warten als arbeiten. Dadurch entsteht die Anforderung an Anwendungen eine hohe Parallelität und Nebenläufigkeit zu gewährleisten. Programmiersprachen wie Java, Kotlin und Go tragen dieser neuen Entwicklung Rechnung und bieten unterschiedliche Ansätze zur Umsetzung von Nebenläufigkeit, die jeweils ihre eigenen Vor- und Nachteile haben. Als Motivation für diese Arbeit dient die aktuelle Veröffentlichung von Virtual Threads in Java im September 2023. Diese Veröffentlichung diente als Anlass für eine fundierte Bewertung der Performance von aktuellen Thread-Abstraktionen in den ausgewählten Programmiersprachen, da es bislang nur begrenzte vergleichende Analysen, für die Performance dieser Konzepte gibt. Diese Masterarbeit soll ein besseres Verständnis dafür schaffen, welche Technologien sich für spezifische Anwendungsfälle am besten eignen.
+In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Softwareentwicklung erheblich zugenommen. Mit dem Anstieg der Anforderungen an die Perfor\-mance und Effizienz von Softwareanwendungen, insbesondere im Bereich von Echtzeit- und Cloud-basierten Systemen, sind robuste und leistungsfähige Nebenläufigkeits\-kon\-zep\-te unerlässlich geworden. Dabei ist es nicht ungewöhnlich, dass mehr Zeit mit der Kommunikation zwischen Systemen verbracht wird, als mit den eigentlichen Berechnungen und dass Systeme deshalb mehr warten als arbeiten. Dadurch gewinnt die Anforderung an Anwendungen eine hohe Parallelität und Nebenläufigkeit zu gewährleisten immer mehr an Wichtigkeit. Programmiersprachen wie Java, Kotlin und Go tragen dieser neuen Entwicklung Rechnung und bieten unterschiedliche Ansätze zur Umsetzung von Nebenläufigkeit, die jeweils ihre eigenen Vor- und Nachteile haben. Als Motivation für diese Arbeit dient die aktuelle Veröffentlichung von Virtual Threads in Java im September 2023. Diese Veröffentlichung diente als Anlass für eine fundierte Bewertung der Performance von aktuellen Thread-Abstraktionen in den ausgewählten Programmiersprachen, da es bislang nur begrenzte vergleichende Analysen, für die Performance dieser Konzepte gibt. Wobei der Fokus vor allem auf die Ausführungszeit, Ressourcennutzung und Skalierbarkeit der Thread-Abstraktionen gerichtet wird. Diese Masterarbeit soll ein besseres Verständnis dafür schaffen, welche Technologien sich für spezifische Anwendungsfälle am besten eignen.
 
 \section{Ziel der Arbeit}
 
@@ -255,11 +264,11 @@ In dem Paper \textbf{Concurrency in Go and Java: Performance Analysis} \cite{Tog
 
 In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Threads in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet wurden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtual Threads, jeweils dicht beieinander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also interessant sein, ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert hat. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird also ebenfalls interessant sein, wie sich die Performance bei anderen Benchmarks verhält.
 
-Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Masterarbeit versucht diese Lücke zu schließen.
+Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Masterarbeit zielt darauf ab diese Lücke zu schließen.
 
 \section{Gliederung und Aufbau}
 
-Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Thread-Abstraktionen und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go zu ermöglichen.
+Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Thread-Abstraktionen und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go abzubilden.
 
 \subsubsection{Kapitel 2: Thread-Abstraktionen}
 
@@ -271,11 +280,11 @@ In diesem Kapitel wird die methodische Herangehensweise dieser Arbeit erläutert
 
 \subsubsection{Kapitel 4: Benchmarks}
 
-In diesem Kapitel werden die durchgeführten Benchmarks im Detail beschrieben. Für jeden Benchmark wird das zugrundeliegende Szenario vorgestellt, die Motivation für den Benchmarkt erläutert und der Aufbau des Benchmarks erklärt. Außerdem wird auf Besonderheiten bei der Implementierung der Benchmarks eingegangen. Die Ergebnisse der einzelnen Tests werden anschließend präsentiert, wobei der Fokus auf der Messung der Performancefaktoren liegt. Um eine nachvollziehbare Übersicht über die Ergebnisse zu bieten, werden die Daten grafisch aufbereitet.
+Dieses Kapitel widmet sich der Beschreibung der durchgeführten Benchmarks. Für jeden Benchmark wird das zugrundeliegende Szenario vorgestellt, die Motivation für den Benchmarkt erläutert und der Aufbau des Benchmarks erklärt. Außerdem wird auf Besonderheiten bei der Implementierung der Benchmarks eingegangen. Die Ergebnisse der einzelnen Tests werden anschließend präsentiert, wobei der Fokus auf der Messung der Performancefaktoren liegt. Um eine nachvollziehbare Übersicht über die Ergebnisse zu bieten, werden die Daten grafisch aufbereitet.
 
 \subsubsection{Kapitel 5: Auswertung}
 
-Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapitel eine Analyse der Benchmark-Ergebnisse. Es wird untersucht, wie die unterschiedlichen Nebenläufigkeitskonzepte der Programmiersprachen die Performance beeinflussen. Besonderes Augenmerk liegt auf der Identifikation von Stärken und Schwächen der jeweiligen Konzepte in verschiedenen Anwendungsszenarien. Abschließend wird ein Vergleich zwischen den Sprachen gezogen, um allgemeine Aussagen zur Eignung der einzelnen Konzepte für bestimmte Einsatzgebiete zu treffen.
+Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapitel eine Analyse der Benchmark-Ergebnisse. Es wird untersucht, wie die unterschiedlichen Nebenläufigkeitskonzepte die Performance beeinflussen. Besonderes Augenmerk liegt auf der Identifikation von Stärken und Schwächen der jeweiligen Konzepte in verschiedenen Anwendungsszenarien. Abschließend wird ein Vergleich zwischen den Sprachen gezogen, um allgemeine Aussagen zur Eignung der einzelnen Konzepte für bestimmte Einsatzgebiete zu treffen.
 
 \subsubsection{Kapitel 6: Zusammenfassung und Ausblick}
 
@@ -298,15 +307,15 @@ Java Threads sind die verbreitetste Technik um Nebenläufigkeit in Java-Programm
 
 Dieser Aufbau hat zur Folge, dass Platform Threads schwergewichtig sind. Schwergewichtig meint in diesem Fall, dass ein Platform Thread viel Speicher verbraucht($\sim$ 2-3 MB) und es lange dauert ihn zu erstellen($\sim$ 1ms). Platform Threads und die dazugehörigen Betriebssystem Threads sind also ressourcenintensiv und ihre maximale Anzahl ist somit für ein ausführendes System begrenzt. Dies führt dazu, dass die maximale Anzahl der Platform Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. 
 
-Eine Lösung, um zumindest die Kosten für das Erstellen von neuen Platform Threads zu senken, ist das Verwenden von Thread Pools. Hierbei wird eine Gruppe von Aufgaben einem Pool von Platform Threads zugewiesen. In der Regel übersteigt dabei die Anzahl der Aufgaben die Anzahl an Platform Threads. Dies hat zur Folge, dass einem Platform Thread, nachdem er die ihm zugewiesene Aufgabe abgearbeitet hat, direkt eine neue Aufgabe zugewiesen wird. Das hat den Vorteil, dass nicht mehr für jede Aufgabe ein neuer Platform Thread erstellt werden muss, stattdessen können die gleichen Platform Threads wiederverwendet werden um mehrere Aufgaben hintereinander auszuführen. Damit lassen sich zwar die Kosten für das Erstellen von neuen Platform Threads senken, es lässt sich jedoch nicht die maximale Anzahl an Platform Threads erhöhen.
+Eine Lösung, um zumindest die Kosten für das Erstellen von neuen Platform Threads zu senken, ist das Verwenden von Thread Pools. Hierbei wird eine Gruppe von Aufgaben einem Pool von Platform Threads zugewiesen. In der Regel übersteigt dabei die Anzahl der Aufgaben die Anzahl an Platform Threads. Dies hat zur Folge, dass einem Platform Thread, nachdem er die ihm zugewiesene Aufgabe abgearbeitet hat, direkt eine neue Aufgabe zugewiesen bekommt. Das hat den Vorteil, dass nicht mehr für jede Aufgabe ein neuer Platform Thread erstellt werden muss. Stattdessen können die gleichen Platform Threads wiederverwendet werden um mehrere Aufgaben hintereinander auszuführen. Damit lassen sich zwar die Kosten für das Erstellen von neuen Platform Threads senken, es lässt sich jedoch nicht die maximale Anzahl an Platform Threads erhöhen.
 
 Ein weiteres Problem ist, dass die Verwaltung der Threads vom Betriebssystem über\-nommen wird und die JRE (Java Runtime Environment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sondern für alle Programmiersprachen funktionieren muss.
 
 \section{Java: Virtual Threads}
 
-Seit dem JDK 21, welches im September 2023 veröffentlicht wurde, sind Virtual Threads ein fester Bestandteil von Java. Sie wurden ursprünglich im Rahmen des Project Loom als sogenannte Fibers entwickelt. Das Ziel war es, die schwergewichtigen Java Threads durch eine leichtgewichtigere Variante zu ersetzen, welche auf die gleiche API (Application Programming Interface) zurückgreift.Dies soll, Anwendungsentwicklern den Umstieg von  Platform Threads auf Virtual Threads erleichtern.
+Seit dem JDK 21, welches im September 2023 veröffentlicht wurde, sind Virtual Threads ein fester Bestandteil von Java. Sie wurden ursprünglich im Rahmen des Project Loom \cite{loom2024} als sogenannte Fibers entwickelt. Das Ziel war es, die schwergewichtigen Java Threads durch eine leichtgewichtigere Lösung zu ersetzen, welche auf die gleiche API (Application Programming Interface) zurückgreift. Dies soll, Anwendungsentwicklern den Umstieg von Platform Threads auf Virtual Threads erleichtern.
 
-Das Ziel von Virtual Threads besteht in der Umgehung der Schwächen von Platform Threads, welche vor allem Anwendungen mit einer großen Anzahl an Threads oder häufig blockierenden Threads sind. Dies gelingt, indem eine große Anzahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Dadurch werden die Nachteile von Platform Threads umgangen, dass ihre Anzahl stark begrenzt ist und die Verwaltung der Threads auf Betriebssystemebene stattfindet. Stattdessen können Virtual Threads in großer Zahl erstellt werden und die Verwaltung der Threads findet in der JRE statt.
+Virtual Threads wurden entwickelt, um die Schwächen von Platform Threads zu adressieren, insbesondere bei Anwendungen, die eine große Zahl von Threads oder häufige Blockierungen aufweisen. Dies gelingt, indem eine große Anzahl Virtual Threads auf eine kleine Zahl Betriebssystem Threads verteilt wird. Dadurch werden die Nachteile von Platform Threads umgangen, dass ihre Anzahl stark begrenzt ist und die Verwaltung der Threads auf Betriebssystemebene stattfindet. Stattdessen können Virtual Threads in großer Zahl erstellt werden und die Verwaltung der Threads findet in der JRE statt.
 
 Im Detail sieht dies wie folgt aus:
 
@@ -322,7 +331,7 @@ Für jede neue Aufgabe (task) im System, die nebenläufig ausgeführt werden kan
 \end{figure}
 %TODO: Grafik überarbeiten Peine: Ungeschickte Grafik: Wirkt so, als ob ein Platform Thread gleichzeitig drei VTs ausführt.
 
-Dort bleibt der Virtual Thread so lange bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen (unmount) und so lange geparkt, bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann. Der Virtual Thread wird dann wieder in einen freien Carrier Thread eingesetzt, dies kann aber ein anderer sein als zu Beginn. Daraus folgt, eine Aufgabe wird ihre gesamte Lebenszeit vom gleichen Virtual Thread ausgeführt, welcher jedoch in unterschiedliche Carrier Threads eingesetzt werden kann. 
+Dort bleibt der Virtual Thread so lange, bis die Aufgabe abgeschlossen ist oder der Thread blockiert. Sollte es zu einer Blockade, zum Beispiel durch eine I/O-Operation, kommen, wird der Virtual Thread aus dem Carrier Thread entnommen (unmount) und so lange geparkt, bis er nicht mehr blockiert ist und die Bearbeitung der Aufgabe fortgesetzt werden kann. Der Virtual Thread wird dann wieder in einen freien Carrier Thread eingesetzt, dies kann aber ein anderer sein als zu Beginn. Daraus folgt, eine Aufgabe wird ihre gesamte Lebenszeit vom gleichen Virtual Thread ausgeführt, welcher jedoch in unterschiedliche Carrier Threads eingesetzt werden kann. 
 
 Dies stellt eine entschiedene Neuerung gegenüber den Platform Threads dar. War es bisher so, dass ein Platform Thread fest mit einem Betriebssystem Thread verknüpft war, wurde diese Verknüpfung für Virtual Threads aufgehoben. Dies hat den Vorteil, dass ein Virtual Thread einen Carrier Thread und den damit verbundenen Betriebssystems Thread nur dann benutzt, wenn der Virtual Thread Berechnungen auf dem Prozessor ausführt. Ist ein Virtual Thread blockiert macht er Platz auf dem Betriebssystem Thread für einen anderen Virtual Thread. Bei Platform Threads hingegen blockiert nicht nur der Platform Thread, sondern auch der zugrunde liegende Betriebssystem Thread. \cite{Bateman2023}
 
@@ -335,15 +344,15 @@ Dies stellt eine entschiedene Neuerung gegenüber den Platform Threads dar. War 
 
 \subsection{Continuations}
 
-Das beschriebene Starten (mount) und Parken (unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um die enthaltene Aufgabe entweder zum ersten Mal zu starten oder sie nach dem Parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen (thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren (freeze) bezeichnet. Zuletzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfügung um zu überprüfen, ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen musste neuer Code hinzugefügt werden, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
+Das beschriebene Starten (mount) und Parken (unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um die enthaltene Aufgabe entweder zum ersten Mal zu starten oder sie nach dem Parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen (thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren (freeze) bezeichnet. Zuletzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfügung um zu überprüfen, ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen wurde neuer Code hinzugefügt, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
 
-Wenn es um das Blockadeverhalten von Virtual Threads, geht gibt es einen Spezialfall, der nach Möglichkeit vermieden werden sollte, das sogenannte Feststecken (pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread, sondern auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Synchronized wird verwendet, um den gleichzeitigen Zugriff auf eine Methode oder einen Codeblock zu verhindern, damit nur ein Thread zu einem bestimmten Zeitpunkt Zugriff auf den synchronisierten Code hat. Sollte der Code im Synchronized Block lange blockieren kann es sinnvoll sein, das Synchronized durch ein Reentrant Lock zu ersetzen und dieses freizugeben und dann den Platform-Thread abzugeben (unmount). Die Beschränkung durch Synchronized, soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden.\cite{Chilano2024} Die Beschränkung durch das Aufrufen von nativem Code wird jedoch bestehen bleiben.\cite{Bateman2024}
+Wenn es um das Blockadeverhalten von Virtual Threads, geht gibt es einen Spezialfall, der nach Möglichkeit vermieden werden sollte, das sogenannte Feststecken (pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread, sondern auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Synchronized wird verwendet, um den gleichzeitigen Zugriff auf eine Methode oder einen Codeblock zu verhindern, damit nur ein Thread zu einem bestimmten Zeitpunkt Zugriff auf den synchronisierten Code hat. Sollte der Code im Synchronized Block lange blockieren kann es sinnvoll sein, das Synchronized durch ein Reentrant Lock zu ersetzen und dieses freizugeben und dann den Platform-Thread abzugeben (unmount). Die Beschränkung durch Synchronized, soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden\cite{Chilano2024}. Die Beschränkung durch das Aufrufen von nativem Code wird jedoch bestehen bleiben.\cite{Bateman2024}
 
 \subsection{Thread per request Modell}
 
-Ein typischer Anwendungsfall für Virtual Threads ist eine Server-Anwendung, die Anfragen im Thread per request Modell bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt, der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig bearbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread, sondern auch ein neuer Betriebssystem Threads erstellt werden muss. Da aber die Anzahl an Betriebssystem Threads für ein System stark limitiert ist, in der Regel auf einige Tausend Stück, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Platform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfügung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen Stück.
+Ein typischer Anwendungsfall für Virtual Threads ist eine Server-Anwendung, die Anfragen im Thread per request Modell bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt, der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig bearbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread, sondern auch ein neuer Betriebssystem Threads erstellt werden muss. Da aber die Anzahl an Betriebssystem Threads für ein System stark limitiert ist, in der Regel auf einige Tausend, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Platform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfügung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen.
 
-Der Vorteil von Virtual Threads gegenüber Platform Threads bei dem Thread per request Modell, lässt sich gut an Little's Gesetz zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind, wie hoch der Durchsatz($\lambda$) und die Durchlaufzeit (W) sind.\cite{Little1961}
+Der Vorteil von Virtual Threads gegenüber Platform Threads bei dem Thread per request Modell, lässt sich gut an Little's Gesetz \cite{Little1961} zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind, wie hoch der Durchsatz($\lambda$) und die Durchlaufzeit (W) sind.
 
 \begin{eqnarray}
 	L = \lambda \cdot W \nonumber
@@ -372,12 +381,12 @@ Eine weitere Zielsetzung von Virtual Threads war es, Softwareentwicklern den Ums
 Am folgendem Code-Beispiel wird deutlich, dass lediglich der Aufruf \code{new Thread())} durch \code{Thread.ofVirtual().start()} ersetzt werden muss. Das Starten des Virtual Threads passiert jetzt direkt beim Aufruf. Der restliche Code bleibt jedoch unberührt.
 
 \begin{lstlisting}[language=Java]
-	//erstellen eines einzelnen Platform Threads	
+	// erstellen eines einzelnen Platform Threads	
 	Thread platformThread = new Thread(() -> System.out.println("Platform Thread"));
 	platformThread.start();
 	platformThread.join();
 
-	//erstellen eines einzelnen Virtual Threads
+	// erstellen eines einzelnen Virtual Threads
 	Thread virtualThread = Thread.ofVirtual().start(() -> System.out.println("Virtual Thread"));
 	virtualThread.join();
 \end{lstlisting}
@@ -422,8 +431,6 @@ Falls ein Thread Pool bei Platform Threads bisher verwendet wurde um die Anzahl 
 \section{Kotlin: Coroutinen}
 
 Coroutinen sind ein zentrales Konzept in Kotlin und werden für die asynchrone Programmierung sowie für nebenläufige Prozesse genutzt. Sie ermöglichen es, komplexe Abläufe einfacher zu schreiben und verständlicher zu gestalten. Im Gegensatz zu herkömmlichen Threads sind Coroutinen jedoch leichtgewichtiger und blockieren keinen Thread während ihrer Ausführung. Dies wird durch die Nutzung eines Thread-Pools ermöglicht, auf dem Coroutinen kooperativ ausgeführt werden. Dieses Kapitel wird die Grundlagen von Coroutinen, deren Implementierung und fortgeschrittene Anwendungsfälle erklären.
-
-
 
 \subsection{Motivation}
 
@@ -550,7 +557,7 @@ Genau an diesem Punkt setzt die Entwicklung von Coroutinen an, welche als Ziel h
 \subsection{suspend-Modifier}
 \label{subsec:suspend}
 
-Um die Nachteile der Callback Hell zu umgehen, verfolgen die Coroutinen den Ansatz, dass synchroner Code geschrieben wird, welcher dann asynchron ausgeführt wird. Dafür wurde das Schlüsselwort \texttt{suspend} eingeführt\cite{Akhin2024}. Es wird verwendet um Funktionen als suspendierbar (oder "pausierbar") zu kennzeichnen. Es ermöglicht es einer Funktion, ihre Ausführung zu unterbrechen und später fortzusetzen, ohne dabei den aktuellen Thread zu blockieren (wird im Detail in Abschnitt \ref{subsec:csp} erläutert). Dies ist besonders nützlich für die asynchrone Programmierung, da es den Code im Vergleich zu traditionellen Callback- oder Thread-basierten Lösungen lesbarer und einfacher zu handhaben macht. Außerdem werden mit \texttt{async} Coroutinen gestartet, welche die \texttt{suspend}-Funktionen ausführen. Dadurch kann das Code-Beisipiel aus dem vorausgehenden Abschnitt folgendermaßen optimiert werden:
+Um die Nachteile der Callback-Hell zu umgehen, verfolgen die Coroutinen den Ansatz, synchronen Code zu schreiben, der anschließend asynchron ausgeführt wird. Dafür wurde das Schlüsselwort \texttt{suspend} eingeführt\cite{Akhin2024}. Es wird verwendet um Funktionen als suspendierbar (oder "pausierbar") zu kennzeichnen. Es ermöglicht einer Funktion, ihre Ausführung zu unterbrechen und später fortzusetzen, ohne dabei den aktuellen Thread zu blockieren (wird im Detail in Abschnitt \ref{subsec:csp} erläutert). Dies ist besonders nützlich für die asynchrone Programmierung, da es den Code im Vergleich zu traditionellen Callback- oder Thread-basierten Lösungen lesbarer und einfacher zu handhaben macht. Außerdem werden mit \texttt{async} Coroutinen gestartet, welche die \texttt{suspend}-Funktionen ausführen. Dadurch kann das Code-Beisipiel aus dem vorausgehenden Abschnitt folgendermaßen optimiert werden:
 
 \begin{lstlisting}[language=Kotlin]
 	import kotlinx.coroutines.*
@@ -588,7 +595,8 @@ Um die Nachteile der Callback Hell zu umgehen, verfolgen die Coroutinen den Ansa
 		} catch (e: Exception) {
 			println("Error: ${e.message}")
 		}
-		println("Started operations...")  // Zeigt an, dass die asynchronen Operationen gestartet wurden
+		// Zeigt an, dass die asynchronen Operationen gestartet wurden
+		println("Started operations...")  
 	}
 \end{lstlisting}
 Konsolenausgabe:
@@ -608,7 +616,7 @@ Um in Kotlin eine Coroutine zu starten wird ein Coroutinen-Builder verwendet. Na
 
 \begin{itemize}
 	\item \textbf{launch} ist der am häufigsten verwendete Coroutinen-Builder und startet eine neue Coroutine, die kein Ergebnis zurückgibt. Er wird hauptsächlich für asynchron auszuführende Aufgaben verwendet, die nach dem fire-and-forget Prinzip gestartet werden.
-	\item \textbf{async} startet ebenfalls eine neue Coroutine, gibt aber sofort ein Deferred-Objekt zurück, das ein zukünftiges Ergebnis repräsentiert. Bei Deferred handelt sich um das Äquivalent eines Promise oder Future in Kotlin. Mit \texttt{await()} ist es möglich, auf das Ergebnis zu warten.
+	\item \textbf{async} startet ebenfalls eine neue Coroutine, gibt aber ein Deferred-Objekt zurück, das ein zukünftiges Ergebnis repräsentiert. Bei Deferred handelt sich um das Äquivalent eines Promise oder Future in Kotlin. Mit \texttt{await()} ist es möglich, auf das Ergebnis zu warten.
 	\item \textbf{runBlocking} blockiert den aktuellen Thread, bis der Coroutine-Block abgeschlossen ist. Dies ermöglicht es, asynchronen Code in einer synchronen Umgebung auszuführen. Er wird hauptsächlich in Main-Funktionen und Testfällen verwendet.
 	\item \textbf{produce} ist ein spezieller Coroutine-Builder, der einen \texttt{ReceiveChannel} erstellt und Werte in diesen Kanal sendet. Der Kanal wird automatisch geschlossen, wenn die Coroutine beendet wird oder eine Ausnahme auftritt. Der Builder wird hauptsächlich für Producer-Consumer-Muster verwendet.
 \end{itemize}
@@ -658,7 +666,7 @@ Um eine Coroutine zu kontrollieren stellt ein Job folgende Funktionen zur Verfü
 	\item \textbf{invokeOnCompletion(handler: CompletionHandler):} Fügt einen Handler hinzu, der ausgeführt wird, wenn der Job abgeschlossen ist.
 \end{itemize}
 
-Auch das Deferred-Objekt ist ein Job-Objekt für Coroutinen die ein Ergebnis liefern. Es wird beispielsweise von dem \texttt{async} Coroutinen-Builder zurückgeben. Es hat neben den oben genannten Eigenschaften und Methoden noch folgende weitere Funktionen, um die Funktionalität eines Futures erfüllen zu können:
+Auch das Deferred-Objekt ist ein Job-Objekt für Coroutinen die ein Ergebnis liefern. Dieses wird beispielsweise von dem \texttt{async} Coroutinen-Builder zurückgeben. Neben den oben genannten Eigenschaften und Methoden bietet es folgende weitere Funktionen, um die Funktionalität eines Futures erfüllen zu können:
 
 \begin{itemize}
 	\item \textbf{await():} Eine suspend-Funktion, die auf das Ergebnis der Coroutine wartet und es zurückgibt.
@@ -701,7 +709,16 @@ Beim Starten einer Coroutine mittels Coroutinen-Builder kann ein sogenannter Dis
 \begin{itemize}
 	\item Führt Coroutinen im aktuellen Thread aus, bis sie suspendiert werden.
 	\item Nach der Suspendierung wird die Coroutine in dem Thread fortgesetzt, der die Wiederaufnahme vornimmt.
-	\item Wird selten verwendet und ist hauptsächlich für spezielle Anwendungsfälle (z.B. Testing) gedacht.
+	\item Ist hauptsächlich für spezielle Anwendungsfälle gedacht, zum Beispiel  Testing.
+\end{itemize}
+
+\subsubsection{StandardTestDispatcher}
+
+\begin{itemize}
+	\item Speziell für Tests entwickelt, um deterministisches und kontrolliertes Verhalten von Coroutinen zu gewährleisten.
+	\item Bietet eine manuelle Kontrolle über die Ausführung von Coroutinen, sodass Testfälle vorhersehbar und präzise gestaltet werden können.
+	\item Im Gegensatz zu anderen Dispatchern führt er keine Coroutinen automatisch aus. Stattdessen müssen sie explizit durch den Test gesteuert werden, z.B. durch Methoden wie \texttt{advanceTimeBy} oder \texttt{runCurrent}.
+	\item Ersetzt \texttt{Dispatchers.Unconfined} in Tests, um unerwartetes Verhalten durch spontane Thread-Wechsel zu vermeiden.
 \end{itemize}
 
 Die Vorteile des Dispatcher-Ansatzes sind dabei leicht ersichtlich. Mit Hilfe der Dispatcher findet eine Abstrahierung der Thread-Verwaltung statt und es wird Komplexität reduziert. Ein Anwender muss nur noch einen Dispatcher wählen, der für die zugewiesene Aufgabe optimiert wurde. Außerdem wird der Code besser lesbar, da sich einem Außenstehenden sofort erschließt, für was für eine Sorte von Aufgabe die Coroutine erstellt wurde. Die Herausforderung für den Anwender ist dabei die Wahl des passenden Dispatchers, da diese für bestimmte Anwendungsfälle optimiert wurden. Außerdem sollte von häufigen Kontextwechseln während der Laufzeit einer Coroutine abgesehen werden, da dies jedes Mal zu einem kleinen  Performance-Overhead führt.
@@ -731,7 +748,7 @@ Das Code-Beispiel aus dem vorangegangenen Kapitel für die Zuweisung eines Dispa
 	}
 \end{lstlisting}
 
-Das Pluszeichen (+) wird verwendet, um die einzelnen Elemente des Coroutinen-Contextes zu kombinieren, wobei jeder Aufruf des Pluszeichen-Operators einen neuen Context erstellt, der die Eigenschaften der kombinierten Elemente enthält.
+Das Pluszeichen (+) \cite{Operator2024} wird verwendet, um die einzelnen Elemente des Coroutinen-Contextes zu kombinieren, wobei jeder Aufruf des Pluszeichen-Operators einen neuen Context erstellt, der die Eigenschaften der kombinierten Elemente enthält.
 
 Werden beim Erstellen eines Coroutinen-Contextes nicht alle Elemente festgelegt, wird für die weiteren Elemente auf ihre Standardwerte zurückgegriffen. Der Coroutinen-Name ist standardmäßig \texttt{null}, da er nur aus Debugging-Gründen benötigt wird. Der Standard-Dispatcher ist \texttt{Dispatchers.Default}. Wenn kein Job explizit übergeben wird, wird von dem Builder ein neuer Job erstellt. Dies hat Auswirkungen auf die Coroutinen Hierarchie, auf die im Nachfolgenden genauer eingegangen wird.
 
@@ -777,11 +794,11 @@ Außerdem gibt es bereits vordefinierte Scopes für spezifische Anwendungsfälle
 
 \subsubsection{lifecycleScope}
 
-Der \texttt{lifecycleScope} kommt in der Android-Entwicklung zum Einsatz. Dabei ist der Scope mit dem Lebenszyklus einer Komponente (z.B. Activity oder Fragment) verknüpft. Dies stellt sicher, dass Coroutinen, die im \texttt{lifecycleScope} gestartet werden, automatisch abgebrochen werden, wenn die Komponente zerstört wird. Somit werden keine Ressourcen verschwendet, wenn die Komponente nicht mehr aktiv ist.
+Der \texttt{lifecycleScope} kommt in der Android-Entwicklung zum Einsatz. Der Scope ist mit dem Lebenszyklus einer Komponente (z. B. Activity oder Fragment) verknüpft. Dadurch wird sichergestellt, dass Coroutinen, die im \texttt{lifecycleScope} gestartet wurden, automatisch mit der Zerstörung der Komponente abgebrochen werden. Dies verhindert unnötigen Ressourcenverbrauch, sobald die Komponente nicht mehr aktiv ist
 
 \subsubsection{viewModelScope}
 
-Der \texttt{viewModelScope} wurde speziell für ViewModels in Android entwickelt. Coroutinen, die in \texttt{viewModelScope} gestartet werden, werden automatisch abgebrochen, wenn das ViewModel gelöscht wird. Dies ist nützlich für Aufgaben, die nur ausgeführt werden sollen, solange das ViewModel aktiv ist, wie z.B. das Laden von Daten einer Benutzer\-oberfläche.
+Der \texttt{viewModelScope} wurde speziell für ViewModels in Android entwickelt. Coroutinen, die in \texttt{viewModelScope} gestartet wurden, enden automatisch, wenn das ViewModel gelöscht wird. Dies ist nützlich für Aufgaben, die nur während der aktiven Lebensdauer des ViewModels ausgeführt werden, wie etwa das Laden von Daten für die Benutzeroberfläche.
 
 \subsubsection{GlobalScope}
 
@@ -794,17 +811,17 @@ Es kann der Fall eintreten, dass eine Coroutine vorzeitig abgebrochen werden sol
 Kommt es in einer Coroutine zu einer Cancellation, wird auf das Konzept der cooperative Cancellation\cite{Cancellation2024} zurückgegriffen. Das bedeutet eine Coroutine muss an erwartbaren Punkten abbrechbar sein. Im Detail heißt das, dass eine Coroutine in regelmäßigen Abständen selbständig überprüfen muss ob sie noch aktiv ist oder abgebrochen wurde. Dies geschieht zum Beispiel indem in der Coroutine der Zustand von \texttt{isActive} überprüft wird oder die Methode \texttt{ensureActive()} aufgerufen wird.
 
 \begin{lstlisting}[language=Kotlin]
-	//nicht abbrechbare Coroutine
+	// nicht abbrechbare Coroutine
 	launch {
 		while (true) {
-			//do something
+			// do something
 		}
 	}
 
-	//abbrechbare Coroutine
+	// abbrechbare Coroutine
 	launch {
 		while (this.isActive) {
-			//do something
+			// do something
 		}
 	}
 \end{lstlisting}
@@ -827,11 +844,11 @@ Das Continuation Interface sieht dabei folgendermaßen aus:
 \end{lstlisting}
 
 \begin{itemize}
-	\item \textbf{context:} enthält den Coroutine-Kontext, der ausführenden Coroutine und stellt sicher, dass sie bei Wiederaufnahme im selben Context ausgeführt wird.
-	\item \textbf{resumeWith(result: Result$<$T$>$):} ist eine Funktion, um die Coroutine mit einem Ergebnis fortzusetzen. Der Result-Typ kann entweder ein erfolgreiches Ergebnis oder eine Ausnahme enthalten.
+	\item \textbf{context:} enthält den Coroutine-Kontext der ausführenden Coroutine und stellt sicher, dass sie bei Wiederaufnahme im selben Context ausgeführt wird.
+	\item \textbf{resumeWith(result: Result$<$T$>$):} ist eine Funktion, um die Coroutine mit einem Ergebnis fortzusetzen. Der Result-Typ kann entweder ein erfolgreiches Ergebnis oder einen Fehler enthalten.
 \end{itemize}
 
-Außerdem gibt es die beiden Erweiterungsfunktionen \texttt{resume} und \texttt{resumWithException}, welche anstelle von \texttt{resumeWith} verwendet werden können. Die Funktion \texttt{resume} wird eingesetzt um eine Coroutine mit einem erfolgreichen Ergebnis fortzusetzen, die Funktion \texttt{resumWithException} hingegen, wenn es zu einer Ausnahme kam.
+Außerdem gibt es die beiden Erweiterungsfunktionen \texttt{resume} und \texttt{resumWithException}, welche anstelle von \texttt{resumeWith} verwendet werden können. Die Funktion \texttt{resume} wird eingesetzt um eine Coroutine mit einem erfolgreichen Ergebnis fortzusetzen, die Funktion \texttt{resumWithException} hingegen, wenn es zu einem Fehler gekommen ist.
 
 
 \subsection{countinuation-passing style}
@@ -867,13 +884,15 @@ Konsolenausgabe:
 	Final Result: Result1: Hello - Result2: 3.14
 \end{lstlisting}
 
-In dem Beispiel wird die \texttt{main}-Funktion mit \texttt{runBlocking} in einer Coroutine ausgeführt. Innerhalb dieser Coroutine werden zwei \texttt{suspend}-Funktionen (\texttt{firstOperation} und \texttt{secondOperation}) nacheinander ausgeführt. Dabei werden zwei lokale Variablen (\texttt{localVar1}, \texttt{localVar2}) erstellt, die als Eingaben für die Funktionen dienen. Obwohl \texttt{suspend}-Funktionen in Kotlin asynchrone Operationen ermöglichen, enthalten sie in diesem Beispiel nur synchrone Logik. Zuletzt gibt die \texttt{main}-Funktion das finale Ergebnis auf der Konsole aus. Durch den Einsatz von \texttt{runBlocking} wird sichergestellt, dass die Coroutine vollständig ausgeführt wird, bevor das Programm endet.
+In dem Beispiel wird die \texttt{main}-Funktion mit \texttt{runBlocking} in einer Coroutine ausgeführt. Innerhalb dieser Coroutine werden zwei \texttt{suspend}-Funktionen (\texttt{firstOperation} und \texttt{secondOperation}) nacheinander ausgeführt. Dabei werden zwei lokale Variablen (\texttt{local""Var1}, \texttt{localVar2}) erstellt, die als Eingaben für die Funktionen dienen. Obwohl \texttt{suspend}-Funktionen in Kotlin asynchrone Operationen ermöglichen, enthalten sie in diesem Beispiel nur synchrone Logik. Zuletzt gibt die \texttt{main}-Funktion das finale Ergebnis auf der Konsole aus. Durch den Einsatz von \texttt{runBlocking} wird sichergestellt, dass die Coroutine vollständig ausgeführt wird, bevor das Programm endet.
 
 Das nachfolgende Beispiel zeigt in vereinfachter Form, wie der Code nach der Kompilierung in Bytecode aussehen würde. Zum besseren Verständnis wird er in pseudo-Kotlin dargestellt:
 
 \begin{lstlisting}[language=Kotlin]
 	fun block(cont: Continuation<Any?>) {
-		val sm = cont as? ThisSM ?: object : ThisSM {
+		val sm = if (cont is ThisSM) {
+			cont
+		} else {
 			var label = 0
 			var localVar1: String = ""
 			var result1: String = ""
@@ -933,7 +952,7 @@ Die Funktion \texttt{block} repräsentiert den Code, der innerhalb der Coroutine
 
 \subsubsection{State Machine}
 
-Als erstes wird die State Machine \texttt{sm} erstellt. Sie ist eine Continuation und repräsentiert den aktuellen Zustand der Coroutine\cite{Elizarov2021}. Wenn der Übergabeparameter \texttt{cont} nicht \texttt{null} ist, wird dieser als State Machine verwendet. Ansonsten wird eine neue Continuation erstellt. Beim ersten Aufrufen der Funktion \texttt{block} ist der Übergabeparameter \texttt{cont} noch \texttt{null} und deshalb wird eine neue Continuation erstellt und als State Machine festgelegt. Um den aktuellen Zustand der Coroutine durchgehend abzubilden müssen zuerst einige Variablen definiert werden.  Die Variable \texttt{lable} gibt an in welchem Zustand sich die State Machine befindet. Außerdem werden die lokalen Variablen \texttt{localVar1}, \texttt{result1}, \texttt{localVar2} initialisiert, da sie in der ebenfalls ursprünglichen \texttt{main}-Funktion vorkamen und ihr Inhalt deshalb gespeichert werden muss. Zuletzt wird in der Funktion \texttt{resume} festgelegt was passieren soll, wenn eine suspendierende Operation abgeschlossen ist. In diesem Fall wird das Ergebnis der Operation in \texttt{stateResult} gespeichert und die Funktion \texttt{block} aufgerufen. Der Funktion \texttt{block} wird die Continuation übergeben. An dieser Stelle wird schon deutlich, was sich hinter dem countinuation-passing style verbirgt, nämlich eine Form von rekursiven Aufrufen die nicht allzu weit von Callbacks entfernt sind.
+Als erstes wird die State Machine \texttt{sm} erstellt. Sie ist eine Continuation und repräsentiert den aktuellen Zustand der Coroutine\cite{Elizarov2021}. Wenn der Übergabeparameter \texttt{cont} bereits eine State Machine ist (vom Typ \texttt{ThisSM}), wird er direkt weiterverwendet. Andernfalls wird eine neue Continuation erstellt, die als State Machine fungiert. Beim ersten Aufrufen der Funktion \texttt{block} entspricht der Übergabeparameter \texttt{cont} in der Regel noch keiner State Machine, weshalb eine neue Continuation erzeugt und initialisiert wird. Um den aktuellen Zustand der Coroutine durchgehend abzubilden müssen zuerst einige Variablen definiert werden.  Die Variable \texttt{lable} gibt an in welchem Zustand sich die State Machine befindet. Außerdem werden die lokalen Variablen \texttt{localVar1}, \texttt{result1}, \texttt{localVar2} initialisiert, da sie in der ebenfalls ursprünglichen \texttt{main}-Funktion vorkamen und ihr Inhalt deshalb gespeichert werden muss. Zuletzt wird in der Funktion \texttt{resume} festgelegt was passieren soll, wenn eine suspendierende Operation abgeschlossen ist. In diesem Fall wird das Ergebnis der Operation in \texttt{stateResult} gespeichert und die Funktion \texttt{block} aufgerufen. Der Funktion \texttt{block} wird die Continuation übergeben. An dieser Stelle wird schon deutlich, was sich hinter dem countinuation-passing style verbirgt, nämlich eine Form von rekursiven Aufrufen die nicht allzu weit von Callbacks entfernt sind.
 
 \subsubsection{when-Statement}
 
@@ -979,8 +998,8 @@ Goroutinen wurden von ihrem Designer Rob Pike als eine ''independently executing
 	package main
 	
 	import (
-	"fmt"
-	"time"
+		"fmt"
+		"time"
 	)
 	
 	func hello(name string) {
@@ -1036,11 +1055,9 @@ Um in Go mit Goroutinen zu kommunizieren werden Channels\cite{donovan2015} verwe
 \end{lstlisting}
 % TODO:Ausgabe
 
-In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben, welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt fünf Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes Mal, wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht zehnmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
+In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben, welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt fünf Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes Mal, wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht fünfmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
 
 Alternativ könnte die Nachricht beziehungsweise der Status des Channels auch folgendermaßen abgefragt werden: \texttt{v, ok := <-c}. Der Ausdruck liest einen Wert aus dem Channel \texttt{c} und weist ihn der Variablen \texttt{v} zu, während die boolesche Variable \texttt{ok} angibt, ob der Empfang erfolgreich war (true) oder der Channel geschlossen ist (false).
-
-In dem gezeigten Code-Beispiel wurden Daten über einen Channel von einer Goroutine empfangenen. Selbstverständlich ist es auch möglich auf gleiche Weise Daten an eine Goroutine zu senden.
 
 \subsection{Select}
 
@@ -1077,7 +1094,7 @@ Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese
 
 \subsubsection{Goroutinen-Stack}
 
- Der Goroutinen-Stack ist ein separater Speicherbereich, der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung nur zwei Kilobyte Speicher. Falls der Speicher nicht ausreicht, ruft die Goroutine den Befehl \texttt{morestack} auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert, der die doppelte Größe des alten Stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug Speicher reserviert wurde.
+ Der Goroutinen-Stack ist ein separater Speicherbereich, der der Goroutine zugewiesen wird. Er dient zur Speicherung lokaler Variablen, Funktionsaufrufinformationen und Rücksprungadressen. Der belegte Speicher einer Goroutine kann je nach Bedarf dynamisch wachsen und schrumpfen. Goroutinen verbrauchen zum Zeitpunkt ihrer Erzeugung zwei Kilobyte Speicher. Falls der Speicher nicht ausreicht, ruft die Goroutine den Befehl \texttt{morestack} auf. Dies hat zur Folge, dass die Runtime einen neuen Bereich auf dem Heap reserviert, der die doppelte Größe des alten Stacks hat. Dann wird der Stack in den neuen Bereich kopiert und der  alte Speicherbereich auf dem Heap freigegeben. Sollte der Speicher jetzt ausreichen wird die Goroutine ausgeführt, sonst wiederholt sich der Ablauf bis genug Speicher reserviert wurde.
  
 \subsubsection{BS-Thread}
  Der Parameter \texttt{m} verweist auf den aktuellen Betriebssystem Thread auf dem die Goroutine ausgeführt wird. Dies wird genauer im Abschnitt Scheduler (\ref{subsec:scheduler}) erläutert.
@@ -1239,8 +1256,8 @@ Das Generator-Muster ermöglicht das Erstellen von Funktionen, die Sequenzen von
 	}
 
 	func main() {
-		philipp := helloGenerator("Philipp")
-		michael := helloGenerator("Michael")
+		philipp := helloCounter("Philipp")
+		michael := helloCounter("Michael")
 		for i := 0; i < 5; i++{
 			fmt.Print(<-philipp)
 			fmt.Print(<-michael)
@@ -1255,7 +1272,7 @@ Die auffälligste Veränderung ist, dass die Funktion \texttt{helloCounter} in d
 Die Aufgabe einer Fan-In-Funktion ist es, Ausgaben mehrerer Goroutinen zu sammeln und sie in einem einzigen Datenstrom zusammenzuführen. Durch die Zusammenführung mehrerer Datenströme in einem einzelnen Kanal wird die Verarbeitung der Ergebnisse effizienter gestaltet. In der Praxis wird die Fan-In-Funktion oft in Szenarien eingesetzt, wo Daten parallel verarbeitet werden müssen und die Ergebnisse anschließend zusammengeführt werden sollen, wie beispielsweise bei verteilten Berechnungen oder bei der Verarbeitung großer Datenmengen. Das nachfolgende Beispiel stellt eine Modifizierung des Codes aus dem Generator-Muster Abschnitt (\ref{subsubsec:generator}) dar.
 
 \begin{lstlisting}[language=Go,extendedchars=true]
-	func fanIn(ch1, ch2 <-chan string) <-chan string {
+	func fanIn(ch1 <-chan string, ch2 <-chan string) <-chan string {
 		new_ch := make(chan string)
 		go func() {
 			for {
@@ -1303,8 +1320,8 @@ Das Closing Channels-Muster ist ein wichtiges Konzept in Go, um Goroutinen saube
 package main
 
 import (
-"fmt"
-"time"
+	"fmt"
+	"time"
 )
 
 func worker(id int, done <-chan struct{}, c <-chan int) {
@@ -1348,7 +1365,7 @@ In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \te
 
 \subsection{Zusammenfassung}
 
-Bei Goroutinen handelt es sich um leichtgewichtige Threads, die nebenläufige Ausführungen ermöglichen. Sie lassen sich durch das Schlüsselwort \texttt{go} starten und laufen unabhängig von der Hauptfunktion, wobei sie einen gemeinsamen Adressraum teilen. Die Kommunikation und Synchronisation zwischen Goroutinen erfolgt über Channels, die den sicheren Datenaustausch ermöglichen. Die Go-Laufzeitumgebung enthält einen Scheduler, der Goroutinen effizient verwaltet. Um eine ausgewogene Auslastung der Prozessoren zu gewährleisten, nutzt der Scheduler verschiedene Warteschlangen(LRQ und GRQ) und einen Work-Stealing-Algorithmus. Verschiedene Programmiermuster, wie das Fan-In-Muster und das gezielte Schließen von Channels, unterstützen eine strukturierte Handhabung der Nebenläufigkeit und optimieren die Gesamtleistung der Programme.
+Bei Goroutinen handelt es sich um leichtgewichtige Threads, die nebenläufige Ausführungen ermöglichen. Sie lassen sich durch das Schlüsselwort \texttt{go} starten und laufen unabhängig von der Hauptfunktion, wobei sie einen gemeinsamen Adressraum teilen. Die Kommunikation und Synchronisation zwischen Goroutinen erfolgt über Channels, die den Datenaustausch ermöglichen. Die Go-Laufzeitumgebung enthält einen Scheduler, der Goroutinen effizient verwaltet. Um eine ausgewogene Auslastung der Prozessoren zu gewährleisten, nutzt der Scheduler verschiedene Warteschlangen(LRQ und GRQ) und einen Work-Stealing-Algorithmus. Verschiedene Programmiermuster, wie das Fan-In-Muster und das gezielte Schließen von Channels, unterstützen eine strukturierte Handhabung der Nebenläufigkeit und optimieren die Gesamtleistung der Programme.
 
 \section{Vergleich der Konzepte}
 
@@ -1374,16 +1391,6 @@ Die Stackgröße variiert erheblich, von großen Stacks bei Platform Threads (of
 
 Die Synchronisationsmechanismen reichen von klassischen Locks, Monitoren und Futures bei Platform und Virtual Threads bis zu spezialisierten Konzepten wie suspend und Scope bei Kotlin Coroutinen oder Channels bei Go Goroutinen. 
 
-\subsubsection{Anwenderfreundlichkeit}
-
-Die Bewertung der Anwenderfreundlichkeit ist subjektiv und kann je nach Nutzer unterschiedlich ausfallen. 
-
-Platform und Virtual Threads werden als einfach  eingestuft. Sie nutzen beide das bekannte Thread-Modell von Java und haben haben mit dem ExecutorService eine einheitliche API die nur wenig konfiguriert werden muss. 
-
-Kotlin Coroutinen werden was die Anwenderfreundlichkeit betrifft als mittel eingeschätzt, da sie viele neue Begriffe einführen die vorher nicht geläufig waren. Außerdem ist der Konfigurationsaufwand größer und bietet mehr Möglichkeiten für Fehler, zum Beispiel mit der richtigen Wahl des Builders oder Dispatchers. 
-
-Auch Go Goroutinen werden als mittel bewertet. Zwar werden für die Nutzung nur wenige Schlüsselwörter benötige. Für einen effizienten Einsatz von Goroutinen sollte ein Entwickler aber auch die in dieser Arbeit vorgestellten Programmiermuster kennen, was sie deutlich weniger einsteigerfreundlich macht.
-
 \begin{table}[h]
 	\centering
 	\renewcommand{\arraystretch}{1.2}
@@ -1404,10 +1411,8 @@ Auch Go Goroutinen werden als mittel bewertet. Zwar werden für die Nutzung nur 
 		Maximale Anzahl & Begrenzt & Hoch & Sehr hoch & Sehr hoch \\
 		\rowcolor{gray!10}
 		\makecell[l]{Synchronisations-\\mechanismen} & Locks, Monitore, Future & Locks, Monitore, Future & suspend, Scope & Channels \\
-		Anwenderfreundlichkeit & Einfach & Einfach & Mittel & Mittel \\
-		\bottomrule
 	\end{tabularx}
-	\caption{\textbf{Vergleich von Thread-Abstraktionen in verschiedenen Programmiersprachen}}
+	\caption{Vergleich von Thread-Abstraktionen in verschiedenen Programmiersprachen}
 	\label{tab:thread-comparison}
 \end{table}
 
@@ -1439,14 +1444,18 @@ Alle Tests wurden in einer kontrollierten Umgebung durchgeführt, wobei darauf g
 
 \begin{itemize}
 	\item \textbf{Betriebssystem:} Microsoft Windows 11 Home (Version 26100.2161, 64-Bit)
-	\item \textbf{Java Development Kit (JDK):} xxx
-	\item \textbf{Kotlin:} xxx
-	\item \textbf{Go:} xxx
+	\item \textbf{Java Development Kit (JDK):} openjdk 21.0.2
+	\item \textbf{Kotlin JVM:} 1.9.22
+	\item \textbf{Go:} 1.23.3
 \end{itemize}
 
 Docker
 
 Python
+
+postgres
+
+postrest
 
 %TODO:aktuelle Versionen
 
@@ -1464,7 +1473,7 @@ Die CPU-Auslastung gibt direkten Aufschluss darüber, wie effizient die verfügb
 
 \subsubsection{Arbeitsspeicherverbrauch}
 
-Ein effizienter Umgang mit dem Arbeitsspeicher ist entscheidend für die Gesamtleistung eines multithreaded Programms. Jeder Thread benötigt Speicher für seinen Stack und andere thread-spezifische Daten. Ein hoher Speicherverbrauch kann zu einer Verlangsamung des Systems führen und die Anzahl der möglichen gleichzeitigen Threads begrenzen. Der Speicherverbrauch beeinflusst direkt die Skalierbarkeit eines multithreaded Programms. Ein geringer Speicherverbrauch pro Thread ermöglicht mehr gleichzeitige Threads, während ein hoher Speicherbedarf die maximale Anzahl der Threads und damit die Parallelisierung limitiert. Schließlich schont ein effizienter Speicherverbrauch die Systemressourcen, indem mehr verfügbarer Speicher für andere Prozesse und den Betriebssystem-Cache bleibt und die Belastung des Speichermanagements des Betriebssystems geringer ausfällt.
+Ein effizienter Umgang mit dem Arbeitsspeicher ist entscheidend für die Gesamtleistung eines multithreaded Programms. Jeder Thread benötigt Speicher für seinen Stack und andere thread-spezifische Daten. Ein hoher Speicherverbrauch kann zu einer Verlangsamung des Systems führen und die Anzahl der möglichen gleichzeitigen Threads begrenzen. Der Speicherverbrauch beeinflusst direkt die Skalierbarkeit eines multithreaded Programms. Ein geringer Speicherverbrauch pro Thread ermöglicht mehr gleichzeitige Threads, während ein hoher Speicherbedarf die maximale Anzahl der Threads und damit die Parallelisierung limitiert.  Außerdem führt ein steigender Speicherverbrauch auch zu steigenden Betriebskosten. Schließlich schont ein effizienter Speicherverbrauch die Systemressourcen, indem mehr verfügbarer Speicher für andere Prozesse und den Betriebssystem-Cache bleibt und die Belastung des Speichermanagements des Betriebssystems geringer ausfällt.
 
 \subsubsection{Thread-Anzahl}
 
@@ -1472,17 +1481,37 @@ Die Anzahl der Betriebssystemthreads ist ein bedeutender Performancefaktor bei d
 
 \section{Werkzeuge zur Datenerhebung}
 
-Für die Durchführung der Benchmarks und die Erhebung der relevanten Performancedaten wurden zwei speziell für diese Masterarbeit entwickelten Python-Skripte verwendet. Diese Skripte ermöglichen eine präzise und konsistente Messung der Leistungsparameter über alle getesteten Thread-Abstraktionen hinweg.
+Für die Durchführung der Benchmarks und die Erhebung der relevanten Performancedaten wurden zwei speziell für diese Masterarbeit neu entwickelte Python-Skripte verwendet. Diese Skripte ermöglichen eine präzise und konsistente Messung der Leistungsparameter über alle getesteten Thread-Abstraktionen hinweg. Ein drittes Skript kann die so erhobenen Daten aggregieren und aus ihnen Graphen generieren
 
-\subsubsection{monitoring}
-%TODO: Richtigen Namen einsetzen
+\subsubsection{Überwachung: Mergesort}
 
-TODO:...
+Um den Mergesort Benchmark durchzuführen und dabei die Performancedaten der unterschiedlichen Implementierungen zu sammeln, wurde das Python-Script \texttt{monitoring""Mergesort.py} für diese Masterarbeit entwickelt.
 
-\subsubsection{plotting}
-%TODO: Richtigen Namen einsetzen
+Es startet die einzelnen Implementierungen mit vorher definierten Parametern, misst die Ausführungszeit sowie die Nutzung von CPU, Arbeitsspeicher und Threads während der Ausführung und speichert diese Daten in CSV-Dateien zur späteren Analyse. Das Skript ermöglicht es, verschiedene Algorithmen zu vergleichen, indem es für jede Implementierung die Leistung unter unterschiedlichen Bedingungen, wie zum Beispiel verschiedenen Maximal-Tiefen des MergeSort-Algorithmus, protokolliert. Eine genauere Aufschlüsselung der möglichen Parameter in Abschnitt \ref{subsec:mergsortpara}.
 
-TODO:...
+Um die Performancefaktoren zu erfassen, nutzt das Skript mehrere Python-Bibliotheken und Funktionen. Ein zentraler Bestandteil ist die Bibliothek \texttt{psutil}, die die Möglichkeit bietet, einen Prozess anhand seiner Prozess-ID zu überwachen. Der Arbeitsspeicherverbrauch wird mit Hilfe der Funktion \texttt{.memory\_info().rss} gemessen. Für die Messung der Betriebssystem-Threads wird die Funktion \texttt{.num\_threads()} verwendet. Beide Funktionen geben den aktuellen Wert zum Zeitpunkt des Aufrufs zurück. Deshalb wurde die Abtastrate auf 0,2 Sekunden gesetzt. In der Praxis hat sich gezeigt, dass bei dieser Rate annähernd alle Wertveränderungen erfasst werden.
+
+Zur Messung der CPU-Auslastung wird die Funktion \texttt{psutil.cpu\_count()} genutzt. Im Gegensatz zu den zuvor vorgestellten Funktionen handelt es sich hierbei um eine aggregierende Funktion, die die durchschnittliche CPU-Nutzung seit dem letzten Aufruf zurückgibt. Deshalb wurde der Messabstand zwischen den Aufrufen mit 2 Sekunden größer gewählt.
+
+Um die Ausführungszeit zu messen, wird die \texttt{time}-Bibliothek von Python verwendet. Es wird die Gesamtzeit über alle Sortierungsdurchläufe hinweg gemessen. Dabei beginnt die Messung erst, nachdem die zu sortierende Liste importiert wurde und alle Aufwärmdurchläufe abgeschlossen sind, und endet, nachdem alle Sortierdurchläufe beendet wurden. Auch die anderen Messungen der anderen Parameter finden nur in diesem Zeitfenster statt. 
+
+Abschließend werden die so erhobenen Rohdaten in entsprechenden CSV-Dateien gespeichert.
+
+\subsubsection{Überwachung: Bank}
+
+Für die Überwachung des Bank Benchmarks wurde ein weiteres Python-Skript namens \texttt{monitoring""Bank.py} entwickelt.
+
+Zu beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (TODO: Verweis ) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz der von allen Implementierungen genutzt wird. 
+
+Da die unterschiedlichen Implementierungen des Benchmarks in Docker Containern laufen (TODO: siehe Abschnitt xxx für den genauen Aufbau), wird im nächsten Schritt die Datei \texttt{docker-""compose\_""modify"".yaml} erzeugt. In dieser werden die für den Durchlauf wichtige Parameter gesetzt, wie zum Beispiel die Anzahl der Accounts und Transaktionen oder die Wahl der Implementierung. Eine vollständige Auflistung der Parameter befindet sich in Abschnitt xxx TODO:Verweis.
+
+Dann wird der eigentliche Benchmark mit Hilfe der \texttt{docker-""compose\_""modify"".yaml} gestartet. Die Überwachung der Performancefaktoren, kann in diesem Benchmark jedoch nicht mit der \texttt{psutil} Bibliothek durchgeführt werden, da dafür die Prozess ID nötig wäre welche aber nicht auslesbar ist, da die Implementierungen in einem Docker Container laufen. Deshalb werden die Performancefaktoren: CPU-Auslastung, Arbeitsspeicherverbrauch und Thread-Anzahl in diesem Skript mit \texttt{docker stats} erhobenen. Die Abtastrate von \texttt{docker stats} liegt bei einer Sekunde. Da aber pro Messung auch einmal \texttt{docker inspect} aufgerufen wird ergibt sich eine faktische Abtastrate von zwei Sekunden. Dies hat sich als ausreichen erwiesen, da die Schwankungen zwischen den Messungen sehr gering sind und die Messungen lange laufen. 
+
+Die Ausführungszeit kann erneut mit der \texttt{time}-Bibliothek gemessen werden. Für alle Performancefaktoren gilt erneut, die Messungen beginnen erst wenn alle nötigen Daten importiert wurden und enden mit der Beendigung des Programms. Abschließend werden alle gesammelten Daten in CSV-Dateien gespeichert. 
+
+\subsubsection{Datenaufbereitung}
+
+Zur Aufbereitung und Visualisierung der erhobenen Daten aus den Benchmarks kommt ein drittes Python-Skript zum Einsatz, das mit Hilfe der Bibliotheken \texttt{numpy}, \texttt{pandas}, und \texttt{matplotlib} die gesammelten Performance-Daten verarbeitet und in anschauliche Diagramme umwandelt. Dieses Skript liest die Messdaten aus den CSV-Dateien, berechnet für jeden Algorithmus die maximalen und durchschnittlichen Werte für verschiedene Performance-Kennzahlen und erstellt daraufhin eine Reihe von Balkendiagrammen, die die Leistung der verschiedenen Implementierungen veranschaulichen. Zusätzlich werden die so für die Diagramme aggregierten Daten in Tabellenform in CSV-Dateien gespeichert.
 
 \chapter{Benchmarks}
 
@@ -1519,700 +1548,383 @@ Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Z
 
 Die Speicherkomplexität von Mergesort beträgt $\Theta(n)$, da zusätzlicher Speicherplatz für die temporären Teillisten benötigt wird. Dies kann bei sehr großen Datenmengen zu einem Nachteil werden.
 
-\subsubsection{Parallelisierbarkeit}
-
-Ein bedeutender Vorteil von Mergesort ist seine hervorragende Eignung für die Parallelisierung. Sowohl die Teilungs- als auch die Zusammenführungsphase können parallel ausgeführt werden, was den Algorithmus besonders effizient für Mehrprozessorsysteme macht.
-
-In der Teilungsphase können die rekursiven Aufrufe zur Sortierung der Teillisten unabhängig voneinander auf verschiedenen Threads ausgeführt werden.
-
-In der Zusammenführungsphase kann das Verschmelzen der sortierten Teillisten ebenfalls parallel erfolgen, was die Gesamtleistung weiter verbessert.
-Diese Eigenschaften machen Mergesort zu einem idealen Kandidaten für die Implementierung mit verschiedenen Thread-Abstraktionen und Nebenläufigkeitskonzepten, was ihn zu einem wertvollen Benchmark für den Vergleich dieser Technologien macht.
 
 \subsection{Implementierung: Mergesort}
 
-\subsubsection{Basisimplementierung: Mergesort}
+Im diesem Abschnitt wird die parallelisierte Implementierung von Mergesort vorgestellt. Als erstes wird der grundlegende Ansatz anhand von Pseudocode vorgestellt, dann wird auf die technischen Besonderheiten der einzelnen Implementierungen eingegangen.
 
-\subsubsection{Virtual Threads: Mergesort}
+\subsubsection{Basisimplementierung: Mergesort}
+\label{subsubsec:implms}
+
+Der grundlegende Ansatz zur Parallelisierung von Mergesort ist für alle vier Implementierungen gleich und basiert auf der Version aus \emph{Introduction to Algorithms} von Cormen et al. \cite[S. 775]{Cormen2022}, jedoch wurde er leicht modifiziert. Die Funktion wurde um zwei weitere Übergabeparameter erweiter: \texttt{currentDepth} und \texttt{maxDepth}. Mit diesen lässt sich mit Hilfe einer if-else-Bedingung regulieren bis zu welcher Tiefe des durch die Rekursion enstehenden Baums parallelisiert werden soll. Die Rekursion wird auch danach weiter fortgesetzt, jedoch sequentiell.
+
+\begin{algorithm}[H]
+	\caption{P-MERGE-SORT(array, tempArray, left, right, currentDepth, maxDepth)}
+	\begin{algorithmic}[1]
+		\IF{$left \geq right$}
+		\RETURN
+		\ENDIF
+		\STATE $mid \gets \lfloor (left + right) / 2 \rfloor$ \hfill // Mitte des Bereichs
+		\IF{$currentDepth < maxDepth$} 
+		\STATE \textbf{spawn} P-MERGE-SORT(array, tempArray, left, mid, currentDepth + 1, maxDepth)
+		\STATE \textbf{spawn} P-MERGE-SORT(array, tempArray, mid + 1, right, currentDepth + 1, maxDepth)
+		\STATE \textbf{sync} \hfill // Warte auf parallele Aufgaben
+		\ELSE
+		\STATE P-MERGE-SORT(array, tempArray, left, mid, currentDepth + 1, maxDepth)
+		\STATE P-MERGE-SORT(array, tempArray, mid + 1, right, currentDepth + 1, maxDepth)
+		\ENDIF
+		\STATE MERGE(array, tempArray, left, mid, right) \hfill // Merge der Teilbereiche
+	\end{algorithmic}
+\end{algorithm}
+
+Des weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion parallelisieren lässt \cite[S. 776-782]{Cormen2022}. In der Praxis hat sich jedoch gezeigt, dass der Vorschlag sogar zu einer Verschlechterung der Laufzeit führt, deshalb wurde stattdessen ein sequentieller Ansatz genutzt \cite[S. 36]{Cormen2022}. Das schlechtere Abschneiden der parallelen merge-Implementierung hat verschiedene Gründe. So bietet eine Parallelisierung von merge ab einer bestimmten Baumtiefe keinen Vorteil mehr, da die megrgesort-Funktion bereits parallelisiert wurde und  die CPU-Kerne ab einer bestimmten Baumtiefe bereits vollständig ausgelastet sind, sodass eine zusätzliche Parallelisierung von merge keinen weiteren Vorteil bringt. Außerdem entsteht Overhead für die Verwaltung der parallelen Aufgaben, sowie die wiederholte Suche nach dem Pivot-Element.
+
+\begin{algorithm}[H]
+	\caption{MERGE(array, tempArray, left, mid, right)}
+	\begin{algorithmic}[1]
+		\STATE Kopiere $array[left..right]$ in $tempArray[left..right]$
+		\STATE $i \gets left, j \gets mid + 1, k \gets left$
+		\WHILE{$i \leq mid$ \AND $j \leq right$}
+		\IF{$tempArray[i] \leq tempArray[j]$}
+		\STATE $array[k] \gets tempArray[i]$
+		\STATE $i \gets i + 1$
+		\ELSE
+		\STATE $array[k] \gets tempArray[j]$
+		\STATE $j \gets j + 1$
+		\ENDIF
+		\STATE $k \gets k + 1$
+		\ENDWHILE
+		\STATE Kopiere verbleibende Elemente aus $tempArray[i..mid]$ nach $array[k..]$
+	\end{algorithmic}
+\end{algorithm}
+
+Durch die Verwendung der sequentiellen merge-Implementierung kommt es jedoch zu einer Besonderheit bei der durchschnittlichen CPU-Auslastung. Diese liegt bei ungefähr 82 \%. Der Grund dafür ist, dass auf höheren Baumebenen noch nicht genug Knoten vorhanden sind, um die CPU vollständig auszulasten. Auf der ersten Ebene gibt es nur einen Knoten, weshalb nur ein Kern genutzt werden kann. Auf der zweiten Ebene existieren zwei Knoten, was es ermöglicht, zwei Kerne zu verwenden, und auf der dritten Ebene gibt es vier Knoten, was vier Kerne beansprucht, und so weiter. Diese zunehmende Anzahl an Knoten führt dazu, dass mit jeder weiteren Ebene mehr CPU-Kerne aktiviert werden bis irgendwann alle Kerne des Prozessors genutzt werden. Aufgrund dieser Struktur wird die CPU-Auslastung auf den höheren Ebenen des Baums nicht optimal maximiert, was zu einer durchschnittlichen Auslastung von etwa 82 \% führt. Hinzukommt, dass vor jedem Sortierdurchlauf erst eine Kopie der zu sortierenden Liste erstellt wird, damit die Ausgangsliste für weite Sortierdurchläufe bestehen bleibt. 
+
+TODO: Messergebnisse 82Prozent einfügen 
+
+Um sicherzustellen, dass der Performancevergleich zwischen den verschiedenen Mergesort-Implementierungen fair und konsistent ist, wird in allen Implementierungen die gleiche Liste verwendet. Diese Liste wird als Textdatei  gespeichert und in jede der Implementierungen importiert. Dies gewährleistet, dass jede Implementierung mit denselben Eingabedaten arbeitet und somit vergleichbare Ergebnisse erzielt werden.
 
 \subsubsection{Platform Threads: Mergesort}
 
+Die Implementierung für Java Platform Threads ist Teil der Anwendung \texttt{mergesort""Java"".jar}, und die relevante Klasse in dieser Implementierung ist \texttt{Mergesort""Platform""Threads"".java}.
+
+Zur Verwaltung der Threads wird in dieser Implementierung ein ExecutorService verwendet, der über die Methode \texttt{.newCachedThreadPool()} ein Thread-Pool erstellt. Dieser Thread-Pool kann bei Bedarf beliebig viele Threads erstellen und verwalten, was eine dynamische und effiziente Handhabung der parallelen Aufgaben ermöglicht. Im Vergleich zu anderen Thread-Pool-Typen kann newCachedThreadPool() Threads wiederverwenden, die nicht mehr benötigt werden, wodurch der Overhead durch das Erstellen und Zerstören von Threads minimiert wird.
+
+Die eigentliche Parallelisierung des Mergesort-Algorithmus erfolgt durch die Methode \texttt{.submit()}, mit der Aufgaben an den Executor übergeben werden. Diese Methode sorgt dafür, dass Teilaufgaben, wie das Sortieren von Subarrays, parallel ausgeführt werden. Jede dieser Aufgaben wird als \texttt{Future<?>} zurückgegeben, was es ermöglicht, die Ergebnisse der parallelen Aufgaben später abzurufen und auf deren Abschluss zu warten.
+
+Um sicherzustellen, dass alle parallelen Sortieroperationen abgeschlossen sind, bevor mit dem Mergen der Teillisten fortgefahren wird, wird die Methode \texttt{.get()} auf den \texttt{Future<?>}-Objekten aufgerufen. Diese Methode blockiert den aktuellen Thread, bis die entsprechenden Aufgaben abgeschlossen sind. Dadurch wird gewährleistet, dass die Teillisten vor der eigentlichen Merging-Phase vollständig sortiert sind und keine parallelen Operationen überschneidend oder unvollständig ausgeführt werden.
+
+\subsubsection{Virtual Threads: Mergesort}
+
+Die Implementierung von Virtual Threads für den Mergesort-Algorithmus erfolgt ebenfalls in \texttt{mergesort""Java"".jar}, wobei die Klasse \texttt{Mergesort""Vir""tu""al""Threads"".java} verantwortlich ist. Ähnlich wie bei der Platform Threads-Implementierung wird auch hier ein ExecutorService verwendet, jedoch mit der Methode \texttt{new""Virtual""Thread""Per""Task""Executor()}. Diese Methode erstellt für jede Aufgabe einen neuen Virtual Thread.
+
+Die restliche Implementierung kann im Vergleich zu Platform Threads unverändert bleiben. Aufgaben werden mit der Methode \texttt{.submit()} an den Executor übergeben, und jede Aufgaben wird durch ein \texttt{Future<?>} repräsentiert. Die Synchronisation erfolgt durch das Aufrufen von \texttt{.get()} auf dem \texttt{Future<?>}-Objekt.
+
+Die Anpassung von der Platform-Thread-Implementierung zu Virtual Threads ist sehr einfach, da lediglich der ExecutorService geändert werden muss. Statt \texttt{new""Cached""Thread""Pool()} wird \texttt{new""Virtual""Thread""Per""Task""Executor()} verwendet.
+
 \subsubsection{Coroutinen: Mergesort}
+
+Die Implementierung des Mergesort-Algorithmus mit Kotlin-Coroutinen ist Teil der Anwendung \texttt{mergesortKotlin.jar}, wobei die Klasse \texttt{MergeSortCoroutines.kt} die zentrale Rolle spielt.
+
+Der Einstiegspunkt der Implementierung ist die \texttt{main}-Funktion, die mit \texttt{runBlocking} ausgeführt wird. Dies erlaubt es, asynchrone Funktionen innerhalb einer synchronen Umgebung zu verwenden. In diesem Fall die mergesort-Implementierung, welche als suspend-Funkton umgesetzt wurde.
+
+Die Parallelisierung wird durch den Coroutinen-Builder \texttt{async} erreicht, der asynchrone Aufgaben erstellt, die unabhängig voneinander ausgeführt werden. Die Ergebnisse dieser Aufgaben werden als \texttt{Deferred}-Objekte zurückgegeben, die eine ähnliche Funktion wie \texttt{Future<?>} in Java haben.
+
+Die Synchronisation der parallelen Aufgaben erfolgt durch Aufrufen von \texttt{.await()} auf den \texttt{Deferred}-Objekten. Dies blockiert den aktuellen Coroutine-Context, bis die jeweiligen Aufgaben abgeschlossen sind, und ermöglicht so eine saubere Synchronisation. Da kein spezifischer Dispatcher angegeben wird, verwendet die Implementierung den Standard-Dispatcher (Default) von Kotlin.
+
+Eine Besonderheit ist die Nutzung von \texttt{GlobalScope} für die Erstellung der Coroutinen. Dies führt zu einer Halbierung der Laufzeit im Vergleich zu der Verwendung eines selbsterstellten Scopes. Dieser Geschwindigkeitsvorteil entsteht durch die geringe Scheduling-Kosten für Coroutinen, die im \texttt{GlobalScope} ausgeführt werden.
 
 \subsubsection{Goroutinen: Mergesort}
 
-global scope doppelt so schnell
+Die Implementierung des Mergesort-Algorithmus mit Go-Goroutinen ist Teil der Anwendung \texttt{mergesortGO.exe} bzw. \texttt{mergesortGO}, wobei die Datei \texttt{mergesort.go} den Code enthält.
+
+Die Parallelisierung wird mit dem Schlüsselwort \texttt{go} erreicht, das eine Goroutine startet. Der parallele Aufruf des Mergesort-Algorithmus erfolgt durch \texttt{go merge""Sort""Go""rou""ti""nes(...)}. 
+
+Für die Synchronisation der Goroutinen wird das ''Closing Channels''-Muster verwendet. Dazu wird ein \texttt{done}-Channel für beide Rekursionsaufrufe erstellt und mit \texttt{<-doneLeft} und \texttt{<-doneRight} auf ihren Abschluss gewartet. Das Schließen der Channels innerhalb der Goroutinen erfolgt mit dem Aufruf \texttt{defer close(done)}.
+
+\subsection{Messparameter: Mergesort}
+\label{subsec:mergsortpara}
+
+Für die einzelnen Messungen können Parameter individuell angepasst werden, um unterschiedliche Szenarien zu testen und die Leistung der verschiedenen Implementierungen des MergeSort-Algorithmus unter verschiedenen Bedingungen zu 
+vergleichen.
+
+\subsubsection{Sortierdurchläufe}
+
+Der Parameter Sortierdurchläufe gibt die Anzahl der Sortierdurchläufe an, die der Algorithmus ausführen soll. Dieser Wert beeinflusst die Genauigkeit und Verlässlichkeit der Messungen. Eine höhere Anzahl an Durchläufen ermöglicht 
+eine genauere Einschätzung der Performance, da zufällige Schwankungen bei jeder einzelnen Ausführung geglättet werden. Gleichzeitig erhöht sich aber die Gesamtlaufzeit des Tests.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:}    & \texttt{RUNS} \\
+	\textbf{Beschreibung:} & Gibt die Anzahl der vollständigen Sortierdurchläufe an, die durchgeführt werden. \\
+	\textbf{Typischer Wert:} & z.B. 100 (100 Sortierdurchläufe)
+\end{tabularx}
+
+\subsubsection{Listenlänge}
+
+Die Listenlänge ist ein zentraler Parameter, der die Größe der zu sortierenden Liste festlegt. Die Listenlänge beeinflusst maßgeblich die Laufzeit des Algorithmus, da ein größerer Datensatz zu einem höheren Rechenaufwand führt. Dieser Parameter ist besonders wichtig, um die Skalierbarkeit des Algorithmus zu testen und zu sehen, wie gut er mit größeren Datenmengen umgehen kann.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:}    & \texttt{LIST\_LENGTH} \\
+	\textbf{Beschreibung:} & Legt die Länge der Liste fest, die für das Sortieren verwendet wird. Je größer die Liste, desto mehr Rechenleistung wird benötigt. \\
+	\textbf{Typischer Wert:} & z.B. 10.000.000
+\end{tabularx}
+
+\subsubsection{Maximale Baumebene}
+
+Die maximale Baumebene gibt an, bis zu welcher Tiefe des rekursiven Sortierbaums des 
+Mergesort-Algorithmus parallelisiert wird. Es handelt sich hierbei also um die Schwelle, bis zu der die Teilsortierungen parallel ausgeführt wird. Dieser Parameter ermöglicht es, die Parallelisierung gezielt zu steuern und zu testen, wie die Performance in Abhängigkeit von der Tiefe der Parallelisierung variiert. Wichtig zu beachten ist, dass die Rekursion des Mergesort-Algorithmus trotz dieses Parameters weitergeht, auch über die angegebene maximale Baumebene hinaus. Der Algorithmus wird weiterhin die Liste rekursiv aufteilen und die Teillisten sortieren, aber die Parallelisierung erfolgt nur bis zur angegebenen maximalen Baumebene.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:}    & \texttt{MAX\_DEPTH} \\
+	\textbf{Beschreibung:} & Bestimmt die Ebene des rekursiven Sortierbaums, 
+	bis zu der parallelisiert werden soll. \\
+	\textbf{Typischer Wert:} & z.B. Werte von 0 bis 22 (je nachdem, wie tief der Algorithmus parallelisiert werden soll)
+\end{tabularx}
+
+\subsubsection{Parallelisierungs-Implementierungen}
+
+Die Parallelisierungs-Implementierungen stellen den zentralen Aspekt der Performance-Vergleiche dar. Hier werden verschiedene Techniken zur Parallelisierung des MergeSort-Algorithmus getestet, um zu sehen, wie gut die Implementierungen mit der parallelen Ausführung umgehen und welche Strategie am effizientesten ist. Die 4 Implementierungen sind: Java Platform Threads(platform), Java Virtual Thread(virtual), Kotlin Coroutinen(coroutines) und, Go Goroutinen(goroutines).
+
+TODO: ALGORITHMS umbenenen zB implementation
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:}    & \texttt{ALGORITHMS} \\
+	\textbf{Beschreibung:} & Bestimmt, welche Implementierungen von Parallelisierung getestet werden (z. B. virtual, platform, coroutines, goroutines). \\
+	\textbf{Typischer Wert:} & z.B. \texttt{virtual, platform, coroutines, goroutines}
+\end{tabularx}
+
+\subsubsection{Aufwärmläufe}
+
+Die Aufwärmläufe sind eine wichtige Komponente der Leistungsbewertung. Diese Läufe werden zu Beginn des Tests durchgeführt, um den Algorithmus und das System ''auf Betriebstemperatur'' zu bringen, damit die tatsächliche Leistungsmessung weniger durch systembedingte Verzögerungen oder die Initialisierung des Programms beeinflusst wird. Diese Aufwärmläufe sorgen dafür, dass der Algorithmus unter realistischeren Bedingungen ausgeführt wird.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:}    & \texttt{WARMUP\_RUNS} \\
+	\textbf{Beschreibung:} & Gibt die Anzahl der Aufwärmläufe an, die vor den eigentlichen Messungen durchgeführt werden, um die Stabilität des Systems und des Algorithmus zu gewährleisten. \\
+	\textbf{Typischer Wert:} & z.B. 10 (10 Aufwärmläufe vor den eigentlichen Messungen)
+\end{tabularx}
+
+\subsubsection{Fazit}
+
+Durch die Kombination dieser Parameter lässt sich eine Vielzahl von Testszenarien erstellen, die es ermöglichen, die Performance des Mergesort-Algorithmus unter verschiedenen Bedingungen zu untersuchen. Insbesondere die Wahl der Parallelisierungs-Implementierung und die Anpassung der maximalen Baumtiefe können signifikante Auswirkungen auf die Effizienz und Skalierbarkeit des Mergesort-Algorithmus haben. Die Möglichkeit, Sortierdurchläufe, Listenlängen, 
+Baumtiefe und Aufwärmläufe anzupassen, sorgt für eine hohe Flexibilität und ermöglicht eine präzise Analyse der Performance.
 
 \subsection{Messungen: Mergesort}
 
+Im folgenden Abschnitt werden die Ergebnisse der Messungen 
+als Graphen aufbereitet, für die genauen Werte befindet sich im 
+Anhang zu jeder Grafik eine entsprechende Tabelle.
+
 \subsubsection{Messung 1: Mergesort - Baumebenen:1-6}
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Sortierdurchläufe:} & 100 \\
+	\textbf{Listenlänge:} & 10.000.000 \\
+	\textbf{Maximale Baumebene:} & \textbf{1-6} \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen \\
+	\textbf{Aufwärmläufe:} & 10
+\end{tabularx}
+
+In dieser Messung wird untersucht wie sich die Performance der vier Thread-Ab\-strak\-tio\-nen bei unterschiedlichen maximalen Baumebenen verhalten. Dabei werden die Messungen für die Werte eins bis sechs für die maximale Baumebene verglichen. Ziel der Messung ist es zu überprüfen, wie sich die Skalierbarkeit der Implementierungen im Verhältnis zu steigender Nebenläufigkeit verhält.
+
+Die Grafik \ref{fig:ms1-6CPU} zeigt die durchschnittliche und maximale Auslastung der CPU pro maximale Baumebene. Die CPU-Auslastung wird in Prozent angegeben, wobei 100\% eine komplette Auslastung aller zur Verfügung stehenden Kerne des auszuführenden Systems bedeutet.
+
+Dabei fällt auf, dass die Werte pro maximaler Baumebene für die vier Implementierungen fast gleich sind, bei etwas geringerer Auslastung bei der Goroutinen-Implementierung. Auch die Maximalwerte für die CPU-Auslastung weichen kaum von den Mittelwerten ab. Die durchschnittliche Auslastung bei einer maximalen Bauebene 1 beträgt 12\%. Wenn der Schwellwert für die parallelisieren bei Baumebene 1 liegt wird der gesamte Sortier-Algorithmus auf einem Kern ausgeführt. Die Messung wurden auf einem 8-Kern System ausgeführt, was bedeutet, dass die CPU-Auslastung bei einem ausgelasteten Kern bei 12,5\% liegt. Bei einer maximalen 
+Baumebene von zwei, werden zwei Teillisten parallel sortiert. Was es den Implementierungen ermöglicht zwei Kerne auszulasten, also 25\% CPU-Auslastung. Das wird mit 24\% auch fast erreicht. Auch bei den Ergebnissen für die maximale Baumebene drei und vier wäre wieder jeweils theoretisch eine Verdoppelung zu erwarten gewesen. Dies wird jedoch nicht mehr ganz erreicht, mit einer Steigerung auf 41\% für die maximale Baumebene 3 und auf 74\% für die Ebene 4. Warum dies zu erwarten war wurde bereits in Abschnitt \ref{subsubsec:implms} erläutert. Auf Ebene fünf und sechs stagnieren die Werte, beziehungsweise gehen sogar leicht zurück, da auf Ebene vier bereits alle 8 Kerne beansprucht werden und die Parallelität nicht mehr weiter gesteigert werden kann. Der leichte Rückgang ist mit einem Steigenden Overhead beim Scheduling zu erklären.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/cpu_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-6: CPU-Auslastung}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
 	\label{fig:ms1-6CPU}
 \end{figure}
 
-\begin{table}[h]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-6/cpu_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-6: CPU-Auslastung}}
-	\label{tab:ms1-6CPU}
-\end{table}
+Die Grafik \ref{fig:ms1-6Zeit} zeigt die Ausführungszeit für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumebene. Die Zeit wird in Sekunden angegeben.
+
+Es fällt auf, dass mit steigender maximaler Baumtiefe und damit erhöhter Parallelität die Ausführungszeit abnimmt. Diese Abnahme flacht jedoch zunehmend ab, bis sie ab Baumebene 4 stagniert. Dies lässt sich durch den 8-Kern-Prozessor des ausführenden Systems erklären. Die Ausführungszeiten für Java Virtual Threads und Java Platform Threads sind nahezu identisch, mit einem leichten Vorteil für die Platform Threads. Goroutinen haben konstant eine etwas kürzere Laufzeit als die Java-Implementierungen. Coroutinen hingegen benötigen deutlich mehr Zeit.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/execution_time_plot.png}
-	\caption{Mergesort max. Baumebenen:1-6: Ausführungszeit}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
 	\label{fig:ms1-6Zeit}
 \end{figure}
 
-\begin{table}[h]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-6/execution_time_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-6: Ausführungszeit}}
-	\label{tab:ms1-6Zeit}
-\end{table}
+Die Grafik \ref{fig:ms1-6RAM} zeigt den Arbeitsspeicherverbrauch für alle Sortierdurchläufe in Ab\-hän\-gig\-keit von der maximalen Baumtiefe. Der Arbeitsspeicherverbrauch wird in Megabyte (MB) angegeben.
+
+Dabei ist zu beachten, dass es zwischen den maximalen und mittleren Werten kaum Unterschiede gibt, und der Verbrauch über die verschiedenen Baumebenen hinweg konstant bleibt.
+
+Der Speicherverbrauch der Java Virtual Threads und Java Platform Threads liegt nahezu gleichauf bei etwa 2200 MB und zeigt somit fast keinen Unterschied. Hierbei ist ein leichter Vorteil für die Platform Threads zu beobachten, die einen minimal niedrigeren Speicherverbrauch aufweisen.
+
+Im Vergleich dazu liegt der Arbeitsspeicherverbrauch der Goroutinen deutlich niedriger bei etwa 350 MB. Weißt aber die größten Schwankungen zwischen den maximalen und mittel Werten auf.
+
+Coroutinen hingegen benötigen erheblich mehr Arbeitsspeicher. Der Verbrauch liegt bei etwa  3800 MB, was eine deutlich höhere Speichernutzung im Vergleich zu den anderen Implementierungen ist.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/memory_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-6: Arbeitsspeicherverbrauch}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
 	\label{fig:ms1-6RAM}
 \end{figure}
 
-\begin{table}[h]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-6/memory_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-6: Arbeitsspeicherverbrauch}}
-	\label{tab:ms1-6RAM}
-	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
-	\textit{Einheit: MB}
-\end{table}
+Die Grafik \ref{fig:ms1-6Threads} zeigt die Anzahl der verwendeten Betriebssystem-Threads für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumtiefe. Es werden sowohl die maximalen als auch die mittleren Thread-Anzahlen angegeben.
+
+Es fällt auf, dass die Anzahl der verwendeten Threads, mit Ausnahme der Platform Threads, mit steigender Baumtiefe konstant bleibt oder nur moderat ansteigt. Bei Virtual Threads und Coroutinen stagnieren die verwendeten Threads ab Baumtiefe 4, bei durchschnittlich 36 Threads. Dies ist durch die Begrenzung des 8-Kern-Prozessors des Systems erklärbar. Goroutinen zeigen einen konstanten Thread-Verbrauch von durchschnittlich 10 Threads. Was mit Abstand das beste Ergebnis ist. 
+
+Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads zeigt mit zunehmender Baumtiefe eine exponentielle Steigerung, die in etwa den Potenzen von 2 folgt. Bei Baumtiefe 1 werden maximal 29 Threads verwendet, bei Baumtiefe 2 steigen die maximale Threads auf 31, bei Baumtiefe 3 auf 35 und so weiter. Die mittleren Werte liegen nur leicht darunter. Diese exponentielle Zunahme ist darauf zurückzuführen, dass für jede neue Teilliste ein neuer BS-Thread erstellt wird, was die Anzahl der verwendeten Threads mit der Baumtiefe ansteigen lässt. Die maximale Thread-Anzahl wächst also ungefähr im Muster $2^n$, wobei die Anzahl bei jeder weiteren Ebene exponentiell zunimmt.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-6/num_threads_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-6: Thread-Anzahl}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
 	\label{fig:ms1-6Threads}
 \end{figure}
 
-\begin{table}[h]
-	\centering
-	\small
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-6/num_threads_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-6: Thread-Anzahl}}
-	\label{tab:ms1-6Threads}
-\end{table}
+TODO: Gesamt Auswertung/Fazit ...
 
 \subsubsection{Messung 2: Mergesort - Baumebenen:1-19}
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Sortierdurchläufe:} & 100 \\
+	\textbf{Listenlänge:} & 10.000.000 \\
+	\textbf{Maximale Baumebene:} & \textbf{1-19} (Fokus auf 13-19) \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen \\
+	\textbf{Aufwärmläufe:} & 10
+\end{tabularx}
+
+Im folgenden Abschnitt wird der Fokus auf die Messungen für die maximalen Baumebenen 13 bis 19 gelegt. Diese spezifischen Werte werden detailliert untersucht, um die Auswirkungen der zunehmenden Baumtiefe auf die Performance der verschiedenen Implementierungen zu analysieren. Die vollständigen Messergebnisse für alle  Baumebenen von 1 bis 19 sind in Tabellenform im Anhang zu finden. Dabei werden wieder die vier Thread-Abstraktionen, Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen, verglichen. Ziel dieser Untersuchung ist es, die Skalierbarkeit und Effizienz der Implementierungen bei extremen Grad an Parallelisierung zu überprüfen. Allein bis einschließlich Baumebene 19 besitzt der Mergesort-Baum mit insgesamt 524.287 Knoten, was die immense Skalierung bei dieser Baumtiefe verdeutlicht.
+
+Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert auf den Ergebnissen der ersten Messung, bei der die Baumebenen 1 bis 6 detailliert untersucht wurden. Zwischen den Ebenen 4 und 13 wurden kaum Veränderungen in der Performance festgestellt, weshalb sich die Untersuchung auf die höheren Ebenen  fokussiert, um mögliche Unterschiede und Trends bei sehr großen Werten für die maximale Baumebene zu erfassen.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-19: CPU-Auslastung}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
 	\label{fig:ms1-19CPU}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-19: CPU-Auslastung}}
-	\label{tab:ms1-19CPU}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/execution_time_plot.png}
-	\caption{Mergesort max. Baumebenen:1-19: Ausführungszeit}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
 	\label{fig:ms1-19Zeit}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/execution_time_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-19: Ausführungszeit}}
-	\label{tab:ms1-19Zeit}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-19: Arbeitsspeicherverbrauch}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
 	\label{fig:ms1-19RAM}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-19: Arbeitsspeicherverbrauch}}
-	\label{tab:ms1-19RAM}
-	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
-	\textit{Einheit: MB}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/num_threads_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-19: Thread-Anzahl}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
 	\label{fig:ms1-19Threads}
 \end{figure}
 
-\begin{table}[H]
-	\centering
-	\small
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/num_threads_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-19: Thread-Anzahl}}
-	\label{tab:ms1-19Threads}
-\end{table}
-
 \subsubsection{Messung 3: Mergesort - Baumebenen:1-23}
 
-ohne Platform Threads!!!
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Sortierdurchläufe:} & 100 \\
+	\textbf{Listenlänge:} & 10.000.000 \\
+	\textbf{Maximale Baumebene:} & \textbf{1-23} (Fokus auf 18-23) \\
+	\textbf{Implementierungen:} & \textbf{Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen} (keine Java Platform Threads) \\
+	\textbf{Aufwärmläufe:} & 10
+\end{tabularx}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-23: CPU-Auslastung}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
 	\label{fig:ms1-23CPU}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXX} % 7 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} &
-		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\%}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-23: CPU-Auslastung}}
-	\label{tab:ms1-23CPU}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/execution_time_plot.png}
-	\caption{Mergesort max. Baumebenen:1-23: Ausführungszeit}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
 	\label{fig:ms1-23Zeit}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Coro\\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Goro\\ Zeit \\ Gesamt}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-23_vcg/execution_time_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-23: Ausführungszeit}}
-	\label{tab:ms1-23Zeit}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/memory_usage_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-23: Arbeitsspeicherverbrauch}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
 	\label{fig:ms1-23RAM}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-23_vcg/memory_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen 1-23: Arbeitsspeicherverbrauch}}
-	\label{tab:ms1-23RAM}
-	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
-	\textit{Einheit: MB}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/num_threads_bar_plot.png}
-	\caption{Mergesort max. Baumebenen:1-23: Thread-Anzahl}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
 	\label{fig:ms1-23Threads}
 \end{figure}
 
-\begin{table}[H]
-	\centering
-	\small
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXXXX} % 9 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Maximalebauebenen1-23_vcg/num_threads_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort max. Baumebenen:1-23: Thread-Anzahl}}
-	\label{tab:ms1-23Threads}
-\end{table}
 
 \subsubsection{Messung 4: Mergesort - Listenlänge}
 
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Sortierdurchläufe:} & 10000 \\
+	\textbf{Listenlänge:} & \textbf{10.000 - 10.000.000} \\
+	\textbf{Maximale Baumebene:} & 4 \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen \\
+	\textbf{Aufwärmläufe:} & 10
+\end{tabularx}
+
 Faktor 10!!!
+logarithmische Y Achse
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/cpu_usage_bar_plot.png}
-	\caption{Mergesort Listenlänge: CPU-Auslastung}
+	\caption{CPU-Auslastung pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
 	\label{fig:mslaengeCPU}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Listen- \\ länge}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Listenlaenge/cpu_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort Listenlänge: CPU-Auslastung}}
-	\label{tab:mslaengeCPU}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/execution_time_plot.png}
-	\caption{Mergesort Listenlänge: Ausführungszeit}
+	\caption{Ausführungszeit pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
 	\label{fig:mslaengeZeit}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Listen- \\ länge}} & 
-		\textbf{\makecell[l]{JVT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{JPT \\ Zeit \\ Gesamt}} & 
-		\textbf{\makecell[l]{Coro \\ Zeit \\ Gesamt}} &
-		\textbf{\makecell[l]{Goro \\ Zeit \\ Gesamt}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Listenlaenge/execution_time_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} s & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} s}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort Listenlänge: Ausführungszeit}}
-	\label{tab:mslaengeZeit}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/memory_usage_bar_plot.png}
-	\caption{Mergesort Listenlänge: Arbeitsspeicherverbrauch}
+	\caption{Arbeitsspeicherverbrauch pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
 	\label{fig:mslaengeRAM}
 \end{figure}
-
-\begin{table}[H]
-	\centering
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Listen- \\ länge}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ RAM}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Listenlaenge/memory_usage_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort Listenlänge: Arbeitsspeicherverbrauch}}
-	\label{tab:mslaengeRAM}
-	\vspace{-10mm}  % optional: Anpassung des Abstands zur Tabelle
-	\textit{Einheit: MB}
-\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/num_threads_bar_plot.png}
-	\caption{Mergesort Listenlänge: Thread-Anzahl}
+	\caption{Thread-Anzahl pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
 	\label{fig:mslaengeThreads}
 \end{figure}
 
-\begin{table}[H]
-	\centering
-	\small
-	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
-	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.34\hsize}X}}
-		\toprule
-		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{Liste- \\ länge}} & 
-		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
-		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
-		\midrule
-		\csvreader[
-		head to column names,
-		late after line=\\
-		]{measurements/mergesort/Listenlaenge/num_threads_aggregated.csv}{}
-		{\csvcoli & 
-			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
-			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
-		\bottomrule
-	\end{tabularx}
-	\caption{\textbf{Mergesort Listenlänge: Thread-Anzahl}}
-	\label{tab:mslaengeThreads}
-\end{table}
 
-\section{Benchmark 2}
+\section{Benchmark 2: Bank}
 
-\subsection{Beschreibung: Benchmark 2}
+\subsection{Motivation: Bank}
+
+\subsection{Implementierung: Bank}
+
+\subsubsection{Basisimplementierung: Bank}
+
+\subsubsection{Platform Threads: Bank}
+
+\subsubsection{Virtual Threads: Bank}
+
+\subsubsection{Coroutinen: Bank}
+
+\subsubsection{Goroutinen: Bank}
+
+\subsection{Messparameter: Bank}
+
+\subsection{Messungen: Bank}
+
+Notizen / Stichpunkte:
 
 PostgreSQL bietet ein robustes Transaktionskonzept, das die ACID-Eigenschaften (Atomicity, Consistency, Isolation, Durability) gewährleistet.
 
@@ -2252,6 +1964,554 @@ Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den D
 
 \printbibliography
 
+
+\chapter{Anhang}
+
+\section{Mergesort Tabellen}
+
+\subsection{Mergesort Messung 1}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
+	\label{tab:ms1-6CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
+	\label{tab:ms1-6Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\ 
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix} }
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
+	\label{tab:ms1-6RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-6/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
+	\label{tab:ms1-6Threads}
+\end{table}
+
+\subsection{Mergesort Messung 2}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 1-19}
+	\label{tab:ms1-19CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 1-19}
+	\label{tab:ms1-19Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\ 
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix} }
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 1-19}
+	\label{tab:ms1-19RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-19_pvcg/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 1-19}
+	\label{tab:ms1-19Threads}
+\end{table}
+
+\subsection{Mergesort Messung 3}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 7 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} &
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 1-23}
+	\label{tab:ms1-23CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro\\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Goro\\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 1-23}
+	\label{tab:ms1-23Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 7 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 1-23}
+	\label{tab:ms1-23RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXXXX} % 9 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Max \\ Baum- \\ ebene}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Maximalebauebenen1-23_vcg/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 1-23}
+	\label{tab:ms1-23Threads}
+\end{table}
+
+
+\subsection{Mergesort Messung 4}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/cpu_usage_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{tab:mslaengeCPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{tab:mslaengeZeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Listen- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{tab:mslaengeRAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.34\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Liste- \\ länge}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/mergesort/Listenlaenge/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{tab:mslaengeThreads}
+\end{table}
 
 %\input{abkuerz.tex}      % Einbinden von Tex-Files
 %\input{einfuehrung.tex}
