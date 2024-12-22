@@ -1933,9 +1933,9 @@ Ein wesentlicher Aspekt dieses Benchmarks ist die Integration verschiedener Tech
 	\item \textbf{Datenbanktreiber / Datenbankverbindungspools:} Zur effizienten Verwaltung von Datenbankverbindungen.
 \end{itemize}
 
-Die Verwendung dieser Technologien stellt sicher, dass die Thread-Abstraktionen in einer Umgebung getestet werden, die typischen Produktivsystemen ähnelt. Insbesondere die Interaktion mit der Datenbank repräsentiert eine blockierende I/O-Operation, wie sie in vielen realen Anwendungen vorkommt.
+Die Verwendung dieser Technologien stellt sicher, dass die Thread-Abs\-trak\-tio\-nen in einer Umgebung getestet werden, die typischen Produktivsystemen ähnelt. Insbesondere die Interaktion mit der Datenbank repräsentiert eine blockierende I/O-Operation, wie sie in vielen realen Anwendungen vorkommt.
 
-Durch diesen Aufbau kann nicht nur die reine Leistungsfähigkeit der Thread-Abstraktionen gemessen werden, sondern auch ihre Fähigkeit zur effektiven Zusammenarbeit mit externen Systemen und zur Handhabung von I/O-gebundenen Aufgaben evaluieren. Dies ermöglicht eine umfassendere Beurteilung ihrer Praxistauglichkeit und Effizienz in komplexen, verteilten Systemen.
+Durch diesen Aufbau kann nicht nur die reine Leistungsfähigkeit der Thread-Abs\-trak\-tio\-nen gemessen werden, sondern auch ihre Fähigkeit zur effektiven Zusammenarbeit mit externen Systemen und zur Handhabung von I/O-gebundenen Aufgaben evaluieren. Dies ermöglicht eine umfassendere Beurteilung ihrer Praxistauglichkeit und Effizienz in komplexen, verteilten Systemen.
 
 Der Bank-Benchmark wird somit zu einem aussagekräftigen Indikator für die Leistungsfähigkeit und Skalierbarkeit der verschiedenen Thread-Abstraktionen in einem Szenario, das typische Herausforderungen moderner Softwarearchitekturen widerspiegelt.
 
@@ -1959,7 +1959,7 @@ Für die Verwaltung konkurrierender Zugriffe verwendet PostgreSQL Zeilensperren.
 PostgreSQL verfügt über eine integrierte Deadlock-Erkennung. Wenn zwei Transaktionen gegenseitig aufeinander warten, erkennt PostgreSQL den Deadlock und bricht eine der Transaktionen ab, um die Blockade aufzulösen.
 Um die Häufigkeit von Deadlocks zu reduzieren, wird eine Strategie implementiert, bei der bei Überweisungen immer zuerst das Konto mit der kleineren Kontonummer gesperrt wird. Dies gewährleistet eine konsistente Reihenfolge beim Sperren von Ressourcen und minimiert das Risiko von Deadlocks.
 
-Durch die Verwendung von PostgreSQL als Datenbank für den Bank-Benchmark wird eine realitätsnahe Umgebung geschaffen, die typische Herausforderungen in Bezug auf Datenkonsistenz und Nebenläufigkeit in Geschäftsanwendungen widerspiegelt. Dies ermöglicht eine aussagekräftige Evaluation der verschiedenen Thread-Abstraktionen in einem praxisnahen Szenario.
+Durch die Verwendung von PostgreSQL als Datenbank für den Bank-Benchmark wird eine realitätsnahe Umgebung geschaffen, die typische Herausforderungen in Bezug auf Datenkonsistenz und Nebenläufigkeit in Geschäftsanwendungen widerspiegelt. Dies er\-mög\-licht eine aussagekräftige Evaluation der verschiedenen Thread-Abstraktionen in einem praxisnahen Szenario.
 
 \paragraph{PostREST:}
 
@@ -1979,7 +1979,7 @@ In der praktischen Durchführung des Benchmarks hat sich jedoch gezeigt, dass Po
 
 \paragraph{Docker:}
 
-Docker spielt eine zentrale Rolle in der Implementierung des Bank-Benchmarks, indem es ermöglicht, alle Komponenten in isolierten Containern laufen zu lassen. Diese Containerisierung ist heutzutage typisch für moderne Softwarearchitekturen und bietet mehrere Vorteile für den Benchmark-Aufbau.
+Docker spielt eine zentrale Rolle in der Implementierung des Bank-Bench\-marks, indem es ermöglicht, alle Komponenten in isolierten Containern laufen zu lassen. Diese Containerisierung ist heutzutage typisch für moderne Softwarearchitekturen und bietet mehrere Vorteile für den Benchmark-Aufbau.
 
 \begin{itemize}
 	\item Konsistenz: Alle Tests laufen in der gleichen, reproduzierbaren Umgebung.
@@ -1998,21 +1998,163 @@ Die Hauptkomponenten des Benchmarks, die in Docker-Containern laufen, sind:
 Der gesamte Benchmark-Stack wird über eine \texttt{docker-compose.yaml} Datei orchestriert und gestartet. Diese Konfiguration ermöglicht es, die gesamte Benchmark-Umgebung mit einem einzigen Befehl zu starten und zu verwalten.
 Ein wichtiger Aspekt des Setups ist das Python-Skript \texttt{monitoringBank.py}, welches die Möglichkeit bietet die docker-compose-Datei zu modifiziern, um Umgebungsvariablen zu setzen und Messparameter zu verändern. Dies erlaubt es, verschiedene Szenarien für den Benchmark zu konfigurieren und zu testen. Eine detaillierte Auflistung der verfügbaren Messparameter findet sich im Abschnitt TODO:Verweis.
 
-Um sicherzustellen, dass die Benchmark-Implementierungen erst starten, wenn die Post\-greSQL-Datenbank vollständig initialisiert und betriebsbereit ist, wurde ein Healthcheck für den PostgreSQL-Container implementiert. Dies verhindert Fehlstarts und gewährleistet konsistente Testbedingungen.
+Um sicherzustellen, dass die Benchmark-Implementierungen erst starten, wenn die Post\-greSQL-Datenbank vollständig initialisiert und betriebsbereit ist, wurde ein Healthcheck für den PostgreSQL-Container implementiert. Dies verhindert Fehlstarts und ge\-währ\-leis\-tet konsistente Testbedingungen.
 
 Ein entscheidender Aspekt des Docker-Setups ist die Zuweisung fester Hardwareressourcen (CPU und RAM) zu den einzelnen Containern. Dies wird über die \texttt{resources}-Konfiguration in der Docker-Compose-Datei realisiert. Durch diese Ressourcenbegrenzung wird simuliert, dass die verschiedenen Komponenten auf getrennten Systemen laufen, was die Realitätsnähe des Benchmarks erhöht und eine fairere Vergleichsbasis für die verschiedenen Implementierungen schafft.
 
 Durch diesen Aufbau wird eine realitätsnahe und gut kontrollierbare Umgebung für den Vergleich der verschiedenen Thread-Abstraktionen geschaffen, die moderne Softwarearchitekturen widerspiegelt und gleichzeitig eine hohe Reproduzierbarkeit der Ergebnisse gewährleistet.
 
+\paragraph{Allgemeingültige Implementierungsdetails:}
+
+Um eine effiziente und vergleichbare Aus\-füh\-rung zu gewährleisten, wurden bei der Implementierung des Bank-Bench\-marks  mehrere allgemeingültige Designentscheidungen getroffen:
+
+Zunächst wurde das Interface BankAccountRepository implementiert. Dieses ermöglicht sowohl Implementierungen für Datenbanktreiber als auch für REST-Schnittstellen, was die Vergleichbarkeit zwischen verschiedenen Ansätzen erhöht und eine flexible Architektur schafft.
+
+Der implementierte Code enthält zudem einen Retry-Mechanismus, der hauptsächlich für die PostgREST-Implementierung konzipiert wurde. Obwohl dieser Mechanismus auch in die direkte Datenbankimplementierung integriert wurde, erwies er sich während der Testdurchläufe dort als nicht notwendig. Die Integration dieses Mechanismus in beide Implementierungen dient der Vergleichbarkeit der Ergebnisse und gewährleistet eine konsistente Fehlerbehandlung über verschiedene Szenarien hinweg.
+
+Durch die Verwendung eines gemeinsamen Interfaces und die Integration verschiedener Ansätze lässt sich der Benchmark in Zukunft leicht um weitere Lösungen erweitern, was eine kontinuierliche Evaluation neuer Technologien und Methoden ermöglicht.
+
+
 \subsubsection{Platform Threads: Bank}
+
+Die Implementierung der Bank-Anwendung mit Java Platform Threads erfolgt in der Anwendung \texttt{bankJava.jar}, die in einem Docker Container namens \texttt{bank-java} ausgeführt wird.
+
+Die Klasse \texttt{JDBCBankAccountRepository} implementiert das Interface \texttt{Bank""Account""Re""po""si""to""ry} und stellt die Datenbankzugriffe bereit. Für die Datenbankverbindung wird JDBC in Verbindung mit dem PostgreSQL-Treiber (Version 42.7.2) verwendet. 
+
+Zur effizienten Verwaltung der Datenbankverbindungen kommt HikariCP (Version 6.0.0) zum Einsatz, ein leistungsstarker Connection Pool. HikariCP wurde aufgrund seiner hervorragenden Performance und geringen Overhead ausgewählt. Außerdem ist es eine weitverbreitete Technologie, die so dem Anspruch auf Realitätsnähe gerecht wird.
+
+Die Auswahl der spezifischen Implementierung wird über die Klasse \texttt{Transaction""Exe""cu""tor} gesteuert. Für die Ausführung mit Platform Threads ist die Methode \texttt{execute""Trans""ac""ti""ons""Platform} zuständig. Diese Methode nutzt einen Fixed Thread Pool, der mit \texttt{Executors"".new""Fixed""Thread""Pool""(maxConnections*2)} initialisiert wird. Es werden also doppelt so viele Platform Threads wie Datenbankverbindungen erstellt, dadurch ist gewährleistet, dass theoretisch alle Datenbankverbindungen aus dem Connection Pool genutzt werden könnten. Die Anzahl der Threads bleibt dennoch überschaubar, sodass die Systemressourcen nicht übermäßig belastet werden.
+
 
 \subsubsection{Virtual Threads: Bank}
 
+Die Implementierung der Bank-Anwendung mit Java Virtual Threads erfolgt ebenfalls in der Anwendung \texttt{bankJava.jar}, die im gleichen Docker Container \texttt{bank-java} ausgeführt wird wie die Platform Threads Variante.
+
+Auch hier kommt die Klasse \texttt{JDBCBankAccountRepository} zum Einsatz, die das Interface \texttt{BankAccountRepository} implementiert. Die Datenbankzugriffe werden weiterhin über JDBC mit dem PostgreSQL-Treiber (Version 42.7.2) realisiert. Die Verwendung von JDBC ermöglicht eine konsistente Implementierung zwischen Platform Threads und Virtual Threads, was den Vergleich der Leistung erleichtert. Es ist anzumerken, dass die Unterstützung für Virtual Threads in JDBC-Treibern noch relativ neu ist und stetig verbessert wird.
+
+Für das Verbindungs-Pooling wird ebenfalls HikariCP (Version 6.0.0) verwendet. HikariCP hat in neueren Versionen Optimierungen für die Arbeit mit Virtual Threads eingeführt, um deren Vorteile optimal zu nutzen. Die Beibehaltung von HikariCP für Virtual Threads ermöglicht eine faire Vergleichsbasis und nutzt gleichzeitig die spezifischen Optimierungen für diese neue Technologie.
+
+Die Auswahl der spezifischen Implementierung wird wie bei den Platform Threads über die Klasse \texttt{TransactionExecutor} gesteuert. Für die Ausführung mit Virtual Threads ist die Methode \texttt{executeTransactionsVirtual} zuständig.
+Im Gegensatz zur Platform Threads Implementierung wird hier \texttt{Executors.newVirtualThreadPerTaskExecutor()} verwendet. Dieser Executor erstellt für jede Aufgabe einen neuen Virtual Thread.
+
+Um die Anzahl der gleichzeitigen Datenbankzugriffe zu begrenzen, wird eine Semaphore mit \texttt{maxConnections*2} Genehmigungen verwendet. Dies entspricht der Anzahl der Threads im Fixed Thread Pool der Platform Threads Implementierung, gewährleistet aber eine flexiblere Handhabung der Nebenläufigkeit. In der Praxis hat sich gezeigt, dass HikariCP zwar auch deutlich mehr gleichzeitige Anfragen von Virtual Threads verarbeitet kann (zehntausende), aber der Overhead für die Verwaltung steigt und es deshalb sinnvoll ist die gleichzeitigen Anfragen an den Pool zu limitieren.
+
+Der Hauptunterschied zwischen den beiden Implementierungen liegt also in der Art, wie auf den Connection Pool zugegriffen wird: Bei Platform Threads geschieht dies über einen festen Thread Pool, während bei Virtual Threads für jede Aufgabe ein neuer Thread erstellt wird, der aber durch die Semaphore in seiner Zugriffshäufigkeit auf den Pool begrenzt wird.
+
 \subsubsection{Coroutinen: Bank}
+
+Die Implementierung der Bank-Anwendung mit Kotlin Coroutinen erfolgt in der Anwendung \texttt{bankKotlinFat.jar}, die in einem Docker Container namens \texttt{bank-kotlin} ausgeführt wird.
+
+Die Klasse \texttt{R2DBCBankAccountRepository} implementiert das Interface \texttt{Bank""Account""Repository} und stellt die Datenbankzugriffe bereit. Für die Datenbankverbindung wird der R2DBC-Treiber (Version 1.0.7.RELEASE) in Verbindung mit einem Connection Pool (Version 1.0.0.RELEASE) verwendet. 
+
+Die Wahl fiel auf R2DBC, da es eine de wenigen Kombinationen aus Datenbankteiber und Connection Pool ist die native Unterstützung für Coroutinen bietet. Allerdings wird dabei ein reaktiver Ansatz verfolgt.
+
+Zur Unterstützung der reaktiven Programmierung mit Coroutinen wird die Bibliothek \texttt{kotlinx-coroutines-reactive} verwendet. Diese ermöglicht eine nahtlose Integration zwischen reaktiven Streams und Coroutinen, was die Verarbeitung asynchroner Datenbankoperationen erheblich vereinfacht.
+
+Die Ausführung der Transaktionen wird über die Klasse \texttt{TransactionExecutor} und speziell die Methode \texttt{executeTransactionsCoroutine} gesteuert. Ein bemerkenswerter Aspekt dieser Implementierung ist, dass die Zugriffe auf den Connection Pool nicht limitiert wurden. Diese Entscheidung basiert auf praktischen Erfahrungen, die gezeigt haben, dass dieser Ansatz in Verbindung mit Coroutinen die besten Ergebnisse liefert.
+
+Für die Ausführung der Datenbankoperationen wurde der \texttt{Dispatchers.IO} verwendet. Dieser Dispatcher ist speziell für I/O-intensive Aufgaben wie Datenbankzugriffe optimiert.
+
+Durch den Einsatz von R2DBC in Verbindung mit Coroutinen wird eine reaktive und nicht-blockierende Verarbeitung der Datenbankoperationen erreicht. Dies führt zu einer verbesserten Ressourcennutzung und potenziell höherem Durchsatz, insbesondere bei einer großen Anzahl gleichzeitiger Anfragen.
 
 \subsubsection{Goroutinen: Bank}
 
+Die Implementierung der Bank-Anwendung mit Go Goroutinen erfolgt in der Anwendung \texttt{bankGo.exe} (für Windows) beziehungsweise \texttt{bankGo} (für Unix-basierte Systeme), die in einem Docker Container namens \texttt{bank-go} ausgeführt wird.
+
+Die Datei \texttt{SQLBankAccountRepository.go} implementiert das Interface \texttt{Bank""Account""Repository"".go} und stellt die Datenbankzugriffe bereit. Für die Datenbankverbindung wird der Treiber pgx (Version 5.7.1) verwendet. Pgx ist ein leistungsstarker Postgre\-SQL-Treiber und -Toolkit für Go, der mehrere Vorteile bietet:
+
+\begin{itemize}
+	\item Integrierte Verbindungspooling-Funktionalität
+	\item Automatische Nutzung des Go-eigenen Net Pollers für effiziente Netzwerk-I/O
+	\item Optimierte Performance durch effiziente Protokollimplementierung
+\end{itemize}
+
+Die Verwendung des Net Pollers ermöglicht es, eine große Anzahl von Datenbankverbindungen effizient zu verwalten, ohne für jede Verbindung einen separaten Betriebssystem-Thread zu blockieren.
+
+Die Steuerung der Überweisungen erfolgt in der Datei \texttt{TransactionExecutor.go} durch die Funktion \texttt{executeTransactionsGoroutine}. Diese Funktion nutzt Goroutinen, um die Überweisungen parallel auszuführen.
+
+Um die Anzahl der gleichzeitigen Datenbankzugriffe zu begrenzen, wird ein Semaphore mit \texttt{maxConnections*2} Genehmigungen verwendet. Dies entspricht der Anzahl der Threads im Fixed Thread Pool der Java Platform Threads Implementierung und der Semaphore-Größe in der Virtual Threads Implementierung. Es ist durchaus möglich mehr Anfragen gleichzeitig an den Pool zu senden, jedoch führt dies zu einer leicht erhöhten Ausführungszeit und deutlich erhöhtem Arbeitsspeicherverbrauch.
+
+Die Verwendung von Goroutinen in Kombination mit dem effizienten pgx-Treiber und dem integrierten Scheduler von Go ermöglicht eine hochgradig skalierbare und effiziente Verarbeitung von Datenbankoperationen.
+
 \subsection{Messparameter: Bank}
+
+Für den Bank-Benchmark können verschiedene Parameter variiert werden, um die Leistungsfähigkeit der unterschiedlichen Thread-Abstraktionen zu testen. Die Parameter werden \texttt{docker-compose\_modify.yaml} Datei festgelegt und können von dem Python-Skript \texttt{monitoringBank.py} verändert werden. Im Folgenden werden die wichtigsten Messparameter vorgestellt, die für die Durchführung und Auswertung des Benchmarks von Bedeutung sind.
+
+\subsubsection{Implementierungen}
+
+Der Parameter gibt an, welche Thread-Abstraktion für die Implementierung des Benchmarks verwendet wird. Diese Auswahl bestimmt maßgeblich, wie die nebenläufigen Operationen im Benchmark ausgeführt werden. Jede Thread-Abstraktion hat ihre eigenen Charakteristiken und Optimierungen, was einen direkten Einfluss auf die Performance und das Verhalten des Benchmarks hat.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{ALGORITHM} \\
+	\textbf{Beschreibung:} & Legt die zu verwendende Thread-Abstraktion für den Benchmark fest. \\
+	\textbf{Typischer Wert:} & \texttt{PLATFORM, VIRTUAL, COROUTINE, GOROUTINE}
+\end{tabularx}
+
+\subsubsection{Datenbankschnittstelle}
+
+Der Parameter gibt an, welche Datenbankschnittstelle für die Implementierung des Benchmarks verwendet wird. Diese Auswahl bestimmt, wie die Datenbankoperationen im Benchmark ausgeführt werden.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{INTERFACE\_TYPE} \\
+	\textbf{Beschreibung:} & Legt die zu verwendende Datenbankschnittstelle für den Benchmark fest. \\
+	\textbf{Typischer Wert:} & \texttt{PGX, JDBC, R2DBC, REST}
+\end{tabularx}
+
+\subsubsection{Anzahl der Bankkonten}
+
+Der Parameter gibt die Gesamtzahl der Bankkonten an, die für den Benchmark verwendet werden. Diese Zahl beeinflusst die Komplexität und den Umfang der Simulation. Ein Bankkonto besteht immer aus einer Kontonummer und einem Kontostand.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{NUMBER\_OF\_ACCOUNTS} \\
+	\textbf{Beschreibung:} & Legt die Anzahl der Bankkonten fest, die im Benchmark simuliert werden. \\
+	\textbf{Typischer Wert:} & 1000 (Eintausend Bankkonten)
+\end{tabularx}
+
+\subsubsection{Anzahl der Überweisungen}
+
+Der Parameter gibt die Gesamtzahl der Überweisungen an, die während des Benchmarks durchgeführt werden sollen. Diese Zahl beeinflusst die Laufzeit und den Umfang des Tests sowie die Menge der zu verarbeitenden Daten. Eine höhere Anzahl von Überweisungen erhöht die statistische Zuverlässigkeit der Testergebnisse, da zufällige Schwankungen ausgeglichen werden. Gleichzeitig steigt mit der Anzahl der Transaktionen auch die Gesamtlaufzeit des Benchmarks. Ein Überweisung besteht immer aus einem Sender, einem Empfänger und dem zu überweisenden Betrag. 
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{NUMBER\_OF\_TRANSACTIONS} \\
+	\textbf{Beschreibung:} & Legt die Anzahl der Überweisungen fest, die im Benchmark durchgeführt werden. \\
+	\textbf{Typischer Wert:} & 100000 (Einhunderttausend Transaktionen)
+\end{tabularx}
+
+\subsubsection{Maximale Verbindungen}
+
+Der Parameter gibt die maximale Anzahl gleichzeitiger Datenbankverbindungen an, die der Verbindungspool verwalten kann. Diese Begrenzung beeinflusst direkt die Skalierbarkeit und Ressourcennutzung des Systems.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{MAX\_CONNECTIONS} \\
+	\textbf{Beschreibung:} & Legt die maximale Anzahl gleichzeitiger Datenbankverbindungen fest. \\
+	\textbf{Typischer Wert:} & 80 (Achtzig Verbindungen)
+\end{tabularx}
+
+\subsubsection{Verzögerung der Überweisungen}
+
+Der Parameter gibt an, ob und wie lange eine künstliche Verzögerung (in Sekunden) für jede Transaktion in der Datenbank eingefügt werden soll. Diese Verzögerung wird direkt in der PostgreSQL-Datenbank mittels der \texttt{pg\_sleep}-Funktion implementiert. Dieser Parameter erlaubt es, die Leistungsfähigkeit der verschiedenen Thread-Abstraktionen unter unterschiedlicher Latenz der Datenbank zu vergleichen, ohne die Anwendungslogik selbst zu verändern.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Parameter:} & \texttt{DELAY\_TRANSACTION} \\
+	\textbf{Beschreibung:} & Legt die Dauer der künstlichen Verzögerung für jede Transaktion in Sekunden fest. \\
+	\textbf{Typischer Wert:} & 0.0 (Keine künstliche Verzögerung)
+\end{tabularx}
+
+\subsubsection{Ressourcenbeschränkungen}
+
+Für die Durchführung des Bank-Benchmarks wurden spezifische Ressourcenbe\-schrän\-kun\-gen für die Docker-Container festgelegt. Diese Einschränkungen dienen dazu, eine konsistente und kontrollierte Testumgebung zu gewährleisten und die Vergleichbarkeit der Ergebnisse zwischen verschiedenen Implementierungen sicherzustellen.
+
+Für den Postgres-Datenbankcontainer wurden folgende Ressourcenlimits definiert:
+\begin{itemize}
+	\item \textbf{CPU-Reservierung/Limit}: 3 CPUs
+\end{itemize}
+
+Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen festgelegt:
+\begin{itemize}
+	\item \textbf{CPU-Reservierung/Limit}: 4 CPUs
+	\item \textbf{Arbeitsspeicher-Reservierung/Limit}: 4000 MB
+\end{itemize}
 
 \subsection{Messungen: Bank}
 
