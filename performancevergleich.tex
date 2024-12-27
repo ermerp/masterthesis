@@ -405,7 +405,7 @@ Am folgendem Code-Beispiel wird deutlich, dass lediglich der Aufruf \code{new Th
 Für Virtual Threads wurde der neue Executor Service \code{Executors.""newVirtualThread""PerTask""Executor()} entwickelt. Für jeden Aufruf von \texttt{ExecutorService.""submit(""Run""nable)} wird ein neuer Virtual Thread erstellt, der die ihm zugewiesene Aufgabe ausführt. Der Rückgabewert des Executor Service ist ein Future, welches das Ergebnis der Aufgabe enthält, sobald der erstellte Virtual Thread ausgeführt wurde. Mit Hilfe von \code{Executors.""newVirtualThread""PerTaskExecutor()} lässt sich ein bestehender Code leicht von Platform Threads auf Virtual Threads umstellen. Oft wird für das Verwalten von Platform Threads ein Thread Pool erstellt und für das Erstellen eines Thread Pools ein Executor Service verwendet. So könnten die Plattform Threads beispielsweise bisher in \code{Executors.newCachedThreadPool()} verwaltet worden sein. Dieser lässt sich nun leicht durch \code{Executors.newVirtualThreadPerTaskExecutor()} ersetzen. Dies wird auch am folgenden Beispiel deutlich:
 
 \begin{lstlisting}[language=Java]
-	//mehrere Platform Threads mit Executors.newCachedThreadPool() erstellen
+	// mehrere Platform Threads mit Executors.newCachedThreadPool() erstellen
 	try (var cachedPool = Executors.newCachedThreadPool()) {
 		var future1 = cachedPool.submit(() -> powerFunction(task1.base, task1.exponent));
 		var future2 = cachedPool.submit(() -> powerFunction(task2.base, task2.exponent));
@@ -418,7 +418,7 @@ Für Virtual Threads wurde der neue Executor Service \code{Executors.""newVirtua
 		throw new RuntimeException(e);
 	}
 
-	//mehrere Virtual Threads mit Executors.newVirtualThreadPerTaskExecutor() erstellen
+	// mehrere Virtual Threads mit Executors.newVirtualThreadPerTaskExecutor() erstellen
 	try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 		var future1 = executor.submit(() -> powerFunction(task1.base, task1.exponent));
 		var future2 = executor.submit(() -> powerFunction(task2.base, task2.exponent));
@@ -486,44 +486,45 @@ Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben.
 
 \begin{lstlisting}[language=Kotlin]
 	import kotlin.concurrent.thread
-	
+	import kotlin.Result
+
 	// Simuliert eine asynchrone, zeitaufwändige I/O-Operation (z.B. Datei lesen)
-	fun readFileAsync(callback: (String) -> Unit) {
+	fun readFileAsync(callback: (Result<String>) -> Unit) {
 		thread {
 			try {
 				Thread.sleep(500)
-				callback("File Content")
+				callback(Result.success("File Content"))
 			} catch (e: Exception) {
-				callback("Error: ${e.message}")
+				callback(Result.failure(e))
 			}
 		}
 	}
-	
+
 	// Simuliert eine asynchrone, zeitaufwändige Netzwerkoperation, bei der Daten verarbeitet werden (z.B. API-Anfrage)
-	fun processData(input: String, callback: (String) -> Unit) {
+	fun processData(input: String, callback: (Result<String>) -> Unit) {
 		thread {
 			try {
 				Thread.sleep(500)
-				callback("$input -> Processed Data")
+				callback(Result.success("$input -> Processed Data"))
 			} catch (e: Exception) {
-				callback("Error: ${e.message}")
+				callback(Result.failure(e))
 			}
 		}
 	}
-	
+
 	// Simuliert das asynchrone, zeitaufwändige Speichern von Daten (z.B. in einer Datenbank oder Datei)
-	fun saveData(input: String, callback: (String) -> Unit) {
+	fun saveData(input: String, callback: (Result<String>) -> Unit) {
 		thread {
 			try {
 				Thread.sleep(500)
-				callback("$input -> Data Saved")
+				callback(Result.success("$input -> Data Saved"))
 			} catch (e: Exception) {
-				callback("Error: ${e.message}")
+				callback(Result.failure(e))
 			}
 		}
 	}
-	
-	fun main() {	
+
+	fun main() {
 		// Callbacks werden verwendet, um das Ergebnis schrittweise zu erhalten
 		readFileAsync { result1 ->
 			result1.onSuccess { res1 ->
@@ -531,27 +532,27 @@ Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben.
 					result2.onSuccess { res2 ->
 						saveData(res2) { result3 ->
 							result3.onSuccess { res3 ->
-								println("Final Result: $res3") // Ausgabe des finalen Ergebnisses 
+								println("Final Result: $res3") // Ausgabe des finalen Ergebnisses
 							}
 							// Fehlerbehandlung für saveData
 							result3.onFailure { error ->
-								println("Error in saveData: ${error.message}") 
+								println("Error in saveData: ${error.message}")
 							}
 						}
 					}
 					// Fehlerbehandlung für processData
 					result2.onFailure { error ->
-						println("Error in processData: ${error.message}") 
+						println("Error in processData: ${error.message}")
 					}
 				}
 			}
 			// Fehlerbehandlung für readFileAsync
 			result1.onFailure { error ->
-				println("Error in readFileAsync: ${error.message}") 
+				println("Error in readFileAsync: ${error.message}")
 			}
 		}
 		// Zeigt an, dass die asynchronen 	Operationen gestartet wurden
-		println("Started operations...") 
+		println("Started operations...")
 	}
 \end{lstlisting}
 Konsolenausgabe:
@@ -1024,7 +1025,10 @@ Goroutinen wurden von ihrem Designer Rob Pike als eine ''independently executing
 		time.Sleep(time.Second)
 	}
 \end{lstlisting}
-% TODO:Ausgabe
+Konsolenausgabe:
+\begin{lstlisting}[frame=shadowbox, rulecolor=\color{black}, backgroundcolor=\color{gray!10}]
+	Hallo, Philipp!
+\end{lstlisting}
 
 In dem gezeigten Beispiel gibt es eine herkömmliche Funktion \texttt{hello}. Diese Funktion wiederum wird in der \texttt{main}-Funktion aufgerufen. Da das Schlüsselwort \texttt{go} verwendet wird, wird die Funktion \texttt{hello} nebenläufig zu der \texttt{main}-Funktion in einer eigenen Goroutine ausgeführt. Eine Goroutine kann also als ein leichtgewichtiger Thread angesehen werden, der von der Go Runtime gestartet und verwaltet wird. 
 
@@ -1064,7 +1068,14 @@ Um in Go mit Goroutinen zu kommunizieren werden Channels\cite{donovan2015} verwe
 		}
 	}
 \end{lstlisting}
-% TODO:Ausgabe
+Konsolenausgabe:
+\begin{lstlisting}[frame=shadowbox, rulecolor=\color{black}, backgroundcolor=\color{gray!10}]
+	Hallo Philipp, 0!
+	Hallo Philipp, 1!
+	Hallo Philipp, 2!
+	Hallo Philipp, 3!
+	Hallo Philipp, 4!
+\end{lstlisting}
 
 In dem gezeigten Beispiel wird in der \texttt{main}-Funktion ein Channel \texttt{recevCh} erstellt. Dieser hat als Datentyp String. Der Channel wird der Funktion \texttt{helloCounter} übergeben, welche mit Hilfe des Schlüsselwortes \texttt{go}, nebenläufig, als Goroutine ausgeführt wird. Diese sendet mit einer \texttt{for}-Schleife insgesamt fünf Nachrichten an den Channel. Da es sich bei dem Senden um eine blockierende Funktion handelt, blockiert die Goroutine nach jedem Senden bis die Nachricht empfangen wurde. Das Empfangen der Nachrichten geschieht in der \texttt{main}-Funktion. Dafür wird eine sogenannte \texttt{range}-Schleife verwendet. Diese empfängt solange Nachrichten über einen Channel, bis dieser geschlossen wird.  Jedes Mal, wenn eine Nachricht übermittelt wird, synchronisieren sich die Goroutine und die \texttt{main}-Funktion. Dies geschieht fünfmal. Danach wird der Channel von der Goroutine geschlossen und somit auch die \texttt{range}-Schleife in der \texttt{main}-Funktion beendet.
 
@@ -1256,7 +1267,7 @@ Das Generator-Muster ermöglicht das Erstellen von Funktionen, die Sequenzen von
 	// Generator-Funktion mit Namensparameter
 	func helloCounter(name string) <-chan string {
 		ch := make(chan string)
-		//Starten der Goroutine
+		// Starten der Goroutine
 		go func() {
 			for i := 0; i < 5; i++ {
 				ch <- fmt.Sprintf("Hallo %s, %d!\n", name, i)
@@ -1274,6 +1285,19 @@ Das Generator-Muster ermöglicht das Erstellen von Funktionen, die Sequenzen von
 			fmt.Print(<-michael)
 		}
 	}
+\end{lstlisting}
+Konsolenausgabe:
+\begin{lstlisting}[frame=shadowbox, rulecolor=\color{black}, backgroundcolor=\color{gray!10}]
+	Hallo Philipp, 0!
+	Hallo Michael, 0!
+	Hallo Philipp, 1!
+	Hallo Michael, 1!
+	Hallo Philipp, 2!
+	Hallo Michael, 2!
+	Hallo Philipp, 3!
+	Hallo Michael, 3!
+	Hallo Philipp, 4!
+	Hallo Michael, 4!
 \end{lstlisting}
 
 Die auffälligste Veränderung ist, dass die Funktion \texttt{helloCounter} in der \texttt{main}-Funktion nicht mehr mit dem Schlüsselwort \texttt{go} als Goroutine gestartet werden muss. Stattdessen wird die Goroutine in der Funktion \texttt{helloCounter} intern gestartet. Außerdem wird auch der Channel von \texttt{helloCounter} erstellt und als Rückgabewert zurückgegeben. Das hat den Vorteil, dass sich, wie im Beispiel gezeigt, leicht mehrere Instanzen der Generatorfunktion nebenläufig starten lassen. Im Prinzip lässt sich eine Generatorfunktion als Service betrachten, bei dem sich der Anwender nicht mehr um die Nebenläufigkeit kümmern muss, da sie bereits intern sichergestellt wurde.
@@ -1316,6 +1340,19 @@ Die Aufgabe einer Fan-In-Funktion ist es, Ausgaben mehrerer Goroutinen zu sammel
 			fmt.Println(msg)
 		}
 	}
+\end{lstlisting}
+Mögliche Konsolenausgabe:
+\begin{lstlisting}[frame=shadowbox, rulecolor=\color{black}, backgroundcolor=\color{gray!10}]
+	Hallo Michael, 0!
+	Hallo Michael, 1!
+	Hallo Michael, 2!
+	Hallo Michael, 3!
+	Hallo Philipp, 0!
+	Hallo Philipp, 1!
+	Hallo Philipp, 2!
+	Hallo Philipp, 3!
+	Hallo Philipp, 4!
+	Hallo Michael, 4!
 \end{lstlisting}
 
 In dem Beispiel wurde der Code um eine Fan-In-Funktion erweitert. Dieser Funktion werden in der \texttt{main}-Funktion die beiden Channels der \texttt{helloCounter}-Funktionen übergeben. Die Aufgabe der Fan-In-Funktion ist es, die Ausgaben der beiden Channels zusammenzufassen und in einem neuen Channel (\texttt{new\_ch}) gebündelt an die \texttt{main}-Funktion weiterzugeben. Dafür wird in der Fan-In-Funktion das Generator-Muster verwendet. Es wird innerhalb der Funktion eine Goroutine gestartet. In der Goroutine wird eine \texttt{select}-Anweisung verwendet um auf beiden Channels parallel auf eine Antwort zu warten. Diese Antworten werden dann auf den \texttt{new\_ch} weiter geleitet. Dies geschieht so lange, bis beide Channels der \texttt{helloCounter}-Funktionen geschlossen sind. Dann wird auch der \texttt{new\_ch} geschlossen. Der Vorteil der Verwendung einer Fan-In-Funktion in der \texttt{main}-Funktion wird schnell deutlich. Dadurch ist es möglich mehrere Nachrichten hintereinander von der gleichen \texttt{helloCounter}-Funktion zu empfangen. Außerdem muss in der \texttt{main}-Funktion auch nur noch ein Channel verarbeitet werden. 
@@ -1370,6 +1407,23 @@ func main() {
 	// Warte kurz, damit die Worker-Ausgaben sichtbar sind
 	time.Sleep(2 * time.Second)
 }
+\end{lstlisting}
+Mögliche Konsolenausgabe:
+\begin{lstlisting}[frame=shadowbox, rulecolor=\color{black}, backgroundcolor=\color{gray!10}]
+	Hauptroutine: Sende Wert 1
+	Worker 1: Verarbeite Wert 1
+	Hauptroutine: Sende Wert 2
+	Worker 3: Verarbeite Wert 2
+	Hauptroutine: Sende Wert 3
+	Worker 2: Verarbeite Wert 3
+	Hauptroutine: Sende Wert 4
+	Worker 1: Verarbeite Wert 4
+	Hauptroutine: Sende Wert 5
+	Worker 3: Verarbeite Wert 5
+	Hauptroutine: Beende alle Worker
+	Worker 2: Beende Arbeit
+	Worker 1: Beende Arbeit
+	Worker 3: Beende Arbeit
 \end{lstlisting}
 
 In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \texttt{done} erstellt. Dies ist der so genannte Closing Channel. Danach werden drei \texttt{worker}-Goroutinen ge\-star\-tet. Diese erhalten Werte über den Channel \texttt{c} und geben sie auf der Konsole aus. Nachdem die Hauptroutine alle Werte gesendet hat schließt sie den Closing Channel. Dies signalisiert den  \texttt{worker}-Goroutinen, dass keine weiteren Werte gesendet werden und sie beenden sich selbst.
@@ -1538,7 +1592,7 @@ Die Wahl von Mergesort als Benchmark bietet auch praktische Relevanz, da der Alg
 
 \subsection{Theoretische Grundlagen: Mergesort}
 
-Mergesort ist ein effizienter, auf dem Prinzip "Teile und herrsche" basierender Sortieralgorithmus. Er wurde 1945 von John von Neumann entwickelt und zeichnet sich durch seine stabile Sortierung und vorhersagbare Leistung aus.
+Mergesort ist ein effizienter, auf dem Prinzip "Teile und herrsche" basierender Sortieralgorithmus. Er wurde 1945 von John von Neumann entwickelt \cite{vonNeumann1945} und zeichnet sich durch seine stabile Sortierung und vorhersagbare Leistung aus.
 
 \subsubsection{Funktionsweise}
 
@@ -1556,7 +1610,7 @@ Diese Baumstruktur verdeutlicht nicht nur die Arbeitsweise des Algorithmus, sond
 
 \subsubsection{Komplexität}
 
-Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Zeitkomplexität von $\Theta(n \log n)$ auf, wobei $n$ die Anzahl der zu sortierenden Elemente ist. Dies macht Mergesort zu einem sehr effizienten Sortieralgorithmus, insbesondere für große Datenmengen. Außerdem sind dies sehr gute Voraussetzungen für die Eignung als Benchmark, da die Zeitliche Performance nicht von dem Inhalt der zu verarbeitenden Daten abhängt.\cite{Cormen2022}
+Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Zeitkomplexität von $\Theta(n \log n)$ auf, wobei $n$ die Anzahl der zu sortierenden Elemente ist \cite{Cormen2022}. Dies macht Mergesort zu einem sehr effizienten Sortieralgorithmus, insbesondere für große Datenmengen. Außerdem sind dies sehr gute Voraussetzungen für die Eignung als Benchmark, da die Zeitliche Performance nicht von dem Inhalt der zu verarbeitenden Daten abhängt.
 
 Die Speicherkomplexität von Mergesort beträgt $\Theta(n)$, da zusätzlicher Speicherplatz für die temporären Teillisten benötigt wird. Dies kann bei sehr großen Datenmengen zu einem Nachteil werden.
 
@@ -1791,8 +1845,6 @@ Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads 
 	\label{fig:ms1-6Threads}
 \end{figure}
 
-TODO: Gesamt Auswertung/Fazit ...
-
 \subsubsection{Messung 2: Mergesort - Baumebenen:1-19}
 
 \begin{tabularx}{\textwidth}{@{}lX@{}}
@@ -1807,12 +1859,7 @@ Im folgenden Abschnitt wird der Fokus auf die Messungen für die maximalen Baume
 
 Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert auf den Ergebnissen der ersten Messung, bei der die Baumebenen 1 bis 6 detailliert untersucht wurden. Zwischen den Ebenen 4 und 13 wurden kaum Veränderungen in der Performance festgestellt, weshalb sich die Untersuchung auf die höheren Ebenen  fokussiert, um mögliche Unterschiede und Trends bei sehr großen Werten für die maximale Baumebene zu erfassen.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_bar_plot.png}
-	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
-	\label{fig:ms1-19CPU}
-\end{figure}
+Die entscheiden Performance Parameter sind dabei die Ausführungszeit pro maximaler Baumebene (Abb.: \ref{fig:ms1-19Zeit}) und Thread-Anzahl pro maximaler Baumebene (Abb.:\ref{fig:ms1-19Threads}).
 
 \begin{figure}[H]
 	\centering
@@ -1821,12 +1868,7 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\label{fig:ms1-19Zeit}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_bar_plot.png}
-	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
-	\label{fig:ms1-19RAM}
-\end{figure}
+Die Abbildung \ref{fig:ms1-19Zeit} zeigt die Ausführungszeit pro maximaler Baumebene für die verschiedenen Thread-Abstraktionen im Bereich von 13 bis 19 Ebenen. Die y-Achse ist logarithmisch mit Basis 10 skaliert, aufgrund der großen Unterschiede in den Ausführungszeiten. Virtual Threads, Coroutinen und Goroutinen zeigen eine nahezu konstante Ausführungszeit über alle Baumebenen hinweg. Ihre Leistung bleibt stabil und ähnelt den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Im Gegensatz dazu weisen Platform Threads ein exponentielles Wachstum der Ausführungszeit auf. Mit zunehmender Baumtiefe steigt die benötigte Zeit drastisch an. Die Messungen für Platform Threads wurden nach der maximalen Baumebene 19 abgebrochen, da die Ausführungszeiten für das Sortieren der Liste zu lang wurden. Diese Ergebnisse verdeutlichen die Skalierungsprobleme von Platform Threads bei extrem parallelen Aufgaben, während die anderen Thread-Abstraktionen eine bemerkenswerte Effizienz und Stabilität aufweisen.
 
 \begin{figure}[H]
 	\centering
@@ -1834,6 +1876,12 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
 	\label{fig:ms1-19Threads}
 \end{figure}
+
+Die Abbildung \ref{fig:ms1-19Threads} illustriert die Thread-Anzahl pro maximaler Baumebene für die verschiedenen Implementierungen. Die y-Achse ist ebenfalls logarithmisch mit Basis 10 skaliert, aufgrund der erheblichen Unterschiede in der Thread-Anzahl. Virtual Threads, Coroutinen und Goroutinen zeigen eine konstante Thread-Anzahl über alle Baumebenen hinweg. Diese Werte entsprechen den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Platform Threads hingegen weisen ein exponentielles Wachstum der Thread-Anzahl auf. Dies lässt sich dadurch erklären, dass für jeden Knoten im Baum bis zur maximalen Baumebene ein neuer Betriebssystem-Thread erstellt wird. Auf Ebene 19 werden durchschnittlich 49.881 Betriebssystem-Threads erstellt, mit einem Maximalwert von 68.210 Threads. Diese Beobachtungen führen zu zwei wichtigen Schlussfolgerungen: Erstens zeigen sich Platform Threads ineffizient bei extrem großen Thread-Zahlen und skalieren nicht mehr adäquat. Zweitens erweist sich die Implementierung trotz der enormen Thread-Anzahl als überraschend robust. Entgegen der aufgestellten Vermutungen stürzt die Anwendung nicht ab. Die Robustheit lässt sich durch die Standardkonfigurationen der verwendeten Systeme erklären: Die Java Virtual Machine (JVM) ist standardmäßig so konfiguriert, dass sie eine große Anzahl von Threads handhaben kann. Windows 11 ist ebenfalls darauf ausgelegt, mit einer hohen Anzahl von Threads umzugehen. 
+
+Bei der CPU-Auslastung (Abb.: \ref{fig:ms1-19CPU}) lassen sich kaum Veränderungen im Vergleich zur ersten Messung feststellen und auch der Arbeitsspeicherverbrauch (Abb.: \ref{fig:ms1-19RAM}) bleibt konstant außer für Java Platform Threads, was aber ebenfalls mit der steigenden Zahl an Threads zu erklären ist.
+
+Diese Ergebnisse unterstreichen die Effizienz und Skalierbarkeit von Virtual Threads, Coroutinen und Goroutinen bei hochparallelen Aufgaben, während sie gleichzeitig die Grenzen von Platform Threads bei extremer Parallelisierung aufzeigen.
 
 \subsubsection{Messung 3: Mergesort - Baumebenen:1-23}
 
@@ -1845,12 +1893,11 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_bar_plot.png}
-	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
-	\label{fig:ms1-23CPU}
-\end{figure}
+Die dritte Messung des Mergesort-Benchmarks konzentriert sich auf die extremen Bereiche der Parallelisierung, indem sie die maximalen Baumebenen von 18 bis 23 untersucht. Diese Messung zielt darauf ab, die Grenzen der Leistungsfähigkeit und Skalierbarkeit von Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen unter Bedingungen extremer Parallelität zu erforschen. Java Platform Threads wurden aufgrund ihrer Limitierungen bei hoher Parallelität bewusst aus dieser Messung ausgeschlossen
+
+Mit bis zu 8.388.607 Knoten im Mergesort-Baum bei Ebene 23 stellt dieser Benchmark die Thread-Abstraktionen vor eine enorme Herausforderung. Die Untersuchung soll Aufschluss darüber geben, bis zu welchem Grad diese modernen Konzepte mit der zunehmenden Parallelität umgehen können und ab wann mögliche Leistungseinbrüche oder Ressourcenengpässe auftreten.
+
+Besonders interessant sind die Ergebnisse der Ausführungszeit und der Thread-Anzahl, die in den Abbildungen \ref{fig:ms1-23Zeit} und \ref{fig:ms1-23Threads} dargestellt sind.
 
 \begin{figure}[H]
 	\centering
@@ -1859,12 +1906,7 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\label{fig:ms1-23Zeit}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/memory_usage_bar_plot.png}
-	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
-	\label{fig:ms1-23RAM}
-\end{figure}
+Die Abbildung \ref{fig:ms1-23Zeit} zeigt die Ausführungszeit pro maximaler Baumebene. Dabei fällt auf, dass die Ausführungszeiten für alle drei Implementierungen lange konstant auf den Werten der maximalen Baumebene 4 bleiben. Ein Anstieg ist für Virtual Threads ab Ebene 16, für Goroutinen ab Ebene 17 und für Coroutinen ab Ebene 19 zu beobachten. Eine Verdoppeln der Ausführungszeiten ist bei Ebene 20 für Virtual Threads, für  bei Ebene 21 Goroutinen und bei Ebene 22 für Coroutinen festzustellen. Trotz dieser leichten Unterschiede zeigen alle Implementierungen eine ähnlich gute Performance
 
 \begin{figure}[H]
 	\centering
@@ -1873,6 +1915,13 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\label{fig:ms1-23Threads}
 \end{figure}
 
+Die Abbildung \ref{fig:ms1-23Threads} stellt die Thread-Anzahl pro maximaler Baumebene dar. Bemerkenswert ist, dass die Thread-Anzahlen konstant niedrig bleiben, fast auf dem Niveau der maximalen Baumebenen. Dies deutet darauf hin, dass die Entkopplung von logischen und physischen Threads weiterhin effektiv funktioniert.
+
+Die CPU-Auslastung, dargestellt in Abbildung \ref{fig:ms1-23CPU}, bleibt konstant hoch beziehungsweise steigt für Virtual Threads und Coroutinen sogar an. Dies lässt sich dadurch erklären, dass die Verarbeitung länger auf tieferen Baumebenen stattfindet. Lediglich Goroutinen zeigen einen leichten Abfall der CPU-Auslastung auf Ebene 22.
+
+Der Arbeitsspeicherverbrauch, zu sehen in Abbildung \ref{fig:ms1-23RAM}, zeigt interessante Entwicklungen. Virtual Threads nähern sich im Verbrauch den Coroutinen an, während Goroutinen lange niedrig bleiben und erst ab Ebene 21 einen deutlichen Anstieg verzeichnen.
+
+Zusammenfassend lässt sich sagen, dass alle drei Thread-Abstraktionen einen hohen Grad an Parallelität bewältigen können und in ihrer Performance dicht beieinander liegen. Die Messung gibt Aufschluss darüber, ab welchem Punkt die Effizienz nachlässt, wobei jede Implementierung leicht unterschiedliche Grenzen aufweist.
 
 \subsubsection{Messung 4: Mergesort - Listenlänge}
 
@@ -1884,36 +1933,21 @@ Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert au
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-Faktor 10!!!
-logarithmische Y Achse
+Die vierte Messung des Mergesort-Benchmarks konzentriert sich auf den Einfluss der Listenlänge auf die Performance-Unterschiede zwischen den verschiedenen Thread-Abstraktionen. Für diese Untersuchung wurden Listenlängen von 10.000 bis 10.000.000 Elementen getestet, wobei die maximale Baumebene konstant bei 4 gehalten wurde. Da so alle 8 Kerne des Prozessors genutzt werden können.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/cpu_usage_bar_plot.png}
-	\caption{CPU-Auslastung pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
-	\label{fig:mslaengeCPU}
-\end{figure}
+Das Hauptziel dieser Messung war es, festzustellen, ob die Listenlänge einen signifikanten Einfluss auf die relativen Leistungsunterschiede zwischen den verschiedenen Thread-Abstraktionen hat. Die Ergebnisse zeigten jedoch, dass alle getesteten Implementierungen gleichermaßen mit der Listenlänge skalierten. Die beobachteten Performance-Unterschiede zwischen den Thread-Abstraktionen blieben über den gesamten Bereich der getesteten Listenlängen weitgehend konstant.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/execution_time_plot.png}
-	\caption{Ausführungszeit pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
-	\label{fig:mslaengeZeit}
-\end{figure}
+Aufgrund dieser Beobachtung und da keine neuen Erkenntnisse gewonnen wurden, die über die vorherigen Messungen hinausgingen, wurden die detaillierten Ergebnisse dieser Messung in den Anhang verschoben. Interessierte Leser können die entsprechenden Graphen im Abschnitt \ref{subsec:mergsort4graph} und die zugehörigen Tabellen im Abschnitt \ref{subsec:mergsort4tabellen} einsehen.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/memory_usage_bar_plot.png}
-	\caption{Arbeitsspeicherverbrauch pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
-	\label{fig:mslaengeRAM}
-\end{figure}
+\subsubsection{Fazit: Mergesort}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/num_threads_bar_plot.png}
-	\caption{Thread-Anzahl pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
-	\label{fig:mslaengeThreads}
-\end{figure}
+Der Mergesort-Benchmark erwies sich letztendlich als ein rechenintensiver Benchmark, bei dem der Grad der Parallelisierung durch die Anpassung der maximalen Baumebenen gesteuert werden konnte. Bei niedrigen Baumebenen zeigten alle vier Thread-Abstraktionen eine vergleichbare Skalierung hinsichtlich der CPU-Auslastung. Infolgedessen konnten Virtual Threads, Coroutinen und Goroutinen keine signifikant besseren Ergebnisse bei der Ausführungszeit erzielen als Platform Threads. Interessanterweise benötigten Coroutinen sogar die längste Ausführungszeit.
+
+Bezüglich des Arbeitsspeicherverbrauchs lagen Virtual Threads und Platform Threads gleichauf, während Coroutinen den mit Abstand höchsten Verbrauch aufwiesen. Goroutinen hingegen zeichneten sich durch den deutlich geringsten Arbeitsspeicherverbrauch aus.
+
+Die Anzahl der Threads offenbarte den markantesten Unterschied zwischen den neuen Technologien und Platform Threads. Während die Anzahl der Threads bei den neuen Technologien konstant niedrig blieb, stieg sie bei Platform Threads mit zunehmenden maximalen Baumebenen und damit steigender Parallelisierung kontinuierlich an. Dieser Anstieg führte zu einer Verlangsamung der Ausführung.
+
+Die neuen Technologien konnten aufgrund ihrer Entkoppelung von Betriebssystem-Threads eine deutlich größere Zahl an Threads handhaben. Performanceeinbrüche traten bei ihnen erst bei einem  hohen Grad an Parallelisierung auf, jedoch deutlich später als bei Platform Threads.
 
 
 \section{Benchmark 2: Bank}
@@ -1975,7 +2009,7 @@ Ein wesentlicher Vorteil von PostgREST ist, dass es PostgreSQL-Funktionen als Re
 
 Die Verwendung von PostgREST als Schnittstelle wurde mit dem Ziel gewählt, eine faire Vergleichsbasis für alle Implementierungen zu schaffen. Durch die einheitliche REST-Schnittstelle wird sichergestellt, dass alle Thread-Abstraktionen unter gleichen Bedingungen auf die Datenbank zugreifen. Ein weiterer Vorteil ist, dass keine spezifischen Datenbanktreiber für die verschiedenen Programmiersprachen benötigt werden, was die Implementierung vereinfacht und mögliche Unterschiede in der Leistungsfähigkeit der Treiber ausschließt.
 
-In der praktischen Durchführung des Benchmarks hat sich jedoch gezeigt, dass PostgREST zum limitierenden Faktor bei der Skalierung wurde. Eine genauerer Analyse befindet sich im Abschnitt TODO:Verweis. Deshalb ist PostgREST kein Teil der finalen Messungen für diesen Benchmark.
+In der praktischen Durchführung des Benchmarks hat sich jedoch gezeigt, dass PostgREST zum limitierenden Faktor bei der Skalierung wurde und letztendlich in diesem Aufbau eine ähnliche Funktion wie ein Datenbankverbindungspool übernehmen würde. Deshalb ist PostgREST kein Teil der finalen Messungen für diesen Benchmark.
 
 \paragraph{Docker:}
 
@@ -2121,7 +2155,7 @@ Der Parameter gibt die Gesamtzahl der Überweisungen an, die während des Benchm
 	\textbf{Typischer Wert:} & 100000 (Einhunderttausend Transaktionen)
 \end{tabularx}
 
-\subsubsection{Maximale Verbindungen}
+\subsubsection{Maximale Datenbankverbindungen}
 
 Der Parameter gibt die maximale Anzahl gleichzeitiger Datenbankverbindungen an, die der Verbindungspool verwalten kann. Diese Begrenzung beeinflusst direkt die Skalierbarkeit und Ressourcennutzung des Systems.
 
@@ -2142,6 +2176,7 @@ Der Parameter gibt an, ob und wie lange eine künstliche Verzögerung (in Sekund
 \end{tabularx}
 
 \subsubsection{Ressourcenbeschränkungen}
+\label{subsubsec:bankRes}
 
 Für die Durchführung des Bank-Benchmarks wurden spezifische Ressourcenbe\-schrän\-kun\-gen für die Docker-Container festgelegt. Diese Einschränkungen dienen dazu, eine konsistente und kontrollierte Testumgebung zu gewährleisten und die Vergleichbarkeit der Ergebnisse zwischen verschiedenen Implementierungen sicherzustellen.
 
@@ -2158,26 +2193,229 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 
 \subsection{Messungen: Bank}
 
-\chapter{Auswertung}
+Der Abschnitt präsentiert die Messergebnisse des Bank-Benchmarks. Die Resultate werden in Form von Graphen dargestellt, während die konkreten Messwerte in Tabellen im Anhang zu finden sind.
 
-\section{Ergebnisse und Beobachtungen}
+Bei allen durchgeführten Messungen kamen Datenbankreiber und Verbindungs-Pools zum Einsatz. Da diese Komponenten durchgängig verwendet wurden, wird dies nicht bei jeder einzelnen Messung explizit erwähnt.
 
-\section{Diskussion und Bewertung}
+Die Ressourcenbeschränkungen, die in Abschnitt \ref{subsubsec:bankRes} definiert wurden, blieben für alle Messungen unverändert. Dies gewährleistet eine konsistente Testumgebung und ermöglicht einen aussagekräftigen Vergleich der Ergebnisse.
 
+\subsubsection{Messung 1: Bank - Maximale Verbindungen}
 
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Maximale Datenbankverbindungen:} & \textbf{10-40} \\
+	\textbf{Anzahl der Bankkonten:} & 1000 \\
+	\textbf{Anzahl der Überweisungen:} & 100.000 \\
+	\textbf{Verzögerung der Überweisungen:} & 0.0 ms \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen
+\end{tabularx}
+
+Die erste Messung des Bank-Benchmarks untersucht den Einfluss der maximalen Datenbankverbindungen auf die Performance der verschiedenen Thread-Abstraktionen. Hierbei wird die Verbindungspool-Größe variiert, um zu ermitteln, wie sich die Anzahl gleichzeitiger Datenbankverbindungen auf die Leistung der Implementierungen auswirkt.
+
+Die maximalen Datenbankverbindungen wurden im Bereich von 10 bis 40 variiert, wobei die in den Graphen gzeigten Messpunkte so gewählt wurden, dass sie die optimale Ausführungszeit jeder Thread-Abstraktion abbilden. Diese lagt bei Virtual Threads bei 17 Verbindungen, bei Coroutinen bei 21 Verbindungen, bei Goroutinen bei 28 Verbindungen und bei Platform Threads bei 30 Verbindungen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/connections10-40/execution_time_plot.png}
+	\caption{Ausführungszeit pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{fig:bankConnZeit}
+\end{figure}
+
+Die Abbildung \ref{fig:bankConnZeit} zeigt die Ausführungszeit in Abhängigkeit der Anzahl an maximal zur Verfügung stehenden Datenbankverbindungen. Dabei liegen die optimalen Ausführungszeiten bei den oben genannten Werten. Des Weiteren hat sich gezeigt, dass die Schwankungen für alle Messparameter ab 40 maximal zur Verfügung stehenden Datenbankverbindungen aufhören. Jedoch auf einem deutlich höheren Niveau als bei ideal gewählten Verbindungszahlen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/connections10-40/cpu_usage_bar_plot.png}
+	\caption{CPU-Auslastung pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{fig:bankConnCPU}
+\end{figure}
+
+Die Abbildung \ref{fig:bankConnCPU} zeigt die CPU-Auslastung der Bank-Benchmark Implementierungen in Abhängigkeit der Anzahl an maximal zur Verfügung stehenden Datenbankverbindungen. Es fällt auf, dass alle Implementierungen bis auf Coroutinen ungefähr 40-45\% der zur Verfügung stehenden CPU-Leistung benötigen. Im Gegensatz dazu weisen Coroutinen eine deutlich höhere CPU-Auslastung von 100\% auf. Diese Beobachtung lässt sich darauf zurückführen, dass Coroutinen R2DBC, einen reaktiven Ansatz, verwenden. Bei höheren maximalen Verbindungszahlen wird die CPU somit zum leistungslimitierenden Faktor für die Coroutinen-Implementierung.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/connections10-40/memory_usage_bar_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{fig:bankConnRAM}
+\end{figure}
+
+Die Abbildung \ref{fig:bankConnRAM} zeigt den Arbeitsspeicherverbrauch pro maximale Datenbankverbindungen für die verschiedenen Thread-Abstraktionen. Ein bemerkenswertes Merkmal dieser Darstellung ist die relative Konstanz der Werte über alle Messpunkte hinweg.
+
+Unter den verglichenen Implementierungen weist Kotlin Coroutinen mit etwa 550 MB den höchsten Arbeitsspeicherverbrauch auf. Dicht dahinter folgen Java Virtual Threads mit ungefähr 450 MB. Java Platform Threads liegen mit circa 220 MB im mittleren Bereich. Go Goroutinen heben sich deutlich von den anderen Implementierungen ab und zeigen mit nur etwa 28 MB den mit Abstand niedrigsten Arbeitsspeicherverbrauch.
+
+Trotz dieser erheblichen Unterschiede zwischen den verschiedenen Thread-Abstraktionen bleibt der jeweilige Arbeitsspeicherverbrauch über alle Messpunkte hinweg konstant. Dies lässt darauf schließen, dass der Arbeitsspeicherverbrauch eine charakteristische Eigenschaft der jeweiligen Implementierung ist und nicht von der Anzahl der maximalen Datenbankverbindungen beeinflusst wird beziehungsweise diese nur einen kleinen Bruchteil ausmachen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/connections10-40/num_threads_bar_plot.png}
+	\caption{Thread-Anzahl pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{fig:bankConnThreads}
+\end{figure}
+
+Die Abbildung \ref{fig:bankConnThreads} zeigt die Thread-Anzahl der verschiedenen Bank-Benchmark Implementierungen in Abhängigkeit der maximal verfügbaren Datenbankverbindungen. Dabei fallen einige interessante Muster auf:
+Virtual Threads und Goroutinen zeigen konstante Werte über alle Messpunkte hinweg. Virtual Threads verwendet durchgehend um die 33 Betriebssystem-Threads, während Goroutinen mit nur ca. 12 Betriebssystem-Threads auskommt. Diese Konstanz deutet auf eine erfolgreiche Entkopplung von den BS-Threads hin.
+
+Platform Threads hingegen zeigen einen linearen Anstieg der Thread-Anzahl. Die Anzahl lässt sich durch die Formel \texttt{24+(maxConnections*2)} beschreiben, was auf die Verwendung von \texttt{Executors"".new""Fixed""Thread""Pool""(maxConnections*2)} zurückzuführen ist.
+
+Coroutinen weisen ein anderes Verhalten auf. Die Thread-Anzahl steigt bis auf etwa 85 Threads an und stagniert dann zwischen 80 und 90 Threads. Was sich mit Erfahrungen aus anderen Messungen dekt. Dieses Verhalten unterscheidet sich von den anderen drei Implementierungen, bei denen die maximalen gleichzeitigen Anfragen an den jeweiligen Pool auf\texttt{ maxConnections*2} begrenzt sind. Bei Coroutinen gibt es keine solche Begrenzung dafür, wie viele Coroutinen gleichzeitig Anfragen an den R2DBC-Pool senden dürfen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/connections10-40/postgres\_cpu\_bar\_plot.png}
+	\caption{PostgreSQL CPU-Auslastung pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{fig:bankConnPostgCPU}
+\end{figure}
+
+Die Abbildung zeigt die CPU-Auslastung der PostgreSQL-Datenbank in Abhängigkeit von der Anzahl der maximalen Datenbankverbindungen für verschiedene Thread-Abstraktionen. Es fällt auf, das mit Ausnahme der Coroutinen-Implementierung alle anderen untersuchten Implementierungen die Datenbank bei einer hohen Anzahl von Datenbankverbindungen vollständig auslasten können. Im Gegensatz dazu erreichen die Coroutinen nur eine maximale Auslastung der Datenbank von etwa 50\%. Diese Beobachtung lässt damit erklären, dass bei der Coroutinen-Implementierung die CPU-Auslastung der Anwendung selbst der limitierende Faktor ist.
+
+\subsubsection{Messung 2: Bank - Verzögerung}
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Maximale Datenbankverbindungen:} & 80 \\
+	\textbf{Anzahl der Bankkonten:} & 1000 \\
+	\textbf{Anzahl der Überweisungen:} & 100.000 \\
+	\textbf{Verzögerung der Überweisungen:} & \textbf{10-100 ms} \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen
+\end{tabularx}
+
+In der zweiten Messung des Bank-Benchmarks wurde untersucht, wie die verschiedenen Thread-Abstraktionen mit zunehmender Latenz der Datenbankoperationen umgehen. Die maximale Anzahl der Datenbankverbindungen wurde auf 80 festgelegt. Diese Einstellung wurde gewählt, um eine hohe Parallelität zu ermöglichen, ohne die standardmäßige Obergrenze von 100 Verbindungen in PostgreSQL zu überschreiten. Die Verzögerung der Überweisungen wurde durch die Verwendung von \texttt{pg\_sleep} in der Datenbank simuliert und variierte zwischen 10 und 100 Millisekunden.
+
+Besonders interessant für die Analyse waren die Ausführungszeit sowie die CPU-Auslastung der verschiedenen Implementierungen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delay80/execution_time_plot.png}
+	\caption{Ausführungszeit pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankDelay80Zeit}
+\end{figure}
+
+Abbildung \ref{fig:bankDelay80Zeit} stellt die Ausführungszeit der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen dar. Die Grafik zeigt einen linearen Anstieg der Ausführungszeit für alle Implementierungen mit zunehmender Ver\-zö\-ge\-rung.
+
+Bei geringen Verzögerungen weisen die Platform Threads zunächst die kürzeste Aus\-füh\-rungs\-zei\-ten auf. Ab einer Verzögerung von etwa 30 Millisekunden ändert sich jedoch die Reihenfolge, und es stellt sich ein konsistentes Muster ein. Virtual Threads und Goroutinen zeigen dann die kürzesten Ausführungszeiten, dicht gefolgt von den Platform Threads. Die Coroutinen weisen durchgehend die längsten Ausführungszeiten auf, wenn auch der Abstand zu den anderen Implementierungen relativ gering bleibt.
+
+Bemerkenswert ist, dass trotz der unterschiedlichen Leistungscharakteristika die Aus\-füh\-rungs\-zei\-ten aller getesteten Thread-Abstraktionen über den gesamten Ver\-zö\-ge\-rungs\-be\-reich hinweg recht nahe beieinander liegen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delay80/cpu_usage_bar_plot.png}
+	\caption{CPU-Auslastung pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankDelay80CPU}
+\end{figure}
+
+Abbildung \ref{fig:bankDelay80CPU} zeigt die CPU-Auslastung der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen. Bei einer Latenz von 10 Millisekunden liegen die CPU-Auslastungen für Platform Threads, Virtual Threads und Goroutinen eng beieinander, wobei Platform Threads die niedrigste Auslastung mit etwa 44\% und Virtual Threads die höchste mit circa 56\% aufweisen. Auffällig ist, dass die Coroutinen-Implementierung bei dieser Latenz eine deutlich höhere CPU-Auslastung von 100\% zeigt, was mit den Ergebnissen aus der ersten Messung für eine hohe Anzahl maximaler Verbindungen übereinstimmt.
+
+Mit zunehmender Verzögerung ist für alle Implementierungen ein leichter linearer Rück\-gang der CPU-Auslastung zu beobachten. Dieser Trend deutet darauf hin, dass bei längeren Wartezeiten zwischen den Überweisungen die Prozessorressourcen weniger intensiv genutzt werden. Die Coroutinen-Implementierung behält jedoch durchgehend die höchste CPU-Auslastung, während die anderen Thread-Abstraktionen weiterhin relativ dicht beieinander liegen.
+
+Ein ähnliches Bild zeigt sich für die CPU-Auslastung der PostgreSQL-Datenbank, die ebenfalls mit steigender Latenz linear abnimmt (siehe Abb.: \ref{fig:bankDelay80PostgCPU}). 
+
+Der Arbeitsspeicherverbrauch bleibt hingegen konstant und weist kaum Unterschiede zum Verbrauch in Messung 1 auf (siehe Abb.: \ref{fig:bankDelay80RAM}).
+
+Die Thread-Anzahl bleibt ebenfalls konstant, was nicht überraschend ist, da mit festen Datenbankverbindungspools gearbeitet wird (siehe Abb.: \ref{fig:bankDelay80Threads}).
+
+Bei Verwendung der jeweils idealen Anzahl an Verbindungen für die Implementierungen, die in Messung 1 ermittelt wurden, zeigt sich eine Verlagerung hinsichtlich der Implementierung mit den kürzesten Ausführungszeiten (siehe Abb.: \ref{fig:bankdelayIdealZeit}). Insgesamt sind jedoch alle Ausführungszeiten deutlich langsamer als bei 80 maximalen Verbindungen. Dies ist darauf zurückzuführen, dass die Parallelität durch die kleineren Pool-Größen deutlich begrenzter ist, was sich als Nachteil bei Latenzen in der Datenbankkommunikation erweist.
+
+Abschließend lässt sich festhalten, dass Latenzen in der Kommunikation mit der Datenbank direkte Auswirkungen auf die Ausführungszeit haben. Zudem sinkt die CPU-Auslastung sowohl bei den Implementierungen als auch bei der PostgreSQL-Datenbank mit zunehmender Latenz.
+
+Der Grund dafür liegt in der Limitierung durch den Datenbankverbindungspool, der zum begrenzenden Faktor für die Parallelität wird. Mit maximal 80 gleichzeitig ausführbaren Transaktionen reicht die Kapazität bei steigender Latenz nicht aus, um eine optimale Auslastung zu gewährleisten. Eine ideale Lösung wäre, wenn eine Verbindung freigegeben werden könnte, sobald eine Transaktion blockiert, sodass eine weitere Transaktion diese Verbindung nutzen könnte. Dies würde dem Prinzip der Thread-Abstraktionen ähneln, bei denen Ressourcen effizient wiederverwendet werden, wenn ein Thread oder eine Aufgabe auf eine I/O-Operation wartet.
+
+\subsubsection{Messung 3: Bank - Anzahl an Überweisungen}
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Maximale Datenbankverbindungen:} & 80 \\
+	\textbf{Anzahl der Bankkonten:} & 1000 \\
+	\textbf{Anzahl der Überweisungen:} & \textbf{100.000 - 500.000} \\
+	\textbf{Verzögerung der Überweisungen:} & 0.0 ms \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen
+\end{tabularx}
+
+In der dritten Messung des Bank-Benchmarks wurde untersucht, wie die verschiedenen Thread-Abstraktionen mit einer steigenden Anzahl von Überweisungen umgehen. Für diesen Test wurde die Anzahl der Überweisungen zwischen 100.000 und 500.000 variiert.
+
+Die Messung wurde in zwei Varianten durchgeführt: Einmal mit einer maximalen Anzahl von 80 Datenbankverbindungen für alle Implementierungen und einmal unter den jeweils idealen Bedingungen, die in Messung 1 ermittelt wurden. Diese idealen Einstellungen waren 17 Verbindungen für Virtual Threads, 21 für Coroutinen, 28 für Goroutinen und 30 für Platform Threads.
+
+Besonders interessant für die Analyse waren die Ausführungszeiten, sowohl für die Konfiguration mit 80 maximalen Verbindungen als auch für die idealen Einstellungen. Diese Zeiten geben Aufschluss darüber, wie gut die verschiedenen Thread-Abstraktionen mit einer zunehmenden Arbeitslast umgehen können.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactions80/execution\_time\_plot.png}
+	\caption{Ausführungszeit pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\label{fig:bankTransactions80Zeit}
+\end{figure}
+
+Abbildung \ref{fig:bankTransactions80Zeit} zeigt die Ausführungszeit pro Anzahl an Überweisungen mit 80 maximalen Verbindungen für die verschiedenen Implementierungen. Es ist erkennbar, dass alle Implementierungen linear mit der steigenden Anzahl an Überweisungen skalieren. Besonders auffällig ist, dass die Coroutinen-Implementierung am besten skaliert und sich mit zunehmender Zahl an Überweisungen deutlich von den anderen drei Implementierungen absetzen kann.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactionsIdeal/execution_time_plot.png}
+	\caption{Ausführungszeit pro Anzahl an Überweisungen mit idealen Verbindungs-Einstellungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\label{fig:bankTransactionsIdealZeit}
+\end{figure}
+
+Im Vergleich dazu präsentiert Abbildung \ref{fig:bankTransactionsIdealZeit} die Ausführungszeit pro Anzahl an Überweisungen unter idealen Verbindungs-Einstellungen für jede Implementierung. Auch hier ist eine lineare Skalierung zu beobachten, jedoch bleibt das Verhältnis der Implementierungen zueinander nun weitgehend konstant. In dieser Konfiguration erweisen sich die Goroutinen als die schnellste Implementierung, mit einer fast doppelt so schnellen Ausführungszeit wie die anderen. Virtual Threads und Coroutinen zeigen ähnliche Leistungen und liegen im Mittelfeld, während die Platform Threads die langsamste Performance aufweisen. Interessanterweise gibt es eine Ausnahme beim ersten Messpunkt, wo die Platform Threads die zweitschnellste Ausführungszeit verzeichnen.
+
+Die restlichen Messwerte bleiben unauffällig. Es lässt sich beobachten, dass die CPU-Auslastung für alle Implementierungen konstant bleibt (Abb.: \ref{fig:bankTransactions80CPU}), unabhängig von der steigenden Anzahl der Überweisungen. Ebenso bleibt die Thread-Anzahl über den gesamten Messbereich hinweg unverändert (\ref{fig:bankTransactions80Threads}). Die PostgreSQL CPU-Auslastung zeigt ebenfalls ein konstantes Verhalten (Abb.: \ref{fig:bankTransactions80PostgCPU}).
+
+Der Arbeitsspeicherverbrauch weist einen langsamen, linearen Anstieg auf (Abb.: \ref{fig:bankTransactions80RAM}). Dies lässt sich dadurch erklären, dass mit steigender Anzahl der Überweisungen mehr Daten zu Beginn des Programms importiert werden müssen, was zu einem erhöhten Speicherbedarf führt.
+
+Insgesamt lässt sich feststellen, dass die Anzahl der Überweisungen keinen signifikanten Einfluss auf die Performance-Metriken hat, mit Ausnahme der Ausführungszeit. Diese skaliert gleichmäßig mit der steigenden Anzahl der Überweisungen. Interessanterweise führt ein möglichst hoher Grad an Parallelisierung nicht automatisch zu besseren Laufzeiten. Wie bereits in Messung 1 beobachtet, werden die besten Ergebnisse für die Ausführungszeit bei ideal gewählten Werten für die maximalen Verbindungen erzielt.
+
+\subsubsection{Messung 4: Bank - Anzahl an Bankkonten}
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+	\textbf{Maximale Datenbankverbindungen:} & 80 \\
+	\textbf{Anzahl der Bankkonten:} & \textbf{10, 100, 1000, 10000} \\
+	\textbf{Anzahl der Überweisungen:} & 100.000 \\
+	\textbf{Verzögerung der Überweisungen:} & 0.0 ms \\
+	\textbf{Implementierungen:} & Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen, Go Goroutinen
+\end{tabularx}
+
+Die vierte Messung des Bank-Benchmarks untersucht den Einfluss der Anzahl der Bankkonten auf die Performance der verschiedenen Thread-Abstraktionen. Für diesen Test wurde die Anzahl der Bankkonten von 10 bis 10.000 variiert, während die anderen Parameter konstant blieben.
+
+Es ist wichtig zu beachten, dass die Anzahl der Bankkonten der Anzahl der Zeilen in der PostgreSQL-Tabelle entspricht. Bei einer Überweisung werden zwei Zeilen gesperrt, da sowohl das Sender- als auch das Empfängerkonto betroffen sind. Daraus folgt, dass die maximale Anzahl gleichzeitiger Transaktionen der Hälfte der Anzahl der Konten entspricht. Dies erklärt die längeren Ausführungszeiten bei einer geringen Anzahl von Konten, da dies zum begrenzenden Faktor wird.
+
+Insgesamt zeigt diese Messung, dass die Anzahl der Bankkonten keine nennenswerten Auswirkungen auf die Performance hat, solange sie ausreichend groß gewählt wird. Die detaillierten Ergebnisse und Graphen können im Anhang eingesehen werden (Abschnitt: \ref{subsec:bank4graph}).
+
+\subsubsection{Fazit: Bank}
+
+Der Bank-Benchmark zeigt, dass die Performance von Thread-Abstraktionen stark von anderen Technologien abhängt, insbesondere von der Datenbank, dem Datenbanktreiber und dem Datenbankverbindungspool. Um das volle Potenzial der Thread-Abstraktionen auszuschöpfen, müssen all diese Komponenten die jeweilige Thread-Abstraktionen unterstützen.
+
+Die Leistung ist dementsprechend stark von den genutzten Technologien abhängig. Da Virtual Threads noch relativ neu sind, müssen andere Technologien noch nachziehen oder weiter optimiert werden, um das volle Potenzial ausnutzen zu können.
+
+Ein generelles Problem, das sich herauskristallisierte, ist die fehlende Entkopplung bei Datenbankverbindungen, ähnlich wie sie bei Thread-Abstraktionen existiert. Dies begrenzt den Nutzen der Freigabe von Threads erheblich, da die maximale Anzahl an Verbindungen zum limitierenden Faktor für die Parallelität wird. Besonders deutlich wurde dies in der zweiten Messung mit künstlichen Latenzen in den Überweisungen. Hier stand theoretisch noch CPU-Leistung zur Verfügung, die aufgrund dieser Begrenzung nicht ausgeschöpft werden konnte.
+
+Interessanterweise hat sich gezeigt, dass bei geringen Latenzen, also wenig oder kurzen Blockierungen, ein hoher Grad an Parallelisierung nicht vorteilhaft ist. Die erste Messung demonstrierte sogar, dass die idealen Werte für maximale Verbindungen eher niedrig sind. Dies deutet darauf hin, dass es in solchen Szenarien wichtiger ist, den Overhead gering zu halten, als die Parallelität zu steigern.
 
 \chapter{Zusammenfassung und Ausblick}
 
-\section{Zusammenfassung}
+\section{Fazit}
+
+Die neuen Thread-Abstraktionen in verschiedenen Programmiersprachen verfolgen einen ähnlichen Ansatz: Sie entkoppeln die Ausführung von Aufgaben von den Betriebssystem-Threads. Dies bedeutet, dass die Anzahl der gleichzeitig ausführbaren Aufgaben nicht mehr direkt an die Anzahl der verfügbaren Betriebssystem-Threads gebunden ist. Stattdessen wird ein Scheduling auf Laufzeitebene eingeführt, das es ermöglicht, eine deutlich größere Zahl von leichtgewichtigen Thread-Abstraktionen (wie Virtual Threads, Coroutinen oder Goroutinen) auf einer kleineren Anzahl von Betriebssystem-Threads zu verwalten.
+
+Diese Entkopplung führt zu einem geringeren Ressourcenverbrauch, da nicht für jede parallel auszuführende Aufgabe ein eigener Betriebssystem-Thread erstellt werden muss. Dadurch können Anwendungen eine viel höhere Anzahl von gleichzeitigen Aufgaben effizient verwalten, was besonders bei I/O-lastigen Operationen von Vorteil ist.
+
+Diese Effizienzsteigerung wurde im Rahmen des ersten Benchmarks (Mergesort) deutlich demonstriert, insbesondere in den Messungen 2 und 3, bei denen bewusst viele Threads erstellt wurden. Die neuen Versionen zeigten sich deutlich länger performant als die alten Platform Threads, wobei die Anzahl der Betriebssystem-Threads bis zum Schluss konstant niedrig blieb, während die Anzahl der Platform Threads stetig anstieg. Allerdings zeigte die erste Messung des Mergesort-Benchmarks auch, dass bei einer bereits optimalen CPU-Auslastung durch einen geringen Grad an Parallelisierung keine weiteren Laufzeitvorteile erzielt werden konnten.
+
+Der zweite Benchmark (Bank) offenbarte eine starke Abhängigkeit von anderen Technologien, die die neuen Thread-Abstraktionen unterstützen müssen. Selbst bei vorhandener Unterstützung konnte kein signifikanter Performancegewinn erzielt werden, da eine Entkopplung von Datenbankverbindungen und Transaktionen nicht möglich war.
+
+Die neuen Thread-Abstraktionen zeigen ihre Stärken besonders in Szenarien mit hoher Parallelität und häufigen Unterbrechungen. Sie bieten mindestens die gleiche Leistung wie die alten Implementierungen, übertreffen diese jedoch deutlich in Situationen, die viele gleichzeitige Aufgaben und häufig blockierende Vorgänge beinhalten.Generell lässt sich festhalten, dass die neuen Thread-Abstraktionen in keinem Fall schlechter abschneiden als die alten. Dies ermöglicht beispielsweise in Java einen bedenkenlose Umstellung von Platform Threads auf Virtual Threads. Die neuen Virtual Threads konnten in den Benchmarks sogar besser abschneiden als ihr direktes Konkurrenzprodukt in der JVM, die Kotlin Coroutinen.
+
+Trotz dieser Fortschritte zeigten die Goroutinen in Go mit Abstand die beste Performance, was nicht überrascht, da Go von Grund auf für Leistung und Nebenläufigkeit entwickelt wurde.
+
 
 \section{Ausblick}
-%Java VT kein pinning bei Synchronized
-%Structured Concurrency(jeps/preview)
-%Cancellation
-%Scoped Values(jeps/preview)
-%ExceptionHandling
-%Webserver Thread-per-Request
 
+Die vorliegende Masterarbeit bietet eine solide Grundlage für weiterführende Untersuchungen im Bereich der Nebenläufigkeit und Thread-Abstraktionen in verschiedenen Programmiersprachen. Es gibt mehrere vielversprechende Anknüpfungspunkte, die das Potenzial haben, die Arbeit zu erweitern und zu vertiefen und durch Entwicklung eines robusten Testaufbaus inklusive entsprechender Messwerkzeuge ist dies mit einem überschaubaren Aufwand möglich.
+
+Ein wichtiger Bereich für zukünftige Forschung wäre die Erweiterung um weiter Benchmarks. Dabei gibt es verschieden interessante Ansätze:
+
+Insbesondere könnte die Untersuchung von Cancellation-Mechanismen wertvolle Einblicke liefern. Diese werden in den Sprachen unterschiedlich umgesetzt. Coroutinen nutzen Coroutinen-Scopes zur Ermöglichung einer hierarchischen Strukturierung, Goroutinen hingegen das Closing-Channels-Programmiermuster.
+Für Java Virtual Threads wird zukünftig vermutlich die sogenannte Structured Concurrency eingeführt, welche ebenfalls eine Hierarchie unter den Virtual Threads ermöglicht.
+
+Ein weiterer wichtiger Aspekt für zukünftige Untersuchungen wäre das Exception Handling. Eine detaillierte Analyse des Verhaltens bei Ausnahmen und Abbrüchen in nebenläufigen Szenarien könnte die Robustheit verschiedener Implementierungen aufzeigen.
+
+Zudem könnte die Entwicklung eines Webserver nach dem Thread-per-Request Modell Erkenntnisse für praktische Anwendungsfälle liefern und für die verschiedenen Thread-Abstraktionen deren Effizienz in realen Szenarien demonstrieren.
+
+Um ein noch umfassenderes Bild zu erhalten, wäre es alternativ auch möglich, die vorhandenen Benchmarks auf weitere Programmiersprachen mit entsprechenden Thread-Abstraktionen auszuweiten. Insbesondere könnten Sprachen wie C++ und Rust in Betracht gezogen werden, die ihre eigenen Ansätze zur Nebenläufigkeit bieten.
+
+Insgesamt bietet diese Masterarbeit eine gute Grundlage als Fundament für potenziell weitere Untersuchungen. Die gewonnenen Erkenntnisse können als Ausgangspunkt für tiefergehende Analysen und praktische Anwendungen in der Softwareentwicklung dienen.
 
 
 \printbibliography
@@ -2185,9 +2423,181 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 
 \chapter{Anhang}
 
+\section{Mergesort: zusätzliche Graphen}
+
+\subsection{Mergesort Messung 2: Graphen}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/cpu_usage_bar_plot.png}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
+	\label{fig:ms1-19CPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-19_pvcg/memory_usage_bar_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 2: max. Baumebenen 13-19}
+	\label{fig:ms1-19RAM}
+\end{figure}
+
+\subsection{Mergesort Messung 3: Graphen}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/cpu_usage_bar_plot.png}
+	\caption{CPU-Auslastung pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
+	\label{fig:ms1-23CPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Maximalebauebenen1-23_vcg/memory_usage_bar_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro maximaler Baumebene,\\ Mergesort Messung 3: max. Baumebenen 18-23}
+	\label{fig:ms1-23RAM}
+\end{figure}
+
+\subsection{Mergesort Messung 4: Graphen}
+\label{subsec:mergsort4graph}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/cpu_usage_bar_plot.png}
+	\caption{CPU-Auslastung pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{fig:mslaengeCPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/execution_time_plot.png}
+	\caption{Ausführungszeit pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{fig:mslaengeZeit}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/memory_usage_bar_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{fig:mslaengeRAM}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/mergesort/Listenlaenge/num_threads_bar_plot.png}
+	\caption{Thread-Anzahl pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
+	\label{fig:mslaengeThreads}
+\end{figure}
+
+\section{Bank: zusätzliche Graphen}
+
+\subsection{Bank Messung 2: Graphen}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delay80/memory_usage_bar_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankDelay80RAM}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delay80/num_threads_bar_plot.png}
+	\caption{Thread-Anzahl pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankDelay80Threads}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delay80/postgres\_cpu\_bar\_plot.png}
+	\caption{PostgreSQL CPU-Auslastung pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankDelay80PostgCPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/delayIdeal/execution_time_plot.png}
+	\caption{Ausführungszeit pro Verzögerung mit idealen Verbindungs-Einstellungen,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{fig:bankdelayIdealZeit}
+\end{figure}
+
+\subsection{Bank Messung 3: Graphen}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactions80/cpu\_usage\_bar\_plot.png}
+	\caption{CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\label{fig:bankTransactions80CPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactions80/memory\_usage\_bar\_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\label{fig:bankTransactions80RAM}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactions80/num\_threads\_bar\_plot.png}
+	\caption{Thread-Anzahl pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\label{fig:bankTransactions80Threads}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/transactions80/postgres\_cpu\_bar\_plot.png}
+	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.0000}
+	\label{fig:bankTransactions80PostgCPU}
+\end{figure}
+
+\subsection{Bank Messung 4: Graphen}
+\label{subsec:bank4graph}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accounts80/execution\_time\_plot.png}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccounts80Zeit}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accounts80/cpu\_usage\_bar\_plot.png}
+	\caption{CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccounts80CPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accounts80/memory\_usage\_bar\_plot.png}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccounts80RAM}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accounts80/num\_threads\_bar\_plot.png}
+	\caption{Thread-Anzahl pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccounts80Threads}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accounts80/postgres\_cpu\_bar\_plot.png}
+	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccounts80PostgCPU}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figures/bank/accountsIdeal/execution_time_plot.png}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten mit idealen Verbindungs-Einstellungen, Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\label{fig:bankAccountsIdealZeit}
+\end{figure}
+
 \section{Mergesort Tabellen}
 
-\subsection{Mergesort Messung 1}
+\subsection{Mergesort Messung 1: Tabellen}
 
 \begin{table}[H]
 	\centering
@@ -2326,7 +2736,7 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 	\label{tab:ms1-6Threads}
 \end{table}
 
-\subsection{Mergesort Messung 2}
+\subsection{Mergesort Messung 2: Tabellen}
 
 \begin{table}[H]
 	\centering
@@ -2465,7 +2875,7 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 	\label{tab:ms1-19Threads}
 \end{table}
 
-\subsection{Mergesort Messung 3}
+\subsection{Mergesort Messung 3: Tabellen}
 
 \begin{table}[H]
 	\centering
@@ -2591,7 +3001,8 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 \end{table}
 
 
-\subsection{Mergesort Messung 4}
+\subsection{Mergesort Messung 4: Tabellen}
+\label{subsec:mergsort4tabellen}
 
 \begin{table}[H]
 	\centering
@@ -2730,6 +3141,198 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 	\caption{Thread-Anzahl pro Listenlänge,\\ Mergesort Messung 4: Listenlänge 10.000-10.000.000}
 	\label{tab:mslaengeThreads}
 \end{table}
+
+\newpage
+
+\section{Bank Tabellen}
+
+\subsection{Bank Messung 1: Tabellen}
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\small
+		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\small
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\small
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\small
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\small
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/connections10-40/execution_time_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{tab:bankConnZeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.3\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/connections10-40/cpu_usage_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{tab:bankConnCPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.3\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/connections10-40/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{tab:bankConnRAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/connections10-40/num_threads_aggregated.csv}{}
+		{\csvcoli & 
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{tab:bankConnThreads}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.64\hsize}X*{8}{>{\hsize=3.3\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/connections10-40/postgres_cpu_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{PostgreSQL CPU-Auslastung pro Maximale Verbindungen,\\ Bank Messung 1: Maximale Verbindungen 10-40}
+	\label{tab:bankConnPostgCPU}
+\end{table}
+
+\subsection{Bank Messung 2: Tabellen}
 
 %\input{abkuerz.tex}      % Einbinden von Tex-Files
 %\input{einfuehrung.tex}
