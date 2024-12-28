@@ -1,0 +1,6 @@
+transactions,platform_max_cpu_usage,platform_mean_cpu_usage,virtual_max_cpu_usage,virtual_mean_cpu_usage,coroutines_max_cpu_usage,coroutines_mean_cpu_usage,goroutines_max_cpu_usage,goroutines_mean_cpu_usage
+100.000,83,41,100,43,106,100,43,41
+200.000,84,41,102,41,107,100,43,41
+300.000,85,40,102,40,107,100,44,41
+400.000,88,41,102,40,106,99,48,41
+500.000,83,40,101,41,107,98,46,41

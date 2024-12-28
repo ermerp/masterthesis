@@ -1,0 +1,5 @@
+accounts,platform_max_postgres_cpu,platform_mean_postgres_cpu,virtual_max_postgres_cpu,virtual_mean_postgres_cpu,coroutines_max_postgres_cpu,coroutines_mean_postgres_cpu,goroutines_max_postgres_cpu,goroutines_mean_postgres_cpu
+10,76,51,66,48,56,45,66,51
+100,111,104,111,95,87,60,111,105
+1000,111,106,110,104,89,53,109,106
+10000,108,106,109,101,100,57,109,105

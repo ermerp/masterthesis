@@ -1,0 +1,11 @@
+delay,platform_max_postgres_cpu,platform_mean_postgres_cpu,virtual_max_postgres_cpu,virtual_mean_postgres_cpu,coroutines_max_postgres_cpu,coroutines_mean_postgres_cpu,goroutines_max_postgres_cpu,goroutines_mean_postgres_cpu
+10,111,105,103,92,84,56,110,101
+20,109,100,96,79,67,52,95,80
+30,97,84,90,71,62,47,88,79
+40,108,77,85,48,58,45,80,69
+50,91,75,80,64,57,45,77,66
+60,85,70,73,60,59,47,73,64
+70,80,68,69,58,60,46,70,58
+80,73,65,67,56,54,46,72,58
+90,68,60,63,53,53,43,70,55
+100,63,58,60,52,54,42,64,51

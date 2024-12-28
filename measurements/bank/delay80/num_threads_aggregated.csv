@@ -1,0 +1,11 @@
+delay,platform_max_num_threads,platform_mean_num_threads,virtual_max_num_threads,virtual_mean_num_threads,coroutines_max_num_threads,coroutines_mean_num_threads,goroutines_max_num_threads,goroutines_mean_num_threads
+10,185,184,34,33,96,89,14,12
+20,185,184,34,33,96,88,13,12
+30,185,184,34,33,96,85,13,12
+40,185,184,34,33,96,88,14,13
+50,184,184,34,33,95,83,13,12
+60,185,184,34,33,81,74,13,12
+70,185,184,34,33,91,84,13,13
+80,185,184,34,33,87,74,14,12
+90,185,184,34,33,88,74,13,12
+100,185,184,34,33,96,82,13,12

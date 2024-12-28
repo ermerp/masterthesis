@@ -1,0 +1,5 @@
+accounts,platform_max_memory_usage,platform_mean_memory_usage,virtual_max_memory_usage,virtual_mean_memory_usage,coroutines_max_memory_usage,coroutines_mean_memory_usage,goroutines_max_memory_usage,goroutines_mean_memory_usage
+10,229,227,555,496,579,573,36,34
+100,214,214,573,498,567,490,35,34
+1000,243,233,471,422,698,597,37,36
+10000,248,245,545,459,694,570,37,36

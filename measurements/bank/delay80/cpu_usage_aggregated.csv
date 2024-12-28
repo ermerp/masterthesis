@@ -1,0 +1,11 @@
+delay,platform_max_cpu_usage,platform_mean_cpu_usage,virtual_max_cpu_usage,virtual_mean_cpu_usage,coroutines_max_cpu_usage,coroutines_mean_cpu_usage,goroutines_max_cpu_usage,goroutines_mean_cpu_usage
+10,80,44,104,56,105,99,50,45
+20,85,43,100,47,105,90,48,44
+30,79,38,102,45,105,80,47,42
+40,69,34,102,32,104,75,45,39
+50,46,33,98,40,102,69,45,38
+60,67,31,104,39,106,67,42,38
+70,55,30,90,38,105,65,40,36
+80,58,29,72,38,105,63,42,36
+90,57,27,106,37,103,60,40,35
+100,56,26,98,37,103,59,38,33

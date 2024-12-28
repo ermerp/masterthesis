@@ -1,0 +1,11 @@
+delay,platform_max_memory_usage,platform_mean_memory_usage,virtual_max_memory_usage,virtual_mean_memory_usage,coroutines_max_memory_usage,coroutines_mean_memory_usage,goroutines_max_memory_usage,goroutines_mean_memory_usage
+10,248,246,543,461,671,587,36,34
+20,214,213,520,452,546,510,37,36
+30,230,221,562,475,516,491,35,34
+40,238,236,522,463,544,518,37,35
+50,242,238,551,476,564,544,35,34
+60,218,210,509,458,600,578,37,36
+70,225,224,520,455,686,656,37,36
+80,219,215,552,472,573,560,36,34
+90,241,236,539,479,722,690,33,32
+100,252,246,567,502,687,664,35,34

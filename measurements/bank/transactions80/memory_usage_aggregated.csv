@@ -1,0 +1,6 @@
+transactions,platform_max_memory_usage,platform_mean_memory_usage,virtual_max_memory_usage,virtual_mean_memory_usage,coroutines_max_memory_usage,coroutines_mean_memory_usage,goroutines_max_memory_usage,goroutines_mean_memory_usage
+100.000,241,234,538,467,717,579,37,36
+200.000,243,242,733,670,1019,862,52,51
+300.000,422,415,861,824,1281,1067,67,65
+400.000,386,385,1041,989,1280,1132,84,82
+500.000,537,528,1127,1088,1295,1236,96,95

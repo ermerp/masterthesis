@@ -1,0 +1,5 @@
+accounts,platform_max_cpu_usage,platform_mean_cpu_usage,virtual_max_cpu_usage,virtual_mean_cpu_usage,coroutines_max_cpu_usage,coroutines_mean_cpu_usage,goroutines_max_cpu_usage,goroutines_mean_cpu_usage
+10,39,9,104,17,103,30,24,15
+100,89,38,103,50,106,91,47,44
+1000,90,41,92,42,108,100,44,41
+10000,86,41,103,43,105,99,43,40

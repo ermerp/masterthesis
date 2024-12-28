@@ -41,7 +41,7 @@
 \sisetup{
 	round-mode = places,   % Rundet auf eine festgelegte Anzahl Dezimalstellen
 	round-precision = 4,   % Präzision von 4 Dezimalstellen
-	group-separator = {.}, % Tausendertrennzeichen als Punkt
+	group-separator = {.}, % Tausendernnnnzeichen als Punkt
 	group-minimum-digits = 3, % Mindestens 3 Ziffern pro Gruppe
 	output-decimal-marker = {,}, % Dezimaltrennzeichen als Komma
 	zero-decimal-to-integer = true, % Entfernt die Dezimalstellen bei Ganzzahlen
@@ -57,6 +57,9 @@
 \usepackage[sorting=none, style=nature]{biblatex}
 \addbibresource{literatur.bib}
 
+\usepackage{geometry}
+\geometry{a4paper, left=2.3cm, right=2.3cm, top=3.5cm, bottom=3.5cm}
+
 % Festlegung Kopf- und Fußzeile     
 \defpagestyle{meinstil}{%
 {\headmark \hfill}
@@ -71,11 +74,13 @@
 }
 \pagestyle{meinstil} 
 
+
 \raggedbottom
 \renewcommand{\topfraction}{1}
 \renewcommand{\bottomfraction}{1}
 
 \newcommand{\code}[1]{\texttt{#1}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -836,7 +841,6 @@ Kommt es in einer Coroutine zu einer Cancellation, wird auf das Konzept der coop
 			// do something
 		}
 	}
-
 	// abbrechbare Coroutine
 	launch {
 		while (this.isActive) {
@@ -1111,7 +1115,7 @@ In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommuni
 
 Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend, um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber um einen Strukturtyp mit dem Namen \texttt{g} der in der \texttt{runtime2.go} \cite{goruntime2024} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps \texttt{g} bei dem sich auf die wichtigsten Parameter beschränkt wird:
 
-\begin{lstlisting}[language=Go,extendedchars=true]
+\begin{lstlisting}[language=Go,extendedchars=true,breaklines=false]
 	type g struct {
 		stack	    stack   // Goroutinen-Stack
 		m       	 *m      // aktueller BS-Thread (m)
@@ -1948,6 +1952,8 @@ Die Anzahl der Threads offenbarte den markantesten Unterschied zwischen den neue
 
 Die neuen Technologien konnten aufgrund ihrer Entkoppelung von BS-Threads eine deutlich größere Zahl an Threads handhaben. Performanceeinbrüche traten bei ihnen erst bei einem  hohen Grad an Parallelisierung auf, jedoch deutlich später als bei Platform Threads.
 
+\newpage
+
 \section{Benchmark 2: Bank}
 
 \subsection{Motivation: Bank}
@@ -2334,7 +2340,7 @@ Besonders interessant für die Analyse waren die Ausführungszeiten, sowohl für
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/transactions80/execution\_time\_plot.png}
-	\caption{Ausführungszeit pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\caption{Ausführungszeit pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
 	\label{fig:bankTransactions80Zeit}
 \end{figure}
 
@@ -2527,28 +2533,28 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/transactions80/cpu\_usage\_bar\_plot.png}
-	\caption{CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\caption{CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
 	\label{fig:bankTransactions80CPU}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/transactions80/memory\_usage\_bar\_plot.png}
-	\caption{Arbeitsspeicherverbrauch pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
 	\label{fig:bankTransactions80RAM}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/transactions80/num\_threads\_bar\_plot.png}
-	\caption{Thread-Anzahl pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.000}
+	\caption{Thread-Anzahl pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
 	\label{fig:bankTransactions80Threads}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/transactions80/postgres\_cpu\_bar\_plot.png}
-	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 4: Anzahl an Überweisungen 100.000-500.0000}
+	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.0000}
 	\label{fig:bankTransactions80PostgCPU}
 \end{figure}
 
@@ -2558,42 +2564,42 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accounts80/execution\_time\_plot.png}
-	\caption{Ausführungszeit pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccounts80Zeit}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accounts80/cpu\_usage\_bar\_plot.png}
-	\caption{CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccounts80CPU}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accounts80/memory\_usage\_bar\_plot.png}
-	\caption{Arbeitsspeicherverbrauch pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccounts80RAM}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accounts80/num\_threads\_bar\_plot.png}
-	\caption{Thread-Anzahl pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{Thread-Anzahl pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccounts80Threads}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accounts80/postgres\_cpu\_bar\_plot.png}
-	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{PostgreSQL CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccounts80PostgCPU}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/bank/accountsIdeal/execution_time_plot.png}
-	\caption{Ausführungszeit pro Anzahl an Bankkonten mit idealen Verbindungs-Einstellungen, Bank Messung 3: Anzahl an Bankkonten 10-10.000}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten mit idealen Verbindungs-Einstellungen, Bank Messung 4: Anzahl an Bankkonten 10-10.000}
 	\label{fig:bankAccountsIdealZeit}
 \end{figure}
 
@@ -3010,7 +3016,7 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\centering
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}}
+	\begin{tabularx}{\textwidth}{>{\hsize=4.1\hsize}X*{8}{>{\hsize=3.3\hsize}X}}
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
 		\textbf{\makecell[l]{Listen- \\ länge}} & 
@@ -3075,7 +3081,7 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\centering
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.11\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+	\begin{tabularx}{\textwidth}{>{\hsize=4.1\hsize}X*{8}{>{\hsize=3.3\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
 		\textbf{\makecell[l]{Listen- \\ länge}} & 
@@ -3112,7 +3118,7 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\small
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.34\hsize}X}}
+	\begin{tabularx}{\textwidth}{>{\hsize=4.1\hsize}X*{8}{>{\hsize=3.6\hsize}X}}
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
 		\textbf{\makecell[l]{Liste- \\ länge}} & 
@@ -3159,7 +3165,7 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
 		\small
-		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{max Ver- \\ bindungen}} & 
 		\small
 		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
 		\small
@@ -3189,10 +3195,10 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\small
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.3\hsize}X}}
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.5\hsize}X}}
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{max Ver- \\ bindungen}} & 
 		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
 		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
 		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
@@ -3227,10 +3233,10 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\small
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.3\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.5\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{max Ver- \\ bindungen}} & 
 		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
 		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
 		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
@@ -3264,10 +3270,10 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\small
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+	\begin{tabularx}{\textwidth}{>{\hsize=4.65\hsize}X*{8}{>{\hsize=3.5\hsize}X}}
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{max Ver- \\ bindungen}} & 
 		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
 		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
 		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
@@ -3301,10 +3307,10 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 	\small
 	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
 	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
-	\begin{tabularx}{\textwidth}{>{\hsize=4.64\hsize}X*{8}{>{\hsize=3.3\hsize}X}}
+	\begin{tabularx}{\textwidth}{>{\hsize=4.64\hsize}X*{8}{>{\hsize=3.5\hsize}X}}
 		\toprule
 		\rowcolor{gray!20} % Kopfzeile farbig
-		\textbf{\makecell[l]{mxa Ver- \\ bindungen}} & 
+		\textbf{\makecell[l]{max Ver- \\ bindungen}} & 
 		\textbf{\makecell[l]{JVT \\ Postg. \\ Max \\ CPU}} & 
 		\textbf{\makecell[l]{JVT \\ Postg. \\ Mittel \\ CPU}} & 
 		\textbf{\makecell[l]{JPT \\ Postg. \\ Max \\ CPU}} & 
@@ -3335,6 +3341,622 @@ Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere 
 \end{table}
 
 \subsection{Bank Messung 2: Tabellen}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delay80/execution_time_aggregated.csv}{}
+		{
+			\csvcoli \hspace{0.2em} ms &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankDelay80Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delay80/cpu_usage_aggregated.csv}{}
+		{
+			\csvcoli \hspace{0.2em} ms &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankDelay80CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delay80/memory_usage_aggregated.csv}{}
+		{\csvcoli \hspace{0.2em} ms & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankDelay80RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delay80/num_threads_aggregated.csv}{}
+		{\csvcoli \hspace{0.2em} ms &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankDelay80Threads}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delay80/postgres_cpu_aggregated.csv}{}
+		{
+			\csvcoli \hspace{0.2em} ms &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{PostgreSQL CPU-Auslastung pro Verzögerung,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankDelay80PostgCPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Verzö- \\ gerung}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/delayIdeal/execution_time_aggregated.csv}{}
+		{
+			\csvcoli \hspace{0.2em} ms &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Verzögerung mit idealen Verbindungs-Einstellungen,\\ Bank Messung 2: Verzögerung 10-100 ms}
+	\label{tab:bankdelayIdealZeit}
+\end{table}
+
+\subsection{Bank Messung 3: Tabellen}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactions80/execution_time_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactions80Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.28\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactions80/cpu_usage_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactions80CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactions80/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactions80RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.28\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactions80/num_threads_aggregated.csv}{}
+		{\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactions80Threads}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactions80/postgres_cpu_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{PostgreSQL CPU-Auslastungl pro Anzahl an Überweisungen,\\ Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactions80PostgCPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Überwei- \\ sungen}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/transactionsIdeal/execution_time_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Anzahl an Überweisungen mit idealen Verbindungs-Einstellungen, Bank Messung 3: Anzahl an Überweisungen 100.000-500.000}
+	\label{tab:bankTransactionsIdealZeit}
+\end{table}
+
+\subsection{Bank Messung 4: Tabellen}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accounts80/execution_time_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccounts80Zeit}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accounts80/cpu_usage_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{CPU-Auslastung pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccounts80CPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}} % 9 Spalten mit unterschiedlicher Breite
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ RAM \\ in MB}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ RAM \\ in MB}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accounts80/memory_usage_aggregated.csv}{}
+		{\csvcoli & 
+			\num{\csvcolii} & 
+			\num{\csvcoliii} & 
+			\num{\csvcoliv} & 
+			\num{\csvcolv} & 
+			\num{\csvcolvi} & 
+			\num{\csvcolvii} & 
+			\num{\csvcolviii} & 
+			\num{\csvcolix}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Arbeitsspeicherverbrauch pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccounts80RAM}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4\hsize}X*{8}{>{\hsize=3.28\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JVT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{JPT \\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Coro\\ Mittel \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Max \\ Thread}} & 
+		\textbf{\makecell[l]{Goro\\ Mittel \\ Thread}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accounts80/num_threads_aggregated.csv}{}
+		{\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult} & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}}
+		\bottomrule
+	\end{tabularx}
+	\caption{Thread-Anzahl pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccounts80Threads}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{>{\hsize=4.5\hsize}X*{8}{>{\hsize=3.25\hsize}X}}
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JVT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{JPT \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Coro \\ Postg. \\ Mittel \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Max \\ CPU}} & 
+		\textbf{\makecell[l]{Goro \\ Postg. \\ Mittel \\ CPU}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accounts80/postgres_cpu_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvi}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolvii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolviii}\pgfmathprintnumber{\pgfmathresult}\% & 
+			\pgfmathparse{\csvcolix}\pgfmathprintnumber{\pgfmathresult}\%}
+		\bottomrule
+	\end{tabularx}
+	\caption{PostgreSQL CPU-Auslastungl pro Anzahl an Bankkonten,\\ Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccounts80PostgCPU}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.2} % Erhöhte Zeilenhöhe
+	\rowcolors{2}{gray!10}{white} % Alternierende Zeilenfarben ab der zweiten Zeile
+	\begin{tabularx}{\textwidth}{XXXXX} % 5 gleichmäßig verteilte Spalten
+		\toprule
+		\rowcolor{gray!20} % Kopfzeile farbig
+		\textbf{\makecell[l]{Bank- \\ konten}} & 
+		\textbf{\makecell[l]{JVT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{JPT \\ Zeit \\ gesamt}} & 
+		\textbf{\makecell[l]{Coro \\ Zeit \\ gesamt}} &
+		\textbf{\makecell[l]{Goro \\ Zeit \\ gesamt}} \\
+		\midrule
+		\csvreader[
+		head to column names,
+		late after line=\\
+		]{measurements/bank/accountsIdeal/execution_time_aggregated.csv}{}
+		{
+			\csvcoli &
+			\pgfmathparse{\csvcolii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliii}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcoliv}\pgfmathprintnumber[use comma]{\pgfmathresult} s & 
+			\pgfmathparse{\csvcolv}\pgfmathprintnumber[use comma]{\pgfmathresult} s}
+		\bottomrule
+	\end{tabularx}
+	\caption{Ausführungszeit pro Anzahl an Bankkonten mit idealen Verbindungs-Einstellungen, Bank Messung 4: Anzahl an Bankkonten 10-10.000}
+	\label{tab:bankAccountsIdealZeit}
+\end{table}
 
 %\input{abkuerz.tex}      % Einbinden von Tex-Files
 %\input{einfuehrung.tex}

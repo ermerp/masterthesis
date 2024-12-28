@@ -1,0 +1,6 @@
+transactions,platform_max_postgres_cpu,platform_mean_postgres_cpu,virtual_max_postgres_cpu,virtual_mean_postgres_cpu,coroutines_max_postgres_cpu,coroutines_mean_postgres_cpu,goroutines_max_postgres_cpu,goroutines_mean_postgres_cpu
+100.000,109,106,108,102,104,58,110,105
+200.000,110,106,110,104,104,62,110,105
+300.000,111,106,109,104,96,60,110,106
+400.000,109,105,111,105,101,66,110,105
+500.000,110,105,111,105,103,68,113,105

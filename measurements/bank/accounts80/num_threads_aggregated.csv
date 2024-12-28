@@ -1,0 +1,5 @@
+accounts,platform_max_num_threads,platform_mean_num_threads,virtual_max_num_threads,virtual_mean_num_threads,coroutines_max_num_threads,coroutines_mean_num_threads,goroutines_max_num_threads,goroutines_mean_num_threads
+10,184,183,34,33,50,48,11,11
+100,185,184,34,33,78,66,13,12
+1000,185,184,34,33,97,91,14,13
+10000,185,184,34,33,97,89,15,14

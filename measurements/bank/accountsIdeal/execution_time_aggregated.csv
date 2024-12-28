@@ -1,0 +1,5 @@
+accounts,virtual_execution_time,platform_execution_time,coroutines_execution_time,goroutines_execution_time
+10,388.0,401.9,406.4,380.3
+100,47.5,45.6,55.5,27.0
+1000,51.7,39.1,51.6,20.1
+10000,49.9,39.3,49.7,19.0

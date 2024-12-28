@@ -1,0 +1,6 @@
+transactions,platform_max_num_threads,platform_mean_num_threads,virtual_max_num_threads,virtual_mean_num_threads,coroutines_max_num_threads,coroutines_mean_num_threads,goroutines_max_num_threads,goroutines_mean_num_threads
+100.000,185,184,34,33,100,92,15,14
+200.000,185,184,37,36,98,93,17,16
+300.000,185,184,34,33,100,95,14,13
+400.000,185,184,35,34,96,94,16,15
+500.000,185,184,37,35,97,94,17,15
