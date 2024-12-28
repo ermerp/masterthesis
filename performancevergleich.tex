@@ -279,7 +279,7 @@ Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nich
 
 \section{Gliederung und Aufbau}
 
-Die vorliegende Arbeit ist in sechs Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Thread-Abstraktionen und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go abzubilden.
+Die vorliegende Arbeit ist in fünf Hauptkapitel gegliedert, die systematisch aufeinander aufbauen, um eine umfassende Untersuchung der Thread-Abstraktionen und ihrer Performance in den ausgewählten Programmiersprachen Java, Kotlin und Go abzubilden.
 
 \subsubsection{Kapitel 2: Thread-Abstraktionen}
 
@@ -291,13 +291,9 @@ In diesem Kapitel wird die methodische Herangehensweise dieser Arbeit erläutert
 
 \subsubsection{Kapitel 4: Benchmarks}
 
-Dieses Kapitel widmet sich der Beschreibung der durchgeführten Benchmarks. Für jeden Benchmark wird das zugrundeliegende Szenario vorgestellt, die Motivation für den Benchmarkt erläutert und der Aufbau des Benchmarks erklärt. Außerdem wird auf Besonderheiten bei der Implementierung der Benchmarks eingegangen. Die Ergebnisse der einzelnen Tests werden anschließend präsentiert, wobei der Fokus auf der Messung der Performancefaktoren liegt. Um eine nachvollziehbare Übersicht über die Ergebnisse zu bieten, werden die Daten grafisch aufbereitet.
+Dieses Kapitel widmet sich der Beschreibung der durchgeführten Benchmarks. Für jeden Benchmark wird das zugrundeliegende Szenario vorgestellt, die Motivation für den Benchmarkt erläutert und der Aufbau des Benchmarks erklärt. Außerdem wird auf Besonderheiten bei der Implementierung der Benchmarks eingegangen. Die Ergebnisse der einzelnen Tests werden anschließend präsentiert, wobei der Fokus auf der Messung der Performancefaktoren liegt. Um eine nachvollziehbare Übersicht über die Ergebnisse zu bieten, werden die Daten grafisch aufbereitet. Auf Basis der präsentierten Daten erfolgt eine Analyse der Benchmark-Ergebnisse. Es wird untersucht, wie die unterschiedlichen Nebenläufigkeitskonzepte die Performance beeinflussen. Besonderes Augenmerk liegt auf der Identifikation von Stärken und Schwächen der jeweiligen Konzepte in verschiedenen Anwendungsszenarien.
 
-\subsubsection{Kapitel 5: Auswertung}
-
-Auf Basis der im vorherigen Kapitel präsentierten Daten erfolgt in diesem Kapitel eine Analyse der Benchmark-Ergebnisse. Es wird untersucht, wie die unterschiedlichen Nebenläufigkeitskonzepte die Performance beeinflussen. Besonderes Augenmerk liegt auf der Identifikation von Stärken und Schwächen der jeweiligen Konzepte in verschiedenen Anwendungsszenarien. Abschließend wird ein Vergleich zwischen den Sprachen gezogen, um allgemeine Aussagen zur Eignung der einzelnen Konzepte für bestimmte Einsatzgebiete zu treffen.
-
-\subsubsection{Kapitel 6: Zusammenfassung und Ausblick}
+\subsubsection{Kapitel 5: Zusammenfassung und Ausblick}
 
 Im abschließenden Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst. Es wird ein Überblick über die wichtigsten Resultate und die daraus folgenden Schlüsse gegeben. Außerdem wird ein Ausblick auf zukünftige Forschungsmöglichkeiten in diesem Bereich gegeben. Dabei wird auf potenzielle Weiterentwicklungen der betrachteten Konzepte sowie auf offene Fragen und Herausforderungen eingegangen.
 
@@ -369,15 +365,14 @@ Der Vorteil von Virtual Threads gegenüber Platform Threads bei dem Thread per r
 	L = \lambda \cdot W \nonumber
 \end{eqnarray}
 
-Daraus folgt, dass sich der Durchsatz aus den gleichzeitig in Bearbeitung befindlichen Aufgaben und der Durchlaufzeit ergibt.
+Auf das Thread per request Modell angewandt bedeutet das, dass der Durchsatz die pro Sekunde in das System eingehenden Anfragen ist. Die Durchlaufzeit wird dadurch beschrieben, wie hoch die durchschnittliche Latenz des Systems ist, um eine Anfrage zu beantworten. L ist weiterhin die sich gleichzeitig in Bearbeitung befindlichen Aufgaben.
 
-\begin{eqnarray}
-	\lambda = \frac{L}{W} \nonumber
-\end{eqnarray}
+\begin{align*}
+	\text{gleichzeitig in Bearbeitung befindliche Aufgaben} &= 
+	\text{Anfragen pro Sekunde} \cdot \text{Latenz}
+\end{align*}
 
-Auf das Thread per request Modell angewandt bedeutet das, dass der Durchsatz die pro Sekunde in das System eingehenden Anfragen ist. Die Durchlaufzeit wird dadurch beschrieben, wie hoch die durchschnittliche Latenz des Systems ist, um eine Anfrage zu beantworten. 
-
-Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, bei einer Latenz von 50ms pro Anfrage. Dafür ist es nötig 10 Anfragen gleichzeitig nebenläufig zu verarbeiten. Soll das System nun auf 2000 Anfragen pro Sekunde, bei gleichbleibender Latenz, skaliert werden, muss das System nun 100  Anfragen gleichzeitig nebenläufig verarbeiten.
+Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, bei einer Latenz von 50ms pro Anfrage. Dafür ist es nötig 10 Anfragen gleichzeitig nebenläufig zu verarbeiten. Soll das System nun auf 2000 Anfragen pro Sekunde, bei gleichbleibender Latenz, skaliert werden, muss das System nun 100  Anfragen gleichzeitig nebenläufig verarbeiten \cite{Pressler2023a}.
 
 Da wir vom Thread per request Modell ausgehen, müssen also im Fall von  Platform Threads 100 von ihnen erstellt werden und damit auch 100 Betriebssystem Threads. Somit ist die Skalierbarkeit auf die maximal zur Verfühgung stehenden Betriebssystem Threads (einige Tausend) begrenzt. Virtual Threads hingegen lassen sich in einer deutlich größeren Anzahl erstellen (mehrere Millionen) und werden so nicht zum limitierenden Faktor wenn es um die Skalierbarkeit des beschriebenen Beispiels geht.
 
@@ -436,6 +431,18 @@ Der \code{Executors"".new""Virtual""Thread""Per""Task""Executor()} erstellt für
 Die maximale Anzahl von Virtual Threads ist deutlich größer als die von Platform Threads und die Zeit sie zu erstellen sowie ihr Speicherverbrauch sind deutlich geringer. Bei der Umstellung auf Virtual Threads werden Platform Threads also nicht direkt durch Virtual Threads ersetzt. Stattdessen werden die Aufgaben durch Virtual Threads ersetzt, beziehungsweise für jede Aufgabe wird ein neuer Virtual Thread erstellt. 
 
 Falls ein Thread Pool bei Platform Threads bisher verwendet wurde um die Anzahl an maximal nebenläufig ausgeführten Aufgaben zu limitieren, sollte dafür bei Virtual Threads stattdessen auf Semaphore zurückgegriffen werden. Auch mit Semaphoren lässt sich die maximale Anzahl gleichzeitiger Zugriffe auf eine Ressource limitieren.
+
+\subsection{Zusammenfassung: Java Virtual Threads}
+
+Virtual Threads stellen eine bedeutende Weiterentwicklung in der Nebenläufigkeitsmodellierung in Java dar. Durch die Entkopplung von Virtual Threads und Betriebssystem-Threads wird ein hoher Grad an Parallelisierung ermöglicht, ohne die Einschränkungen der herkömmlichen Thread-Pools, in denen für jeden Platform Thread ein Betriebssystem-Thread erstellt wird.
+
+Ein weiterer Vorteil ist die verbesserte Thread-Verwaltung: Die Verwaltung der Threads findet in der Java Runtime Environment (JRE) statt, was eine optimierte und anwendungsspezifische Steuerung ermöglicht. Dies erlaubt der JRE, Virtual Threads effizient auf Carrier Threads zu verteilen, wodurch eine bessere Ressourcennutzung erreicht wird.
+
+In typischen Anwendungsfällen wie dem Thread-per-Request-Modell zeigen Virtual Threads ihre Stärke, indem sie die Skalierbarkeit erheblich erhöhen, da Millionen von Threads effizient verwaltet werden können. Allerdings bleibt ihr Nutzen auf Szenarien beschränkt, in denen Aufgaben regelmäßig blockieren und somit Platz für andere Threads auf den Carrier Threads schaffen. In CPU-intensiven Szenarien, bei denen keine Pausierung stattfindet, können Virtual Threads keinen signifikanten Vorteil gegenüber Platform Threads bieten.
+
+Die Kompatibilität mit bestehenden Thread-API macht eine einfache Migration von Platform Threads zu Virtual Threads möglich. Dennoch existieren Einschränkungen, wie das Risiko des „Pinnings“ bei nativen oder synchronisierten Codeabschnitten, die bei der Verwendung von Virtual Threads berücksichtigt werden müssen.
+
+Insgesamt sind Virtual Threads ein leistungsstarkes Werkzeug für Entwickler, um Anwendungen mit hoher Nebenläufigkeit effizient zu implementieren, solange deren spezifische Einschränkungen beachtet werden.
 
 \newpage
 
@@ -988,7 +995,7 @@ Der eigentliche Ablauf von Zustand 1 ist sehr ähnlich zu Zustand 0. Zuerst wird
 
 Zustand 2 ist der letzte Zustand des \texttt{when}-Blocks, deshalb wird \texttt{lable} auf den Wert -1 gesetzt, was signalisiert, dass die Coroutine mit Beendigung dieses Zustands ebenfalls beendet ist. Zuletzt wird das finale Ergebnis ausgegeben und damit die Coroutine beendet.
 
-\subsection{Zusammenfassung}
+\subsection{Zusammenfassung: Coroutinen}
 
 Zusammenfassend lässt sich sagen: Kotlin Coroutinen sind ein leistungsfähiges Werkzeug für die asynchrone Programmierung, das sich durch eine hohe Lesbarkeit und Wartbarkeit des Codes auszeichnet. Im Vergleich zu traditionellen Callbacks vermeiden Coroutinen die sogenannte "Callback-Hell".
 
@@ -1100,7 +1107,7 @@ Ein elementarer Bestandteil bei der Kommunikation über Channels ist die \texttt
 
 In dem gezeigten Beispiel wird mit der \texttt{select}-Anweisung auf die Kommunikation mit mehreren Channels gewartet. Je nachdem welcher Channel zuerst bereit ist, wird der entsprechende Fall ausgeführt. Sollten mehrere Fälle gleichzeitig bereit sein wird einer von ihnen zufällig ausgewählt. In diesem Beispiel wird in den ersten zwei Fällen darauf gewartet, dass eine Nachricht über einen Channel empfangen werden kann. Im dritten Fall wird darauf gewartet, dass eine Nachricht gesendet werden kann. Im vierten Fall handelt es sich um einen sogenannten Timeout-Channel. Die Funktion \texttt{time.After} erstellt einen Channel, der nach einer vorgegebenen Zeit einen Wert sendet. In dem Beispiel geschieht dies nach einer Sekunde. Falls es innerhalb einer Sekunde keine Kommunikation in einem der ersten drei Fälle gab wird der vierte Fall ausgeführt. Damit wird verhindert, dass das Programm unbegrenzt auf eine Channel-Operation wartet und die \texttt{select}-Anweisung unendlich lang blockiert ist. Es gibt auch die Möglichkeit einen \texttt{default}-Fall der \texttt{select}-Anweisung hinzuzufügen. Dieser würde ausgeführt werden, wenn keiner der anderen Fälle bereit ist. Dadurch wäre die \texttt{select}-Anweisung nicht mehr blockierend.
 
-\subsection{Goroutine}
+\subsection{Goroutine als Strukturtyp}
 
 Bis jetzt wurde eine Goroutine als leichtgewichtiger Thread bezeichnet und diese Betrachtungsweise ist für einen Programmierer auch ausreichend, um zu verstehen was eine Goroutine macht und wie sie zu handhaben ist. In der Praxis handelt es sich aber um einen Strukturtyp mit dem Namen \texttt{g} der in der \texttt{runtime2.go} \cite{goruntime2024} definiert wird. Das folgende Beispiel ist ein Auszug des Strukturtyps \texttt{g} bei dem sich auf die wichtigsten Parameter beschränkt wird:
 
@@ -1155,28 +1162,28 @@ Dafür ist es wichtig, dass die Betriebssystem-Threads möglichst durchgehend Go
 
 Dieses Beispiel zeigt wie der Scheduler mit Goroutinen umgeht, die aufgrund von Channel-Kommunikation blockieren. Für dieses Beispiel wird zum leichteren Verständnis von einem System mit nur einem Prozessorkern ausgegangen. Die Anzahl der logischen Prozessoren P ist gleich der Anzahl an Prozessorkernen des ausführenden Systems.  Dementsprechend wird auch nur ein logischer Prozessor P1 erstellt. Diesem wird vom Scheduler die Goroutine G1 als auszuführende Aufgabe zugewiesen und der Betriebssystem Thread M1 als Ort an dem die Aufgabe ausgeführt werden soll. Außerdem besitzt ein logischer Prozessor noch eine local Run Queue (LRQ), dieser werden vom Scheduler weitere Goroutinen hinzugefügt, die vom logischen Prozessor als nächstes bearbeitet werden sollen. In diesem Fall enthält die LRQ von P1 die Goroutinen G2 und G3.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel1.png}
-	\caption{Channel-Kommunikation: G1 wird ausgeführt und blockiert}
+	\caption{Go Channel-Kommunikation: Goroutine 1 wird ausgeführt und blockiert}
 	\label{fig:GoroutineChannel1}
 \end{figure}
 
 In der Abbildung ist die oben beschriebene Ausgangssituation zu sehen. P1 führt aktuell G1 aus. G1 möchte die Nachricht \texttt{msg1} an den Channel \texttt{ch1} senden. Da es aktuell keinen Empfänger gibt blockiert G1 und wechselt in den Status Waiting. Dies registriert der Scheduler und entnimmt G1 aus P1, wie in der nächsten Abbildung deutlich wird.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel2.png}
-	\caption{Channel-Kommunikation: G1 wird entfernt, G2 wird ausgeführt}
+	\caption{Go Channel-Kommunikation: Goroutine 1 wird entfernt, Goroutine 2 wird ausgeführt}
 	\label{fig:GoroutineChannel2}
 \end{figure}
 
 Der Scheduler hat G1 aus P1 entfernt und der Empfänger-Warteschlange \texttt{recvq} des Channels \texttt{ch1} zugewiesen. Dort wartet G1 auf einen Empfänger für die Nachricht. Da P1 jetzt keine Goroutine mehr ausführt, entnimmt er die vorderste Goroutine aus seiner LRQ und beginnt mit der Bearbeitung. In diesem Fall ist dies G2. Dafür wird weiterhin der Betriebssystem Thread M1 genutzt dem P1 bereits zugewiesen war. Der Status von G2 wird dementsprechend von runnable auf running geändert. G2 wiederum empfängt eine Nachricht vom Channel \texttt{ch1}, was zur Folge hat, dass G1 nicht länger blockiert ist, wie in der folgenden Abbildung zu sehen ist.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineChannel3.png}
-	\caption{Channel-Kommunikation: G1 ist nicht mehr blockiert und wird in die LRQ verschoben}
+	\caption{Go Channel-Kommunikation: Goroutine 1 ist nicht mehr blockiert und wird in die LRQ verschoben}
 	\label{fig:GoroutineChannel3}
 \end{figure}
 
@@ -1188,28 +1195,28 @@ Diese Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht die
 
 In dem folgenden Beispiel wird gezeigt wie der Scheduler mit Systemaufrufen innerhalb von Goroutinen umgeht. In diesem Beispiel gehen wir wieder von einem System mit einem Prozessorkern aus. Deshalb gibt es auch wieder nur einen logischen Prozessor P1. Dieser führt die Goroutine G1 auf dem Betriebssystemthread M1 aus. Außerdem wartet eine zweite Goroutine G2 in der LRQ von P1 darauf ausgeführt zu werden. Schlussendlich gibt es noch einen zweiten untätigen Betriebssystemthread M2, der aktuell nicht genutzt wird.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe1.png}
-	\caption{Systemaufrufe: G1 ist auf Grund eines Systemaufrufs blockiert}
+	\caption{Go Systemaufrufe: Goroutine 1 ist auf Grund eines Systemaufrufs blockiert}
 	\label{fig:GoroutineSystemaufrufe1}
 \end{figure}
 
 G1 führt einen Systemaufruf aus, der dazu führt, dass G1 blockiert. Dies könnte beispielsweise eine I/O-Operation sein. Go hat keine direkte Kontrolle über die Ausführung von Systemaufrufen auf Betriebssystemebene. Sobald ein Systemaufruf initiiert wird, liegt die Kontrolle beim Betriebssystem. Deshalb blockiert nicht nur G1 sondern auch der ausführende Betriebssystemthread M1. Damit P1 weiterhin ausgelastet ist, werden sowohl G1 als auch M1 vom Scheduler freigegeben. P1 wird dann ein neuer Betriebssystemthread, in diesem Fall M2, zugewiesen und P1 kann die nächste Goroutine aus der LRQ ausführen, in diesem Fall G2.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe2.png}
-	\caption{Systemaufrufe: G1 wird mit M1 aus P1 entfernt, G2 wird auf M2 ausgeführt}
+	\caption{Go Systemaufrufe: Goroutine 1 wird zusammen mit dem Betriebssystemthread M1 aus P1 entfernt, Goroutine 2 wird auf M2 ausgeführt}
 	\label{fig:GoroutineSystemaufrufe2}
 \end{figure}
 
 Wenn G1 nicht mehr blockiert ist, überprüft der Scheduler, ob es einen freien logischen Prozessor gibt, der G1 auf M1 ausführen kann. In diesem Beispiel ist P1 aber mit der Ausführung von G2 beschäftigt. Deshalb wird G1 in die Global Run Queue (GRQ) verschoben. Dort gespeicherte Goroutinen werden von den logischen Prozessoren abgearbeitet sollte ihre eigene LRQ leer sein. M1 hingegen wird zu einem untätigen Thread.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineSystemaufrufe3.png}
-	\caption{G1 ist nicht mehr blockiert und wird in die GRQ verschoben}
+	\caption{Go Systemaufrufe: Goroutine 1 ist nicht mehr blockiert und wird in die GRQ verschoben}
 	\label{fig:GoroutineSystemaufrufe3}
 \end{figure}
 
@@ -1231,16 +1238,16 @@ Dieser Abschnitt zeigt wie der Work-Stealing-Algorithmus im Goroutinen-Scheduler
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing1.png}
-	\caption{Work-Stealing: P1 und P2 führen Gs aus und haben gefüllte LRQs}
+	\caption{Go Work-Stealing: P1 und P2 führen Goroutinen aus und haben gefüllte LRQs}
 	\label{fig:GoroutineWorkstealing1}
 \end{figure}
 
 Wenn ein P keine Goroutinen mehr in seiner LRQ hat, versucht er, Goroutinen zu ``stehlen''. Er wählt zufällig einen anderen P aus und versucht, Goroutinen aus dessen LRQ zu entnehmen. In diesem Fall hat P1 alle seine Goroutinen abgearbeitet während P2 immer noch beschäftigt ist.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{figures/GoroutineWorkstealing2.png}
-	\caption{Work-Stealing: P1 hat keine Gs mehr und stiehlt die Hälfte der Gs aus der LRQ von P2}
+	\caption{Go Work-Stealing: P1 hat keine Goroutinen mehr und stiehlt die Hälfte der Goroutinen aus der LRQ von P2}
 	\label{fig:GoroutineWorkstealing2}
 \end{figure}
 
@@ -1428,13 +1435,13 @@ Mögliche Konsolenausgabe:
 
 In der \texttt{main}-Funktion wird ein neuer separater Channel mit dem Namen \texttt{done} erstellt. Dies ist der so genannte Closing Channel. Danach werden drei \texttt{worker}-Goroutinen ge\-star\-tet. Diese erhalten Werte über den Channel \texttt{c} und geben sie auf der Konsole aus. Nachdem die Hauptroutine alle Werte gesendet hat schließt sie den Closing Channel. Dies signalisiert den  \texttt{worker}-Goroutinen, dass keine weiteren Werte gesendet werden und sie beenden sich selbst.
 
-\subsection{Zusammenfassung}
+\subsection{Zusammenfassung: Goroutinen}
 
 Bei Goroutinen handelt es sich um leichtgewichtige Threads, die nebenläufige Ausführungen ermöglichen. Sie lassen sich durch das Schlüsselwort \texttt{go} starten und laufen unabhängig von der Hauptfunktion, wobei sie einen gemeinsamen Adressraum teilen. Die Kommunikation und Synchronisation zwischen Goroutinen erfolgt über Channels, die den Datenaustausch ermöglichen. Die Go-Laufzeitumgebung enthält einen Scheduler, der Goroutinen effizient verwaltet. Um eine ausgewogene Auslastung der Prozessoren zu gewährleisten, nutzt der Scheduler verschiedene Warteschlangen(LRQ und GRQ) und einen Work-Stealing-Algorithmus. Verschiedene Programmiermuster, wie das Fan-In-Muster und das gezielte Schließen von Channels, unterstützen eine strukturierte Handhabung der Nebenläufigkeit und optimieren die Gesamtleistung der Programme.
 
 \section{Vergleich der Konzepte}
 
-Im folgendem werden die Erkenntnisse die über Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen gesammelt wurden, miteinander verglichen, um so sowohl Gemeinsamkeiten als auch Unterschiede hervorzuheben.
+Im Folgenden werden die Erkenntnisse, die über Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen gesammelt wurden, miteinander verglichen, um sowohl Gemeinsamkeiten als auch Unterschiede hervorzuheben.
 
 \subsubsection{Unterstützte Sprachen}
 
@@ -1446,11 +1453,11 @@ Der Mechanismus zur Ausführungskontrolle variiert stark zwischen den Konzepten.
 
 \subsubsection{Thread-Pool-Nutzung und Ressourcenverbrauch}
 
-Bei der Thread-Pool-Nutzung zeigen sich Unterschiede: Platform Threads und Coroutinen erfordern eine explizite Nutzung, während Virtual Threads und Goroutinen dies implizit handhaben. Der Ressourcenverbrauch ist bei Platform Threads deutlich höher (schwergewichtig), während die anderen drei Konzepte als leichtgewichtig gelten.
+Auch bei der Thread-Pool-Nutzung zeigen sich Unterschiede: Platform Threads und Coroutinen erfordern eine explizite Nutzung, während Virtual Threads und Goroutinen dies implizit handhaben. Der Ressourcenverbrauch ist bei Platform Threads deutlich höher (schwergewichtig), während die anderen drei Konzepte als leichtgewichtig gelten.
 
 \subsubsection{Stackgröße und maximale Anzahl}
 
-Die Stackgröße variiert erheblich, von großen Stacks bei Platform Threads (oft 1 MB oder mehr) bis zu sehr kleinen bei Virtual Threads und Go Goroutinen. Kotlin Coroutinen nutzen keinen eigenen Stack, sondern den Hauptstack kurzzeitig. Diese Unterschiede wirken sich direkt auf die maximale Anzahl aus, die bei Platform Threads einige tausend begrenzt, bei den anderen Konzepten jedoch mit mehreren Millionen sehr hoch ist.
+Die Stackgröße variiert erheblich, von großen Stacks bei Platform Threads (oft 1 MB oder mehr), bis zu sehr kleinen bei Virtual Threads und Go Goroutinen. Kotlin Coroutinen nutzen keinen eigenen Stack, sondern den Hauptstack kurzzeitig. Diese Unterschiede wirken sich direkt auf die maximale Anzahl aus, die bei Platform Threads auf einige tausend begrenzt, bei den anderen Konzepten mit mehreren Millionen jedoch sehr hoch ist.
 
 \subsubsection{Synchronisationsmechanismen}
 
@@ -1512,17 +1519,11 @@ Alle Tests wurden in einer kontrollierten Umgebung durchgeführt, wobei darauf g
 	\item \textbf{Java Development Kit (JDK):} openjdk 21.0.2
 	\item \textbf{Kotlin JVM:} 1.9.22
 	\item \textbf{Go:} 1.23.3
+	\item \textbf{Python:} 3.12.5
+	\item \textbf{Docker:} 27.3.1
+	\item \textbf{PostgreSQL:} 17.2
+	\item \textbf{PostgREST:} 12.2.3
 \end{itemize}
-
-Docker
-
-Python
-
-postgres
-
-postrest
-
-%TODO:aktuelle Versionen
 
 \section{Performancefaktoren}
 
@@ -1546,13 +1547,13 @@ Die Anzahl der Betriebssystemthreads ist ein bedeutender Performancefaktor bei d
 
 \section{Werkzeuge zur Datenerhebung}
 
-Für die Durchführung der Benchmarks und die Erhebung der relevanten Performancedaten wurden zwei speziell für diese Masterarbeit neu entwickelte Python-Skripte verwendet. Diese Skripte ermöglichen eine präzise und konsistente Messung der Leistungsparameter über alle getesteten Thread-Abstraktionen hinweg. Ein drittes Skript kann die so erhobenen Daten aggregieren und aus ihnen Graphen generieren
+Für die Durchführung der Benchmarks und die Erhebung der relevanten Performance\-daten wurden zwei speziell für diese Masterarbeit neu entwickelte Python-Skripte verwendet. Diese Skripte ermöglichen eine präzise und konsistente Messung der Leistungsparameter über alle getesteten Thread-Abstraktionen hinweg. Ein drittes Skript kann die so erhobenen Daten aggregieren und aus ihnen Graphen generieren.
 
 \subsubsection{Überwachung: Mergesort}
 
-Um den Mergesort Benchmark durchzuführen und dabei die Performancedaten der unterschiedlichen Implementierungen zu sammeln, wurde das Python-Script \texttt{monitoring""Mergesort.py} für diese Masterarbeit entwickelt.
+Um den Mergesort-Benchmark durchzuführen und dabei die Performancedaten der unterschiedlichen Implementierungen zu sammeln, wurde das Python-Script \texttt{monitoring""Mergesort.py} für diese Masterarbeit entwickelt.
 
-Es startet die einzelnen Implementierungen mit vorher definierten Parametern, misst die Ausführungszeit sowie die Nutzung von CPU, Arbeitsspeicher und Threads während der Ausführung und speichert diese Daten in CSV-Dateien zur späteren Analyse. Das Skript ermöglicht es, verschiedene Algorithmen zu vergleichen, indem es für jede Implementierung die Leistung unter unterschiedlichen Bedingungen, wie zum Beispiel verschiedenen Maximal-Tiefen des MergeSort-Algorithmus, protokolliert. Eine genauere Aufschlüsselung der möglichen Parameter in Abschnitt \ref{subsec:mergsortpara}.
+Es startet die einzelnen Implementierungen mit vorher definierten Parametern, misst die Ausführungszeit in Sekunden sowie die Nutzung von CPU, Arbeitsspeicher und Threads während der Ausführung und speichert diese Daten in CSV-Dateien zur späteren Analyse. Das Skript ermöglicht es, verschiedene Algorithmen zu vergleichen, indem es für jede Implementierung die Leistung unter unterschiedlichen Bedingungen, wie zum Beispiel verschiedenen Maximal-Tiefen des Mergesort-Algorithmus, protokolliert. Eine genauere Aufschlüsselung der möglichen Parameter befinden sich in Abschnitt \ref{subsec:mergsortpara}.
 
 Um die Performancefaktoren zu erfassen, nutzt das Skript mehrere Python-Bibliotheken und Funktionen. Ein zentraler Bestandteil ist die Bibliothek \texttt{psutil}, die die Möglichkeit bietet, einen Prozess anhand seiner Prozess-ID zu überwachen. Der Arbeitsspeicherverbrauch wird mit Hilfe der Funktion \texttt{.memory\_info().rss} gemessen. Für die Messung der Betriebssystem-Threads wird die Funktion \texttt{.num\_threads()} verwendet. Beide Funktionen geben den aktuellen Wert zum Zeitpunkt des Aufrufs zurück. Deshalb wurde die Abtastrate auf 0,2 Sekunden gesetzt. In der Praxis hat sich gezeigt, dass bei dieser Rate annähernd alle Wertveränderungen erfasst werden.
 
@@ -1565,19 +1566,19 @@ Abschließend werden die so erhobenen Rohdaten in entsprechenden CSV-Dateien ges
 \subsubsection{Überwachung: Bank}
 \label{subsubsec:monibank}
 
-Für die Überwachung des Bank Benchmarks wurde ein weiteres Python-Skript namens \texttt{monitoring""Bank.py} entwickelt.
+Für die Überwachung des Bank-Benchmarks wurde ein weiteres Python-Skript namens \texttt{monitoring""Bank.py} entwickelt.
 
-Zu beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (Abschnitt: \ref{para:datagenerator}) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz der von allen Implementierungen genutzt wird. 
+Zu Beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (Abschnitt: \ref{para:datagenerator}) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz, der von allen Implementierungen genutzt wird. 
 
-Da die unterschiedlichen Implementierungen des Benchmarks in Docker Containern laufen (TODO: siehe Abschnitt xxx für den genauen Aufbau), wird im nächsten Schritt die Datei \texttt{docker-""compose\_""modify"".yaml} erzeugt. In dieser werden die für den Durchlauf wichtige Parameter gesetzt, wie zum Beispiel die Anzahl der Accounts und Transaktionen oder die Wahl der Implementierung. Eine vollständige Auflistung der Parameter befindet sich in Abschnitt xxx TODO:Verweis.
+Da die unterschiedlichen Implementierungen des Benchmarks in Docker Containern laufen (TODO: siehe Abschnitt xxx für den genauen Aufbau), wird im nächsten Schritt die Datei \texttt{docker-""compose\_""modify"".yaml} erzeugt. In dieser werden die für den Durchlauf wichtigen Parameter gesetzt, wie zum Beispiel die Anzahl der Accounts und Transaktionen oder die Wahl der Implementierung. Eine vollständige Auflistung der Parameter befindet sich in Abschnitt xxx TODO:Verweis.
 
-Dann wird der eigentliche Benchmark mit Hilfe der \texttt{docker-""compose\_""modify"".yaml} gestartet. Die Überwachung der Performancefaktoren, kann in diesem Benchmark jedoch nicht mit der \texttt{psutil} Bibliothek durchgeführt werden, da dafür die Prozess ID nötig wäre welche aber nicht auslesbar ist, da die Implementierungen in einem Docker Container laufen. Deshalb werden die Performancefaktoren: CPU-Auslastung, Arbeitsspeicherverbrauch und Thread-Anzahl in diesem Skript mit \texttt{docker stats} erhobenen. Die Abtastrate von \texttt{docker stats} liegt bei einer Sekunde. Da aber pro Messung auch einmal \texttt{docker inspect} aufgerufen wird ergibt sich eine faktische Abtastrate von zwei Sekunden. Dies hat sich als ausreichen erwiesen, da die Schwankungen zwischen den Messungen sehr gering sind und die Messungen lange laufen. 
+Anschließend wird der eigentliche Benchmark mit Hilfe der \texttt{docker-""compose\_""modify"".yaml} gestartet. Die Überwachung der Performancefaktoren kann in diesem Benchmark jedoch nicht mit der \texttt{psutil} Bibliothek durchgeführt werden, da dafür die Prozess ID nötig wäre, welche aber nicht auslesbar ist, da die Implementierungen in einem Docker Container laufen. Deshalb werden die Performancefaktoren: CPU-Auslastung, Arbeitsspeicherverbrauch und Thread-Anzahl in diesem Skript mit \texttt{docker stats} erhobenen. Die Abtastrate von \texttt{docker stats} liegt bei einer Sekunde. Da aber pro Messung auch einmal \texttt{docker inspect} aufgerufen wird ergibt sich eine faktische Abtastrate von zwei Sekunden. Dies hat sich als ausreichend erwiesen, da die Schwankungen zwischen den Messungen sehr gering sind und die Messungen lange laufen. 
 
-Die Ausführungszeit kann erneut mit der \texttt{time}-Bibliothek gemessen werden. Für alle Performancefaktoren gilt erneut, die Messungen beginnen erst wenn alle nötigen Daten importiert wurden und enden mit der Beendigung des Programms. Abschließend werden alle gesammelten Daten in CSV-Dateien gespeichert. 
+Die Ausführungszeit kann erneut mit der \texttt{time}-Bibliothek gemessen werden. Für alle Performancefaktoren gilt erneut, die Messungen beginnen erst, wenn alle nötigen Daten importiert wurden und enden mit der Beendigung des Programms. Abschließend werden alle gesammelten Daten in CSV-Dateien gespeichert. 
 
 \subsubsection{Datenaufbereitung}
 
-Zur Aufbereitung und Visualisierung der erhobenen Daten aus den Benchmarks kommt ein drittes Python-Skript zum Einsatz, das mit Hilfe der Bibliotheken \texttt{numpy}, \texttt{pandas}, und \texttt{matplotlib} die gesammelten Performance-Daten verarbeitet und in anschauliche Diagramme umwandelt. Dieses Skript liest die Messdaten aus den CSV-Dateien, berechnet für jeden Algorithmus die maximalen und durchschnittlichen Werte für verschiedene Performance-Kennzahlen und erstellt daraufhin eine Reihe von Balkendiagrammen, die die Leistung der verschiedenen Implementierungen veranschaulichen. Zusätzlich werden die so für die Diagramme aggregierten Daten in Tabellenform in CSV-Dateien gespeichert.
+Zur Aufbereitung und Visualisierung der erhobenen Daten aus den Benchmarks wurde ein drittes Python-Skript erstellt, das mit Hilfe der Bibliotheken \texttt{numpy}, \texttt{pandas}, und \texttt{matplotlib} die gesammelten Performance-Daten verarbeitet und in anschauliche Diagramme umwandelt. Dieses Skript liest die Messdaten aus den CSV-Dateien, berechnet für jeden Algorithmus die maximalen und durchschnittlichen Werte für verschiedene Performance-Kennzahlen und erstellt daraufhin eine Reihe von Balkendiagrammen, die die Leistung der verschiedenen Implementierungen veranschaulichen. Zusätzlich werden die so für die Diagramme aggregierten Daten in Tabellenform in CSV-Dateien gespeichert.
 
 \chapter{Benchmarks}
 
@@ -1588,11 +1589,11 @@ Mergesort eignet sich hervorragend als Benchmark für den Vergleich verschiedene
 
 Ein weiterer Vorteil von Mergesort als Benchmark ist seine vorhersehbare Zeitkomplexität von $\Theta(n\log{}n)$ für alle Eingabegrößen. Diese Eigenschaft ermöglicht es, die Leistung der verschiedenen Thread-Abstraktionen unter kontrollierten Bedingungen zu vergleichen. Zudem erfordert Mergesort sowohl Rechenoperationen als auch Speicherzugriffe, was eine umfassende Bewertung der Leistungsfähigkeit der untersuchten Technologien erlaubt.
 
-Die Wahl von Mergesort als Benchmark bietet auch praktische Relevanz, da der Algorithmus häufig in realen Anwendungen zum Einsatz kommt, insbesondere bei der Verarbeitung großer Datenmengen. Somit können die gewonnenen Erkenntnisse direkt auf praxisnahe Szenarien übertragen werden. Durch die Verwendung von Mergesort als Benchmark lassen sich wertvolle Einblicke in die Stärken und Schwächen der verschiedenen Thread-Abstraktionen und Nebenläufigkeitskonzepte gewinnen, was für die Auswahl der geeigneten Technologie in spezifischen Anwendungsfällen von großer Bedeutung ist.
+Die Wahl von Mergesort als Benchmark hat tatsächlich auch praktische Relevanz, da der Algorithmus häufig in realen Anwendungen zum Einsatz kommt, insbesondere bei der Verarbeitung großer Datenmengen. Somit können die gewonnenen Erkenntnisse direkt auf praxisnahe Szenarien übertragen werden. Durch die Verwendung von Mergesort als Benchmark lassen sich wertvolle Einblicke in die Stärken und Schwächen der verschiedenen Thread-Abstraktionen und Nebenläufigkeitskonzepte gewinnen, was für die Auswahl der geeigneten Technologie in spezifischen Anwendungsfällen von großer Bedeutung ist.
 
 \subsection{Theoretische Grundlagen: Mergesort}
 
-Mergesort ist ein effizienter, auf dem Prinzip "Teile und herrsche" basierender Sortieralgorithmus. Er wurde 1945 von John von Neumann entwickelt \cite{vonNeumann1945} und zeichnet sich durch seine stabile Sortierung und vorhersagbare Leistung aus.
+Mergesort ist ein effizienter, auf dem Teile-und-herrsche-Prinzip basierender Sortieralgorithmus. Er wurde 1945 von John von Neumann entwickelt \cite{vonNeumann1945} und zeichnet sich durch seine stabile Sortierung und vorhersagbare Leistung aus.
 
 \subsubsection{Funktionsweise}
 
@@ -1610,19 +1611,19 @@ Diese Baumstruktur verdeutlicht nicht nur die Arbeitsweise des Algorithmus, sond
 
 \subsubsection{Komplexität}
 
-Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Zeitkomplexität von $\Theta(n \log n)$ auf, wobei $n$ die Anzahl der zu sortierenden Elemente ist \cite{Cormen2022}. Dies macht Mergesort zu einem sehr effizienten Sortieralgorithmus, insbesondere für große Datenmengen. Außerdem sind dies sehr gute Voraussetzungen für die Eignung als Benchmark, da die Zeitliche Performance nicht von dem Inhalt der zu verarbeitenden Daten abhängt.
+Mergesort weist in allen Fällen (Best-Case, Average-Case und Worst-Case) eine Zeitkomplexität von $\Theta(n \log n)$ auf, wobei $n$ die Anzahl der zu sortierenden Elemente ist \cite{Cormen2022}. Dies macht Mergesort zu einem sehr effizienten Sortieralgorithmus, insbesondere für große Datenmengen. Außerdem sind dies sehr gute Voraussetzungen für die Eignung als Benchmark, da die zeitliche Performance nicht von dem Inhalt der zu verarbeitenden Daten abhängt.
 
 Die Speicherkomplexität von Mergesort beträgt $\Theta(n)$, da zusätzlicher Speicherplatz für die temporären Teillisten benötigt wird. Dies kann bei sehr großen Datenmengen zu einem Nachteil werden.
 
 
 \subsection{Implementierung: Mergesort}
 
-Im diesem Abschnitt wird die parallelisierte Implementierung von Mergesort vorgestellt. Als erstes wird der grundlegende Ansatz anhand von Pseudocode vorgestellt, dann wird auf die technischen Besonderheiten der einzelnen Implementierungen eingegangen.
+In diesem Abschnitt wird die parallelisierte Implementierung von Mergesort vorgestellt. Als erstes wird der grundlegende Ansatz anhand von Pseudocode vorgestellt, danach wird auf die technischen Besonderheiten der einzelnen Implementierungen eingegangen, welche im Rahmen dieser Masterarbeit programmiert wurden.
 
 \subsubsection{Basisimplementierung: Mergesort}
 \label{subsubsec:implms}
 
-Der grundlegende Ansatz zur Parallelisierung von Mergesort ist für alle vier Implementierungen gleich und basiert auf der Version aus \emph{Introduction to Algorithms} von Cormen et al. \cite[S. 775]{Cormen2022}, jedoch wurde er leicht modifiziert. Die Funktion wurde um zwei weitere Übergabeparameter erweiter: \texttt{currentDepth} und \texttt{maxDepth}. Mit diesen lässt sich mit Hilfe einer if-else-Bedingung regulieren bis zu welcher Tiefe des durch die Rekursion enstehenden Baums parallelisiert werden soll. Die Rekursion wird auch danach weiter fortgesetzt, jedoch sequentiell.
+Der grundlegende Ansatz zur Parallelisierung von Mergesort ist für alle vier Implementierungen gleich und basiert auf der Version aus \emph{Introduction to Algorithms} von Cormen et al. \cite[S. 775]{Cormen2022}, jedoch wurde er leicht modifiziert. Die Funktion wurde um zwei weitere Übergabeparameter erweiter: \texttt{currentDepth} und \texttt{maxDepth}. Mit diesen lässt sich mit Hilfe einer if-else-Bedingung regulieren, bis zu welcher Tiefe des durch die Rekursion enstehenden Baums parallelisiert werden soll. Die Rekursion wird auch danach weiter fortgesetzt, jedoch sequentiell.
 
 \begin{algorithm}[H]
 	\caption{P-MERGE-SORT(array, tempArray, left, right, currentDepth, maxDepth)}
@@ -1643,7 +1644,7 @@ Der grundlegende Ansatz zur Parallelisierung von Mergesort ist für alle vier Im
 	\end{algorithmic}
 \end{algorithm}
 
-Des weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion parallelisieren lässt \cite[S. 776-782]{Cormen2022}. In der Praxis hat sich jedoch gezeigt, dass der Vorschlag sogar zu einer Verschlechterung der Laufzeit führt, deshalb wurde stattdessen ein sequentieller Ansatz genutzt \cite[S. 36]{Cormen2022}. Das schlechtere Abschneiden der parallelen merge-Implementierung hat verschiedene Gründe. So bietet eine Parallelisierung von merge ab einer bestimmten Baumtiefe keinen Vorteil mehr, da die megrgesort-Funktion bereits parallelisiert wurde und  die CPU-Kerne ab einer bestimmten Baumtiefe bereits vollständig ausgelastet sind, sodass eine zusätzliche Parallelisierung von merge keinen weiteren Vorteil bringt. Außerdem entsteht Overhead für die Verwaltung der parallelen Aufgaben, sowie die wiederholte Suche nach dem Pivot-Element.
+Des weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion parallelisieren lässt \cite[S. 776-782]{Cormen2022}. In der Praxis hat sich jedoch gezeigt, dass der Vorschlag sogar zu einer Verschlechterung der Laufzeit führt, deshalb wurde statt dessen ein sequentieller Ansatz genutzt \cite[S. 36]{Cormen2022}. Das schlechtere Abschneiden der parallelen merge-Implementierung hat verschiedene Gründe. So bietet eine Parallelisierung von merge ab einer bestimmten Baumtiefe keinen Vorteil mehr, da die Mergesort-Funktion bereits parallelisiert wurde und  die CPU-Kerne ab einer bestimmten Baumtiefe bereits vollständig ausgelastet sind, sodass eine zusätzliche Parallelisierung von merge keinen weiteren Vorteil bringt. Außerdem entsteht Overhead für die Verwaltung der parallelen Aufgaben, sowie für die wiederholte Suche nach dem Pivot-Element.
 
 \begin{algorithm}[H]
 	\caption{MERGE(array, tempArray, left, mid, right)}
@@ -1664,7 +1665,7 @@ Des weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion pa
 	\end{algorithmic}
 \end{algorithm}
 
-Durch die Verwendung der sequentiellen merge-Implementierung kommt es jedoch zu einer Besonderheit bei der durchschnittlichen CPU-Auslastung. Diese liegt bei ungefähr 82 \%. Der Grund dafür ist, dass auf höheren Baumebenen noch nicht genug Knoten vorhanden sind, um die CPU vollständig auszulasten. Auf der ersten Ebene gibt es nur einen Knoten, weshalb nur ein Kern genutzt werden kann. Auf der zweiten Ebene existieren zwei Knoten, was es ermöglicht, zwei Kerne zu verwenden, und auf der dritten Ebene gibt es vier Knoten, was vier Kerne beansprucht, und so weiter. Diese zunehmende Anzahl an Knoten führt dazu, dass mit jeder weiteren Ebene mehr CPU-Kerne aktiviert werden bis irgendwann alle Kerne des Prozessors genutzt werden. Aufgrund dieser Struktur wird die CPU-Auslastung auf den höheren Ebenen des Baums nicht optimal maximiert, was zu einer durchschnittlichen Auslastung von etwa 82 \% führt. Hinzukommt, dass vor jedem Sortierdurchlauf erst eine Kopie der zu sortierenden Liste erstellt wird, damit die Ausgangsliste für weite Sortierdurchläufe bestehen bleibt. 
+Durch die Verwendung der sequentiellen merge-Implementierung kommt es jedoch zu einer Besonderheit bei der durchschnittlichen CPU-Auslastung. Diese liegt bei ungefähr 82\%. Der Grund dafür ist, dass auf höheren Baumebenen noch nicht genug Knoten vorhanden sind, um die CPU vollständig auszulasten. Auf der ersten Ebene gibt es nur einen Knoten, weshalb nur ein Kern genutzt werden kann. Auf der zweiten Ebene existieren zwei Knoten, was es ermöglicht, zwei Kerne zu verwenden, und auf der dritten Ebene gibt es vier Knoten, was vier Kerne beansprucht, und so weiter. Diese zunehmende Anzahl an Knoten führt dazu, dass mit jeder weiteren Ebene mehr CPU-Kerne aktiviert werden, bis irgendwann alle Kerne des Prozessors genutzt werden. Aufgrund dieser Struktur wird die CPU-Auslastung auf den höheren Ebenen des Baums nicht optimal maximiert, was zu einer durchschnittlichen Auslastung von etwa 82\% führt. Hinzu kommt, dass vor jedem Sortierdurchlauf erst eine Kopie der zu sortierenden Liste erstellt wird, damit die Ausgangsliste für weitere Sortierdurchläufe bestehen bleibt. 
 
 TODO: Messergebnisse 82Prozent einfügen 
 
@@ -1674,17 +1675,17 @@ Um sicherzustellen, dass der Performancevergleich zwischen den verschiedenen Mer
 
 Die Implementierung für Java Platform Threads ist Teil der Anwendung \texttt{mergesort""Java"".jar}, und die relevante Klasse in dieser Implementierung ist \texttt{Mergesort""Platform""Threads"".java}.
 
-Zur Verwaltung der Threads wird in dieser Implementierung ein ExecutorService verwendet, der über die Methode \texttt{.newCachedThreadPool()} ein Thread-Pool erstellt. Dieser Thread-Pool kann bei Bedarf beliebig viele Threads erstellen und verwalten, was eine dynamische und effiziente Handhabung der parallelen Aufgaben ermöglicht. Im Vergleich zu anderen Thread-Pool-Typen kann newCachedThreadPool() Threads wiederverwenden, die nicht mehr benötigt werden, wodurch der Overhead durch das Erstellen und Zerstören von Threads minimiert wird.
+Zur Verwaltung der Threads wird in dieser Implementierung ein ExecutorService verwendet, der über die Methode \texttt{.newCachedThreadPool()} einen Thread-Pool erstellt. Dieser Thread-Pool kann bei Bedarf beliebig viele Threads erstellen und verwalten, was eine dynamische und effiziente Handhabung der parallelen Aufgaben ermöglicht. Im Vergleich zu anderen Thread-Pool-Typen kann newCachedThreadPool() Threads wiederverwenden, die nicht mehr benötigt werden, wodurch der Overhead durch das Erstellen und Zerstören von Threads minimiert wird.
 
 Die eigentliche Parallelisierung des Mergesort-Algorithmus erfolgt durch die Methode \texttt{.submit()}, mit der Aufgaben an den Executor übergeben werden. Diese Methode sorgt dafür, dass Teilaufgaben, wie das Sortieren von Subarrays, parallel ausgeführt werden. Jede dieser Aufgaben wird als \texttt{Future<?>} zurückgegeben, was es ermöglicht, die Ergebnisse der parallelen Aufgaben später abzurufen und auf deren Abschluss zu warten.
 
-Um sicherzustellen, dass alle parallelen Sortieroperationen abgeschlossen sind, bevor mit dem Mergen der Teillisten fortgefahren wird, wird die Methode \texttt{.get()} auf den \texttt{Future<?>}-Objekten aufgerufen. Diese Methode blockiert den aktuellen Thread, bis die entsprechenden Aufgaben abgeschlossen sind. Dadurch wird gewährleistet, dass die Teillisten vor der eigentlichen Merging-Phase vollständig sortiert sind und keine parallelen Operationen überschneidend oder unvollständig ausgeführt werden.
+Um sicherzustellen, dass alle parallelen Sortieroperationen abgeschlossen sind bevor mit dem Mergen der Teillisten fortgefahren wird, wird die Methode \texttt{.get()} auf den \texttt{Future<?>}-Objekten aufgerufen. Diese Methode blockiert den aktuellen Thread, bis die entsprechenden Aufgaben abgeschlossen sind. Dadurch wird gewährleistet, dass die Teillisten vor der eigentlichen Merging-Phase vollständig sortiert sind und keine parallelen Operationen überschneidend oder unvollständig ausgeführt werden.
 
 \subsubsection{Virtual Threads: Mergesort}
 
 Die Implementierung von Virtual Threads für den Mergesort-Algorithmus erfolgt ebenfalls in \texttt{mergesort""Java"".jar}, wobei die Klasse \texttt{Mergesort""Vir""tu""al""Threads"".java} verantwortlich ist. Ähnlich wie bei der Platform Threads-Implementierung wird auch hier ein ExecutorService verwendet, jedoch mit der Methode \texttt{new""Virtual""Thread""Per""Task""Executor()}. Diese Methode erstellt für jede Aufgabe einen neuen Virtual Thread.
 
-Die restliche Implementierung kann im Vergleich zu Platform Threads unverändert bleiben. Aufgaben werden mit der Methode \texttt{.submit()} an den Executor übergeben, und jede Aufgaben wird durch ein \texttt{Future<?>} repräsentiert. Die Synchronisation erfolgt durch das Aufrufen von \texttt{.get()} auf dem \texttt{Future<?>}-Objekt.
+Die restliche Implementierung kann im Vergleich zu Platform Threads unverändert bleiben. Aufgaben werden mit der Methode \texttt{.submit()} an den Executor übergeben und jede Aufgabe wird durch ein \texttt{Future<?>} repräsentiert. Die Synchronisation erfolgt durch das Aufrufen von \texttt{.get()} auf dem \texttt{Future<?>}-Objekt.
 
 Die Anpassung von der Platform-Thread-Implementierung zu Virtual Threads ist sehr einfach, da lediglich der ExecutorService geändert werden muss. Statt \texttt{new""Cached""Thread""Pool()} wird \texttt{new""Virtual""Thread""Per""Task""Executor()} verwendet.
 
@@ -1692,13 +1693,13 @@ Die Anpassung von der Platform-Thread-Implementierung zu Virtual Threads ist seh
 
 Die Implementierung des Mergesort-Algorithmus mit Kotlin-Coroutinen ist Teil der Anwendung \texttt{mergesortKotlin.jar}, wobei die Klasse \texttt{MergeSortCoroutines.kt} die zentrale Rolle spielt.
 
-Der Einstiegspunkt der Implementierung ist die \texttt{main}-Funktion, die mit \texttt{runBlocking} ausgeführt wird. Dies erlaubt es, asynchrone Funktionen innerhalb einer synchronen Umgebung zu verwenden. In diesem Fall die mergesort-Implementierung, welche als suspend-Funkton umgesetzt wurde.
+Der Einstiegspunkt der Implementierung ist die \texttt{main}-Funktion, die mit \texttt{runBlocking} ausgeführt wird. Dies erlaubt es, asynchrone Funktionen innerhalb einer synchronen Umgebung zu verwenden. In diesem Fall die mergesort-Implementierung, welche als suspend-Funktion umgesetzt wurde.
 
-Die Parallelisierung wird durch den Coroutinen-Builder \texttt{async} erreicht, der asynchrone Aufgaben erstellt, die unabhängig voneinander ausgeführt werden. Die Ergebnisse dieser Aufgaben werden als \texttt{Deferred}-Objekte zurückgegeben, die eine ähnliche Funktion wie \texttt{Future<?>} in Java haben.
+Die Parallelisierung wird durch den Coroutinen-Builder \texttt{async} erreicht, welcher asynchrone Aufgaben erstellt, die unabhängig voneinander ausgeführt werden. Die Ergebnisse dieser Aufgaben werden als \texttt{Deferred}-Objekte zurückgegeben, die eine ähnliche Funktion wie \texttt{Future<?>} in Java haben.
 
-Die Synchronisation der parallelen Aufgaben erfolgt durch Aufrufen von \texttt{.await()} auf den \texttt{Deferred}-Objekten. Dies blockiert den aktuellen Coroutine-Context, bis die jeweiligen Aufgaben abgeschlossen sind, und ermöglicht so eine saubere Synchronisation. Da kein spezifischer Dispatcher angegeben wird, verwendet die Implementierung den Standard-Dispatcher (Default) von Kotlin.
+Die Synchronisation der parallelen Aufgaben erfolgt durch Aufrufen von \texttt{.await()} auf den \texttt{Deferred}-Objekten. Dies blockiert den aktuellen Coroutine-Context, bis die jeweiligen Aufgaben abgeschlossen sind und ermöglicht so eine saubere Synchronisation. Da kein spezifischer Dispatcher angegeben wird, verwendet die Implementierung den Standard-Dispatcher (Default) von Kotlin.
 
-Eine Besonderheit ist die Nutzung von \texttt{GlobalScope} für die Erstellung der Coroutinen. Dies führt zu einer Halbierung der Laufzeit im Vergleich zu der Verwendung eines selbsterstellten Scopes. Dieser Geschwindigkeitsvorteil entsteht durch die geringe Scheduling-Kosten für Coroutinen, die im \texttt{GlobalScope} ausgeführt werden.
+Eine Besonderheit ist die Nutzung von \texttt{GlobalScope} für die Erstellung der Coroutinen. Dies führt zu einer Halbierung der Laufzeit im Vergleich zu der Verwendung eines selbst\-erstellten Scopes. Dieser Geschwindigkeitsvorteil entsteht durch die geringen Scheduling-Kosten für Coroutinen, die im \texttt{GlobalScope} ausgeführt werden.
 
 \subsubsection{Goroutinen: Mergesort}
 
@@ -1737,8 +1738,7 @@ Die Listenlänge ist ein zentraler Parameter, der die Größe der zu sortierende
 
 \subsubsection{Maximale Baumebene}
 
-Die maximale Baumebene gibt an, bis zu welcher Tiefe des rekursiven Sortierbaums des 
-Mergesort-Algorithmus parallelisiert wird. Es handelt sich hierbei also um die Schwelle, bis zu der die Teilsortierungen parallel ausgeführt wird. Dieser Parameter ermöglicht es, die Parallelisierung gezielt zu steuern und zu testen, wie die Performance in Abhängigkeit von der Tiefe der Parallelisierung variiert. Wichtig zu beachten ist, dass die Rekursion des Mergesort-Algorithmus trotz dieses Parameters weitergeht, auch über die angegebene maximale Baumebene hinaus. Der Algorithmus wird weiterhin die Liste rekursiv aufteilen und die Teillisten sortieren, aber die Parallelisierung erfolgt nur bis zur angegebenen maximalen Baumebene.
+Die maximale Baumebene gibt an, bis zu welcher Tiefe des rekursiven Sortierbaums des Mergesort-Algorithmus parallelisiert wird. Es handelt sich hierbei also um die Schwelle, bis zu der die Teilsortierungen parallel ausgeführt werden. Dieser Parameter ermöglicht es, die Parallelisierung gezielt zu steuern und zu testen, wie die Performance in Abhängigkeit von der Tiefe der Parallelisierung variiert. Wichtig zu beachten ist, dass die Rekursion des Mergesort-Algorithmus trotz dieses Parameters weitergeht, auch über die angegebene maximale Baumebene hinaus. Der Algorithmus wird weiterhin die Liste rekursiv aufteilen und die Teillisten sortieren, aber die Parallelisierung erfolgt nur bis zur angegebenen maximalen Baumebene.
 
 \begin{tabularx}{\textwidth}{@{}lX@{}}
 	\textbf{Parameter:}    & \texttt{MAX\_DEPTH} \\
@@ -1749,9 +1749,7 @@ Mergesort-Algorithmus parallelisiert wird. Es handelt sich hierbei also um die S
 
 \subsubsection{Parallelisierungs-Implementierungen}
 
-Die Parallelisierungs-Implementierungen stellen den zentralen Aspekt der Performance-Vergleiche dar. Hier werden verschiedene Techniken zur Parallelisierung des MergeSort-Algorithmus getestet, um zu sehen, wie gut die Implementierungen mit der parallelen Ausführung umgehen und welche Strategie am effizientesten ist. Die 4 Implementierungen sind: Java Platform Threads(platform), Java Virtual Thread(virtual), Kotlin Coroutinen(coroutines) und, Go Goroutinen(goroutines).
-
-TODO: ALGORITHMS umbenenen zB implementation
+Die Parallelisierungs-Implementierungen stellen den zentralen Aspekt der Performance-Vergleiche dar. Hier werden verschiedene Techniken zur Parallelisierung des Mergesort-Algorithmus getestet, um zu sehen, wie gut die Implementierungen mit der parallelen Ausführung umgehen und welche Strategie am effizientesten ist. Die 4 Implementierungen sind: Java Platform Threads(platform), Java Virtual Thread(virtual), Kotlin Coroutinen(coroutines) und, Go Goroutinen(goroutines).
 
 \begin{tabularx}{\textwidth}{@{}lX@{}}
 	\textbf{Parameter:}    & \texttt{ALGORITHMS} \\
@@ -1772,12 +1770,12 @@ Die Aufwärmläufe sind eine wichtige Komponente der Leistungsbewertung. Diese L
 \subsubsection{Fazit}
 
 Durch die Kombination dieser Parameter lässt sich eine Vielzahl von Testszenarien erstellen, die es ermöglichen, die Performance des Mergesort-Algorithmus unter verschiedenen Bedingungen zu untersuchen. Insbesondere die Wahl der Parallelisierungs-Implementierung und die Anpassung der maximalen Baumtiefe können signifikante Auswirkungen auf die Effizienz und Skalierbarkeit des Mergesort-Algorithmus haben. Die Möglichkeit, Sortierdurchläufe, Listenlängen, 
-Baumtiefe und Aufwärmläufe anzupassen, sorgt für eine hohe Flexibilität und ermöglicht eine präzise Analyse der Performance.
+Baumtiefe und Aufwärmläufe anzupassen sorgt für eine hohe Flexibilität und ermöglicht eine präzise Analyse der Performance.
 
 \subsection{Messungen: Mergesort}
 
 Im folgenden Abschnitt werden die Ergebnisse der Messungen 
-als Graphen aufbereitet, für die genauen Werte befindet sich im 
+als Graphen aufbereitet. Für die genauen Werte befindet sich im 
 Anhang zu jeder Grafik eine entsprechende Tabelle.
 
 \subsubsection{Messung 1: Mergesort - Baumebenen:1-6}
@@ -1790,12 +1788,7 @@ Anhang zu jeder Grafik eine entsprechende Tabelle.
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-In dieser Messung wird untersucht wie sich die Performance der vier Thread-Ab\-strak\-tio\-nen bei unterschiedlichen maximalen Baumebenen verhalten. Dabei werden die Messungen für die Werte eins bis sechs für die maximale Baumebene verglichen. Ziel der Messung ist es zu überprüfen, wie sich die Skalierbarkeit der Implementierungen im Verhältnis zu steigender Nebenläufigkeit verhält.
-
-Die Grafik \ref{fig:ms1-6CPU} zeigt die durchschnittliche und maximale Auslastung der CPU pro maximale Baumebene. Die CPU-Auslastung wird in Prozent angegeben, wobei 100\% eine komplette Auslastung aller zur Verfügung stehenden Kerne des auszuführenden Systems bedeutet.
-
-Dabei fällt auf, dass die Werte pro maximaler Baumebene für die vier Implementierungen fast gleich sind, bei etwas geringerer Auslastung bei der Goroutinen-Implementierung. Auch die Maximalwerte für die CPU-Auslastung weichen kaum von den Mittelwerten ab. Die durchschnittliche Auslastung bei einer maximalen Bauebene 1 beträgt 12\%. Wenn der Schwellwert für die parallelisieren bei Baumebene 1 liegt wird der gesamte Sortier-Algorithmus auf einem Kern ausgeführt. Die Messung wurden auf einem 8-Kern System ausgeführt, was bedeutet, dass die CPU-Auslastung bei einem ausgelasteten Kern bei 12,5\% liegt. Bei einer maximalen 
-Baumebene von zwei, werden zwei Teillisten parallel sortiert. Was es den Implementierungen ermöglicht zwei Kerne auszulasten, also 25\% CPU-Auslastung. Das wird mit 24\% auch fast erreicht. Auch bei den Ergebnissen für die maximale Baumebene drei und vier wäre wieder jeweils theoretisch eine Verdoppelung zu erwarten gewesen. Dies wird jedoch nicht mehr ganz erreicht, mit einer Steigerung auf 41\% für die maximale Baumebene 3 und auf 74\% für die Ebene 4. Warum dies zu erwarten war wurde bereits in Abschnitt \ref{subsubsec:implms} erläutert. Auf Ebene fünf und sechs stagnieren die Werte, beziehungsweise gehen sogar leicht zurück, da auf Ebene vier bereits alle 8 Kerne beansprucht werden und die Parallelität nicht mehr weiter gesteigert werden kann. Der leichte Rückgang ist mit einem Steigenden Overhead beim Scheduling zu erklären.
+In dieser Messung wird untersucht, wie sich die Performance der vier Thread-Ab\-strak\-tio\-nen bei unterschiedlichen maximalen Baumebenen verhalten. Dabei werden die Messungen für die Werte eins bis sechs für die maximale Baumebene verglichen. Ziel der Messung ist es, zu überprüfen, wie sich die Skalierbarkeit der Implementierungen im Verhältnis zu steigender Nebenläufigkeit verhält.
 
 \begin{figure}[H]
 	\centering
@@ -1804,9 +1797,10 @@ Baumebene von zwei, werden zwei Teillisten parallel sortiert. Was es den Impleme
 	\label{fig:ms1-6CPU}
 \end{figure}
 
-Die Grafik \ref{fig:ms1-6Zeit} zeigt die Ausführungszeit für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumebene. Die Zeit wird in Sekunden angegeben.
+Die Grafik \ref{fig:ms1-6CPU} zeigt die durchschnittliche und maximale Auslastung der CPU pro maximale Baumebene. Die CPU-Auslastung wird in Prozent angegeben, wobei 100\% eine komplette Auslastung aller zur Verfügung stehenden Kerne des ausführenden Systems bedeutet.
 
-Es fällt auf, dass mit steigender maximaler Baumtiefe und damit erhöhter Parallelität die Ausführungszeit abnimmt. Diese Abnahme flacht jedoch zunehmend ab, bis sie ab Baumebene 4 stagniert. Dies lässt sich durch den 8-Kern-Prozessor des ausführenden Systems erklären. Die Ausführungszeiten für Java Virtual Threads und Java Platform Threads sind nahezu identisch, mit einem leichten Vorteil für die Platform Threads. Goroutinen haben konstant eine etwas kürzere Laufzeit als die Java-Implementierungen. Coroutinen hingegen benötigen deutlich mehr Zeit.
+Dabei fällt auf, dass die Werte pro maximaler Baumebene für die vier Implementierungen fast gleich sind, bei etwas geringerer Auslastung bei der Goroutinen-Implementierung. Auch die Maximalwerte für die CPU-Auslastung weichen kaum von den Mittelwerten ab. Die durchschnittliche Auslastung bei einer maximalen Baumebene 1 beträgt 12\%. Wenn der Schwellwert für die Parallelisierung bei Baumebene 1 liegt, wird der gesamte Sortier-Algorithmus auf einem Kern ausgeführt. Die Messungen wurden auf einem 8-Kern System ausgeführt, was bedeutet, dass die CPU-Auslastung bei einem ausgelasteten Kern bei 12,5\% liegt. Bei einer maximalen 
+Baumebene von zwei, werden zwei Teillisten parallel sortiert. Was es den Implementierungen ermöglicht zwei Kerne auszulasten, also 25\% CPU-Auslastung. Das wird mit 24\% auch fast erreicht. Auch bei den Ergebnissen für die maximale Baumebene drei und vier wäre wieder jeweils theoretisch eine Verdoppelung zu erwarten gewesen. Dies wird jedoch nicht mehr ganz erreicht, mit einer Steigerung auf 41\% für die maximale Baumebene 3 und auf 74\% für die Ebene 4. Warum dies zu erwarten war wurde bereits in Abschnitt \ref{subsubsec:implms} erläutert. Auf Ebene fünf und sechs stagnieren die Werte, beziehungsweise gehen sogar leicht zurück, da auf Ebene vier bereits alle 8 Kerne beansprucht werden und die Parallelität nicht mehr weiter gesteigert werden kann. Der leichte Rückgang ist mit einem steigenden Overhead beim Scheduling zu erklären.
 
 \begin{figure}[H]
 	\centering
@@ -1815,15 +1809,9 @@ Es fällt auf, dass mit steigender maximaler Baumtiefe und damit erhöhter Paral
 	\label{fig:ms1-6Zeit}
 \end{figure}
 
-Die Grafik \ref{fig:ms1-6RAM} zeigt den Arbeitsspeicherverbrauch für alle Sortierdurchläufe in Ab\-hän\-gig\-keit von der maximalen Baumtiefe. Der Arbeitsspeicherverbrauch wird in Megabyte (MB) angegeben.
+Die Grafik \ref{fig:ms1-6Zeit} zeigt die Ausführungszeit für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumebene. Die Zeit wird in Sekunden angegeben.
 
-Dabei ist zu beachten, dass es zwischen den maximalen und mittleren Werten kaum Unterschiede gibt, und der Verbrauch über die verschiedenen Baumebenen hinweg konstant bleibt.
-
-Der Speicherverbrauch der Java Virtual Threads und Java Platform Threads liegt nahezu gleichauf bei etwa 2200 MB und zeigt somit fast keinen Unterschied. Hierbei ist ein leichter Vorteil für die Platform Threads zu beobachten, die einen minimal niedrigeren Speicherverbrauch aufweisen.
-
-Im Vergleich dazu liegt der Arbeitsspeicherverbrauch der Goroutinen deutlich niedriger bei etwa 350 MB. Weißt aber die größten Schwankungen zwischen den maximalen und mittel Werten auf.
-
-Coroutinen hingegen benötigen erheblich mehr Arbeitsspeicher. Der Verbrauch liegt bei etwa  3800 MB, was eine deutlich höhere Speichernutzung im Vergleich zu den anderen Implementierungen ist.
+Es fällt auf, dass mit steigender maximaler Baumtiefe und damit erhöhter Parallelität die Ausführungszeit abnimmt. Diese Abnahme flacht jedoch zunehmend ab, bis sie ab Baumebene 4 stagniert. Dies lässt sich durch den 8-Kern-Prozessor des ausführenden Systems erklären. Die Ausführungszeiten für Java Virtual Threads und Java Platform Threads sind nahezu identisch, mit einem leichten Vorteil für die Platform Threads. Goroutinen haben konstant eine etwas kürzere Laufzeit als die Java-Implementierungen. Coroutinen hingegen benötigen deutlich mehr Zeit.
 
 \begin{figure}[H]
 	\centering
@@ -1832,11 +1820,15 @@ Coroutinen hingegen benötigen erheblich mehr Arbeitsspeicher. Der Verbrauch lie
 	\label{fig:ms1-6RAM}
 \end{figure}
 
-Die Grafik \ref{fig:ms1-6Threads} zeigt die Anzahl der verwendeten Betriebssystem-Threads für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumtiefe. Es werden sowohl die maximalen als auch die mittleren Thread-Anzahlen angegeben.
+Die Grafik \ref{fig:ms1-6RAM} zeigt den Arbeitsspeicherverbrauch für alle Sortierdurchläufe in Ab\-hän\-gig\-keit von der maximalen Baumtiefe. Der Arbeitsspeicherverbrauch wird in Megabyte (MB) angegeben.
 
-Es fällt auf, dass die Anzahl der verwendeten Threads, mit Ausnahme der Platform Threads, mit steigender Baumtiefe konstant bleibt oder nur moderat ansteigt. Bei Virtual Threads und Coroutinen stagnieren die verwendeten Threads ab Baumtiefe 4, bei durchschnittlich 36 Threads. Dies ist durch die Begrenzung des 8-Kern-Prozessors des Systems erklärbar. Goroutinen zeigen einen konstanten Thread-Verbrauch von durchschnittlich 10 Threads. Was mit Abstand das beste Ergebnis ist. 
+Dabei ist zu beachten, dass es zwischen den maximalen und mittleren Werten kaum Unterschiede gibt, und der Verbrauch über die verschiedenen Baumebenen hinweg konstant bleibt.
 
-Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads zeigt mit zunehmender Baumtiefe eine exponentielle Steigerung, die in etwa den Potenzen von 2 folgt. Bei Baumtiefe 1 werden maximal 29 Threads verwendet, bei Baumtiefe 2 steigen die maximale Threads auf 31, bei Baumtiefe 3 auf 35 und so weiter. Die mittleren Werte liegen nur leicht darunter. Diese exponentielle Zunahme ist darauf zurückzuführen, dass für jede neue Teilliste ein neuer BS-Thread erstellt wird, was die Anzahl der verwendeten Threads mit der Baumtiefe ansteigen lässt. Die maximale Thread-Anzahl wächst also ungefähr im Muster $2^n$, wobei die Anzahl bei jeder weiteren Ebene exponentiell zunimmt.
+Der Speicherverbrauch der Java Virtual Threads und Java Platform Threads liegt nahezu gleichauf bei etwa 2200 MB und zeigt somit fast keinen Unterschied. Hierbei ist ein leichter Vorteil für die Platform Threads zu beobachten, die einen minimal niedrigeren Speicherverbrauch aufweisen.
+
+Im Vergleich dazu liegt der Arbeitsspeicherverbrauch der Goroutinen deutlich niedriger, bei etwa 350 MB, weist aber die größten Schwankungen zwischen den maximalen und mittel Werten auf.
+
+Coroutinen hingegen benötigen erheblich mehr Arbeitsspeicher. Der Verbrauch liegt bei etwa  3800 MB, was eine deutlich höhere Speichernutzung im Vergleich zu den anderen Implementierungen ist.
 
 \begin{figure}[H]
 	\centering
@@ -1844,6 +1836,13 @@ Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads 
 	\caption{Thread-Anzahl pro maximaler Baumebene,\\ Mergesort Messung 1: max. Baumebenen 1-6}
 	\label{fig:ms1-6Threads}
 \end{figure}
+
+Die Grafik \ref{fig:ms1-6Threads} zeigt die Anzahl der verwendeten Betriebssystem-Threads für alle Sortierdurchläufe in Abhängigkeit von der maximalen Baumtiefe. Es werden sowohl die maximalen als auch die mittleren Thread-Anzahlen angegeben.
+
+Es fällt auf, dass die Anzahl der verwendeten Threads, mit Ausnahme der Platform Threads, mit steigender Baumtiefe konstant bleibt oder nur moderat ansteigt. Bei Virtual Threads und Coroutinen stagnieren die verwendeten Threads ab Baumtiefe 4, bei durchschnittlich 36 Threads. Dies ist durch die Begrenzung des 8-Kern-Prozessors des Systems erklärbar. Goroutinen zeigen einen konstanten Thread-Verbrauch von durchschnittlich 10 Threads. Was mit Abstand das beste Ergebnis ist. 
+
+Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads zeigt mit zunehmender Baumtiefe eine exponentielle Steigerung, die in etwa den Potenzen von 2 folgt. Bei Baumtiefe 1 werden maximal 29 Threads verwendet, bei Baumtiefe 2 steigt Anzahl der maximal verwendeten Threads auf 31, bei Baumtiefe 3 auf 35 und so weiter. Die mittleren Werte liegen nur leicht darunter. Diese exponentielle Zunahme ist darauf zurückzuführen, dass für jede neue Teilliste ein neuer BS-Thread erstellt wird, was die Anzahl der verwendeten Threads mit der Baumtiefe ansteigen lässt. Die maximale Thread-Anzahl wächst also ungefähr im Muster $2^n$, wobei die Anzahl bei jeder weiteren Ebene exponentiell zunimmt.
+
 
 \subsubsection{Messung 2: Mergesort - Baumebenen:1-19}
 
@@ -1855,11 +1854,11 @@ Die Anzahl der verwendeten Threads bei der Implementierung mit Platform Threads 
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-Im folgenden Abschnitt wird der Fokus auf die Messungen für die maximalen Baumebenen 13 bis 19 gelegt. Diese spezifischen Werte werden detailliert untersucht, um die Auswirkungen der zunehmenden Baumtiefe auf die Performance der verschiedenen Implementierungen zu analysieren. Die vollständigen Messergebnisse für alle  Baumebenen von 1 bis 19 sind in Tabellenform im Anhang zu finden. Dabei werden wieder die vier Thread-Abstraktionen, Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen, verglichen. Ziel dieser Untersuchung ist es, die Skalierbarkeit und Effizienz der Implementierungen bei extremen Grad an Parallelisierung zu überprüfen. Allein bis einschließlich Baumebene 19 besitzt der Mergesort-Baum mit insgesamt 524.287 Knoten, was die immense Skalierung bei dieser Baumtiefe verdeutlicht.
+Im folgenden Abschnitt wird der Fokus auf die Messungen für die maximalen Baum\-ebenen 13 bis 19 gelegt. Diese spezifischen Werte werden detailliert untersucht, um die Auswirkungen der zunehmenden Baumtiefe auf die Performance der verschiedenen Implementierungen zu analysieren. Die vollständigen Messergebnisse für alle  Baumebenen von 1 bis 19 sind in Tabellenform im Anhang zu finden. Dabei werden wieder die vier Thread-Abstraktionen, Java Platform Threads, Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen, verglichen. Ziel dieser Untersuchung ist es, die Skalierbarkeit und Effizienz der Implementierungen bei einem extremen Parallelisierungsgrad zu überprüfen. Allein bis einschließlich Baumebene 19 besitzt der Mergesort-Baum insgesamt 524.287 Knoten, was die immense Skalierung bei dieser Baumtiefe verdeutlicht.
 
 Die Entscheidung, sich auf die Baumebenen 13 bis 19 zu konzentrieren, basiert auf den Ergebnissen der ersten Messung, bei der die Baumebenen 1 bis 6 detailliert untersucht wurden. Zwischen den Ebenen 4 und 13 wurden kaum Veränderungen in der Performance festgestellt, weshalb sich die Untersuchung auf die höheren Ebenen  fokussiert, um mögliche Unterschiede und Trends bei sehr großen Werten für die maximale Baumebene zu erfassen.
 
-Die entscheiden Performance Parameter sind dabei die Ausführungszeit pro maximaler Baumebene (Abb.: \ref{fig:ms1-19Zeit}) und Thread-Anzahl pro maximaler Baumebene (Abb.:\ref{fig:ms1-19Threads}).
+Die entscheidenden Performance Parameter sind dabei die Ausführungszeit pro maximaler Baumebene (Abb.: \ref{fig:ms1-19Zeit}) und Thread-Anzahl pro maximaler Baumebene (Abb.:\ref{fig:ms1-19Threads}).
 
 \begin{figure}[H]
 	\centering
@@ -1868,7 +1867,7 @@ Die entscheiden Performance Parameter sind dabei die Ausführungszeit pro maxima
 	\label{fig:ms1-19Zeit}
 \end{figure}
 
-Die Abbildung \ref{fig:ms1-19Zeit} zeigt die Ausführungszeit pro maximaler Baumebene für die verschiedenen Thread-Abstraktionen im Bereich von 13 bis 19 Ebenen. Die y-Achse ist logarithmisch mit Basis 10 skaliert, aufgrund der großen Unterschiede in den Ausführungszeiten. Virtual Threads, Coroutinen und Goroutinen zeigen eine nahezu konstante Ausführungszeit über alle Baumebenen hinweg. Ihre Leistung bleibt stabil und ähnelt den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Im Gegensatz dazu weisen Platform Threads ein exponentielles Wachstum der Ausführungszeit auf. Mit zunehmender Baumtiefe steigt die benötigte Zeit drastisch an. Die Messungen für Platform Threads wurden nach der maximalen Baumebene 19 abgebrochen, da die Ausführungszeiten für das Sortieren der Liste zu lang wurden. Diese Ergebnisse verdeutlichen die Skalierungsprobleme von Platform Threads bei extrem parallelen Aufgaben, während die anderen Thread-Abstraktionen eine bemerkenswerte Effizienz und Stabilität aufweisen.
+Die Abbildung \ref{fig:ms1-19Zeit} zeigt die Ausführungszeit pro maximaler Baumebene für die verschiedenen Thread-Abstraktionen im Bereich von 13 bis 19 Ebenen. Aufgrund der großen Unterschiede in den Ausführungszeiten wurde die y-Achse logarithmisch mit Basis 10 skaliert. Virtual Threads, Coroutinen und Goroutinen zeigen eine nahezu konstante Ausführungszeit über alle Baumebenen hinweg. Ihre Leistung bleibt stabil und ähnelt den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Im Gegensatz dazu weisen Platform Threads ein exponentielles Wachstum der Ausführungszeit auf. Mit zunehmender Baumtiefe steigt die benötigte Zeit drastisch an. Die Messungen für Platform Threads wurden nach der maximalen Baumebene 19 abgebrochen, da die Ausführungszeiten für das Sortieren der Liste zu lang wurden. Diese Ergebnisse verdeutlichen die Skalierungsprobleme von Platform Threads bei extrem parallelen Aufgaben, während die anderen Thread-Abstraktionen eine bemerkenswerte Effizienz und Stabilität aufweisen.
 
 \begin{figure}[H]
 	\centering
@@ -1877,9 +1876,9 @@ Die Abbildung \ref{fig:ms1-19Zeit} zeigt die Ausführungszeit pro maximaler Baum
 	\label{fig:ms1-19Threads}
 \end{figure}
 
-Die Abbildung \ref{fig:ms1-19Threads} illustriert die Thread-Anzahl pro maximaler Baumebene für die verschiedenen Implementierungen. Die y-Achse ist ebenfalls logarithmisch mit Basis 10 skaliert, aufgrund der erheblichen Unterschiede in der Thread-Anzahl. Virtual Threads, Coroutinen und Goroutinen zeigen eine konstante Thread-Anzahl über alle Baumebenen hinweg. Diese Werte entsprechen den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Platform Threads hingegen weisen ein exponentielles Wachstum der Thread-Anzahl auf. Dies lässt sich dadurch erklären, dass für jeden Knoten im Baum bis zur maximalen Baumebene ein neuer Betriebssystem-Thread erstellt wird. Auf Ebene 19 werden durchschnittlich 49.881 Betriebssystem-Threads erstellt, mit einem Maximalwert von 68.210 Threads. Diese Beobachtungen führen zu zwei wichtigen Schlussfolgerungen: Erstens zeigen sich Platform Threads ineffizient bei extrem großen Thread-Zahlen und skalieren nicht mehr adäquat. Zweitens erweist sich die Implementierung trotz der enormen Thread-Anzahl als überraschend robust. Entgegen der aufgestellten Vermutungen stürzt die Anwendung nicht ab. Die Robustheit lässt sich durch die Standardkonfigurationen der verwendeten Systeme erklären: Die Java Virtual Machine (JVM) ist standardmäßig so konfiguriert, dass sie eine große Anzahl von Threads handhaben kann. Windows 11 ist ebenfalls darauf ausgelegt, mit einer hohen Anzahl von Threads umzugehen. 
+Die Abbildung \ref{fig:ms1-19Threads} illustriert die Thread-Anzahl pro maximaler Baumebene für die verschiedenen Implementierungen. Die y-Achse ist, aufgrund der erheblichen Unterschiede in der Thread-Anzahl, ebenfalls logarithmisch mit Basis 10 skaliert. Virtual Threads, Coroutinen und Goroutinen zeigen eine konstante Thread-Anzahl über alle Baumebenen hinweg. Diese Werte entsprechen den Ergebnissen, die bereits bei der maximalen Baumebene 4 beobachtet wurden. Platform Threads hingegen weisen ein exponentielles Wachstum der Thread-Anzahl auf. Dies lässt sich dadurch erklären, dass für jeden Knoten im Baum bis zur maximalen Baumebene ein neuer Betriebssystem-Thread erstellt wird. Auf Ebene 19 werden durchschnittlich 49.881 Betriebssystem-Threads erstellt, mit einem Maximalwert von 68.210 Threads. Diese Beobachtungen führen zu zwei wichtigen Schlussfolgerungen: Erstens zeigen sich Platform Threads ineffizient bei extrem großen Thread-Zahlen und skalieren nicht mehr adäquat. Zweitens erweist sich die Implementierung trotz der enormen Thread-Anzahl als überraschend robust. Entgegen der aufgestellten Vermutungen stürzt die Anwendung nicht ab. Die Robustheit lässt sich durch die Standardkonfigurationen der verwendeten Systeme erklären: Die Java Virtual Machine (JVM) ist standardmäßig so konfiguriert, dass sie eine große Anzahl von Threads handhaben kann. Windows 11 ist ebenfalls darauf ausgelegt, mit einer hohen Anzahl von Threads umzugehen. 
 
-Bei der CPU-Auslastung (Abb.: \ref{fig:ms1-19CPU}) lassen sich kaum Veränderungen im Vergleich zur ersten Messung feststellen und auch der Arbeitsspeicherverbrauch (Abb.: \ref{fig:ms1-19RAM}) bleibt konstant außer für Java Platform Threads, was aber ebenfalls mit der steigenden Zahl an Threads zu erklären ist.
+Bei der CPU-Auslastung (Abb.: \ref{fig:ms1-19CPU}) lassen sich kaum Veränderungen im Vergleich zur ersten Messung feststellen und auch der Arbeitsspeicherverbrauch (Abb.: \ref{fig:ms1-19RAM}) bleibt konstant, außer für Java Platform Threads, was aber ebenfalls mit der steigenden Zahl an Threads zu erklären ist.
 
 Diese Ergebnisse unterstreichen die Effizienz und Skalierbarkeit von Virtual Threads, Coroutinen und Goroutinen bei hochparallelen Aufgaben, während sie gleichzeitig die Grenzen von Platform Threads bei extremer Parallelisierung aufzeigen.
 
@@ -1893,11 +1892,11 @@ Diese Ergebnisse unterstreichen die Effizienz und Skalierbarkeit von Virtual Thr
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-Die dritte Messung des Mergesort-Benchmarks konzentriert sich auf die extremen Bereiche der Parallelisierung, indem sie die maximalen Baumebenen von 18 bis 23 untersucht. Diese Messung zielt darauf ab, die Grenzen der Leistungsfähigkeit und Skalierbarkeit von Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen unter Bedingungen extremer Parallelität zu erforschen. Java Platform Threads wurden aufgrund ihrer Limitierungen bei hoher Parallelität bewusst aus dieser Messung ausgeschlossen
+Die dritte Messung des Mergesort-Benchmarks konzentriert sich auf die extremen Bereiche der Parallelisierung, indem sie die maximalen Baumebenen von 18 bis 23 untersucht. Diese Messung zielt darauf ab, die Grenzen der Leistungsfähigkeit und Skalierbarkeit von Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen unter Bedingungen extremer Parallelität zu erforschen. Java Platform Threads wurden aufgrund ihrer Limitierungen bei hoher Parallelität bewusst aus dieser Messung ausgeschlossen.
 
 Mit bis zu 8.388.607 Knoten im Mergesort-Baum bei Ebene 23 stellt dieser Benchmark die Thread-Abstraktionen vor eine enorme Herausforderung. Die Untersuchung soll Aufschluss darüber geben, bis zu welchem Grad diese modernen Konzepte mit der zunehmenden Parallelität umgehen können und ab wann mögliche Leistungseinbrüche oder Ressourcenengpässe auftreten.
 
-Besonders interessant sind die Ergebnisse der Ausführungszeit und der Thread-Anzahl, die in den Abbildungen \ref{fig:ms1-23Zeit} und \ref{fig:ms1-23Threads} dargestellt sind.
+Besonders aussagekräftig sind die Ergebnisse der Ausführungszeit und der Thread-Anzahl, die in den Abbildungen \ref{fig:ms1-23Zeit} und \ref{fig:ms1-23Threads} dargestellt sind (andere Abbildungen siehe Anhang).
 
 \begin{figure}[H]
 	\centering
@@ -1906,7 +1905,7 @@ Besonders interessant sind die Ergebnisse der Ausführungszeit und der Thread-An
 	\label{fig:ms1-23Zeit}
 \end{figure}
 
-Die Abbildung \ref{fig:ms1-23Zeit} zeigt die Ausführungszeit pro maximaler Baumebene. Dabei fällt auf, dass die Ausführungszeiten für alle drei Implementierungen lange konstant auf den Werten der maximalen Baumebene 4 bleiben. Ein Anstieg ist für Virtual Threads ab Ebene 16, für Goroutinen ab Ebene 17 und für Coroutinen ab Ebene 19 zu beobachten. Eine Verdoppeln der Ausführungszeiten ist bei Ebene 20 für Virtual Threads, für  bei Ebene 21 Goroutinen und bei Ebene 22 für Coroutinen festzustellen. Trotz dieser leichten Unterschiede zeigen alle Implementierungen eine ähnlich gute Performance
+Die Abbildung \ref{fig:ms1-23Zeit} zeigt die Ausführungszeit pro maximaler Baumebene. Dabei fällt auf, dass die Ausführungszeiten für alle drei Implementierungen lange konstant auf den Werten der maximalen Baumebene 4 bleiben. Ein Anstieg ist für Virtual Threads ab Ebene 16, für Goroutinen ab Ebene 17 und für Coroutinen ab Ebene 19 zu beobachten. Eine Verdopplung der Ausführungszeiten ist bei Ebene 20 für Virtual Threads, bei Ebene 21 für Goroutinen und bei Ebene 22 für Coroutinen festzustellen. Trotz dieser leichten Unterschiede zeigen alle Implementierungen eine ähnlich gute Performance.
 
 \begin{figure}[H]
 	\centering
@@ -1933,11 +1932,11 @@ Zusammenfassend lässt sich sagen, dass alle drei Thread-Abstraktionen einen hoh
 	\textbf{Aufwärmläufe:} & 10
 \end{tabularx}
 
-Die vierte Messung des Mergesort-Benchmarks konzentriert sich auf den Einfluss der Listenlänge auf die Performance-Unterschiede zwischen den verschiedenen Thread-Abstraktionen. Für diese Untersuchung wurden Listenlängen von 10.000 bis 10.000.000 Elementen getestet, wobei die maximale Baumebene konstant bei 4 gehalten wurde. Da so alle 8 Kerne des Prozessors genutzt werden können.
+Die vierte Messung des Mergesort-Benchmarks konzentriert sich auf den Einfluss der Listenlänge auf die Performance-Unterschiede zwischen den verschiedenen Thread-Abs\-trak\-ti\-onen. Für diese Untersuchung wurden Listenlängen von 10.000 bis 10.000.000 Elementen getestet, wobei die maximale Baumebene konstant bei 4 gehalten wurde. So können alle 8 Kerne des Prozessors genutzt werden.
 
 Das Hauptziel dieser Messung war es, festzustellen, ob die Listenlänge einen signifikanten Einfluss auf die relativen Leistungsunterschiede zwischen den verschiedenen Thread-Abstraktionen hat. Die Ergebnisse zeigten jedoch, dass alle getesteten Implementierungen gleichermaßen mit der Listenlänge skalierten. Die beobachteten Performance-Unterschiede zwischen den Thread-Abstraktionen blieben über den gesamten Bereich der getesteten Listenlängen weitgehend konstant.
 
-Aufgrund dieser Beobachtung und da keine neuen Erkenntnisse gewonnen wurden, die über die vorherigen Messungen hinausgingen, wurden die detaillierten Ergebnisse dieser Messung in den Anhang verschoben. Interessierte Leser können die entsprechenden Graphen im Abschnitt \ref{subsec:mergsort4graph} und die zugehörigen Tabellen im Abschnitt \ref{subsec:mergsort4tabellen} einsehen.
+Aufgrund dieser Beobachtung und da keine neuen Erkenntnisse gewonnen wurden, die über die vorherigen Messungen hinausgingen, wurden die detaillierten Ergebnisse dieser Messung in den Anhang verschoben. Für tiefergehende Analysen können die entsprechenden Graphen im Abschnitt \ref{subsec:mergsort4graph} und die zugehörigen Tabellen im Abschnitt \ref{subsec:mergsort4tabellen} eingesehen werden.
 
 \subsubsection{Fazit: Mergesort}
 
@@ -1947,14 +1946,13 @@ Bezüglich des Arbeitsspeicherverbrauchs lagen Virtual Threads und Platform Thre
 
 Die Anzahl der Threads offenbarte den markantesten Unterschied zwischen den neuen Technologien und Platform Threads. Während die Anzahl der Threads bei den neuen Technologien konstant niedrig blieb, stieg sie bei Platform Threads mit zunehmenden maximalen Baumebenen und damit steigender Parallelisierung kontinuierlich an. Dieser Anstieg führte zu einer Verlangsamung der Ausführung.
 
-Die neuen Technologien konnten aufgrund ihrer Entkoppelung von Betriebssystem-Threads eine deutlich größere Zahl an Threads handhaben. Performanceeinbrüche traten bei ihnen erst bei einem  hohen Grad an Parallelisierung auf, jedoch deutlich später als bei Platform Threads.
-
+Die neuen Technologien konnten aufgrund ihrer Entkoppelung von BS-Threads eine deutlich größere Zahl an Threads handhaben. Performanceeinbrüche traten bei ihnen erst bei einem  hohen Grad an Parallelisierung auf, jedoch deutlich später als bei Platform Threads.
 
 \section{Benchmark 2: Bank}
 
 \subsection{Motivation: Bank}
 
-Um die Leistungsfähigkeit und Praxistauglichkeit der verschiedenen Thread-Abs\-trak\-tio\-nen in einem realitätsnahen Szenario zu untersuchen, wurde ein Bankensystem-Bench\-mark entwickelt. Dieser Benchmark simuliert eine rudimentäre Bank, die nicht den Anspruch erhebt, die Komplexität eines realen Bankensystems abzubilden, sondern vielmehr als anschauliches Beispiel für nebenläufige Operationen in einer typischen Ge\-schäfts\-an\-wen\-dung dient.
+Um die Leistungsfähigkeit und Praxistauglichkeit der verschiedenen Thread-Abs\-trak\-tio\-nen in einem realitätsnahen Szenario zu untersuchen, wurde im Rahmen der Masterarbeit ein Bankensystem-Bench\-mark entwickelt. Dieser Benchmark simuliert eine rudimentäre Bank, die nicht den Anspruch erhebt die Komplexität eines realen Bankensystems abzubilden, sondern vielmehr als anschauliches Beispiel für nebenläufige Operationen in einer typischen Ge\-schäfts\-an\-wen\-dung dient.
 
 Das simulierte Bankensystem verwaltet Konten und führt Überweisungen zwischen diesen Konten durch. Bei jeder Überweisung wird ein Betrag von einem Konto abgebucht und einem anderen gutgeschrieben, wobei die Konsistenz des Datensatzes zu jedem Zeitpunkt gewährleistet sein muss. Diese Anforderung stellt eine klassische Herausforderung für nebenläufige Systeme dar, da gleichzeitige Zugriffe auf dieselben Konten koordiniert werden müssen, um Race Conditions und inkonsistente Zustände zu vermeiden.
 
@@ -1963,13 +1961,13 @@ Ein wesentlicher Aspekt dieses Benchmarks ist die Integration verschiedener Tech
 \begin{itemize}
 	\item \textbf{PostgreSQL:} Als robuste, relationale Datenbank zur Speicherung der Kontoinformationen.
 	\item \textbf{PostgREST:} Ein RESTful API-Server für PostgreSQL, der eine zusätzliche Abstraktionsebene zwischen Anwendung und Datenbank bietet.
-	\item \textbf{Docker:} Zur Containerisierung und einfachen Bereitstellung der einzelnen Komponenten, so wie zur Zuweisung von Hardwareressourcen.
+	\item \textbf{Docker:} Zur Containerisierung und einfachen Bereitstellung der einzelnen Komponenten sowie zur Zuweisung von Hardwareressourcen.
 	\item \textbf{Datenbanktreiber / Datenbankverbindungspools:} Zur effizienten Verwaltung von Datenbankverbindungen.
 \end{itemize}
 
 Die Verwendung dieser Technologien stellt sicher, dass die Thread-Abs\-trak\-tio\-nen in einer Umgebung getestet werden, die typischen Produktivsystemen ähnelt. Insbesondere die Interaktion mit der Datenbank repräsentiert eine blockierende I/O-Operation, wie sie in vielen realen Anwendungen vorkommt.
 
-Durch diesen Aufbau kann nicht nur die reine Leistungsfähigkeit der Thread-Abs\-trak\-tio\-nen gemessen werden, sondern auch ihre Fähigkeit zur effektiven Zusammenarbeit mit externen Systemen und zur Handhabung von I/O-gebundenen Aufgaben evaluieren. Dies ermöglicht eine umfassendere Beurteilung ihrer Praxistauglichkeit und Effizienz in komplexen, verteilten Systemen.
+Durch diesen Aufbau kann nicht nur die reine Leistungsfähigkeit der Thread-Abs\-trak\-tio\-nen gemessen werden, sondern auch ihre Fähigkeit zur effektiven Zusammenarbeit mit externen Systemen und zur Handhabung von I/O-gebundenen Aufgaben evaluiert werden. Dies ermöglicht eine umfassendere Beurteilung ihrer Praxistauglichkeit und Effizienz in komplexen, verteilten Systemen.
 
 Der Bank-Benchmark wird somit zu einem aussagekräftigen Indikator für die Leistungsfähigkeit und Skalierbarkeit der verschiedenen Thread-Abstraktionen in einem Szenario, das typische Herausforderungen moderner Softwarearchitekturen widerspiegelt.
 
@@ -1980,7 +1978,7 @@ Der Bank-Benchmark wird somit zu einem aussagekräftigen Indikator für die Leis
 \paragraph{Testdatengenerierung:}
 \label{para:datagenerator}
 
- Vor dem Ausführen des Benchmarks müssen zuerst die Testdaten generiert werden. Konkret sind dies einerseits die Bankkonten (Accounts), welche sich aus einer Kontonummer und einem Kontostand, zusammen setzen, andererseits die Überweisungen (Transaktions) welche aus einem Sender, einem Empfänger und dem zu überweisenden Betrag bestehen. Dieses Daten werden von der separaten Anwendung \texttt{bankDataGenerator.jar} generiert. Diese erhält zwei Übergabeparameter: die Anzahl der Konten und die Anzahl der Überweisungen. Auf dieser Grundlage werden zwei Text Dateien erstellt, welche dann von den unterschiedlichen Implementierungen importiert werden können, so dass gewährleistet ist, dass alle mit den gleichen Daten arbeiten. Das Ausführen von \texttt{bankDataGenerator.jar} findet zu Beginn des Python-Scripts \texttt{monitoring""Bank.py} (Abschnitt: \ref{subsubsec:monibank}) statt.
+ Vor dem Ausführen des Benchmarks müssen zuerst die Testdaten generiert werden. Konkret sind dies einerseits die Bankkonten (Accounts), welche sich aus einer Kontonummer und einem Kontostand zusammen setzen, andererseits die Überweisungen (Transactions) welche aus einem Sender, einem Empfänger und dem zu überweisenden Betrag bestehen. Dieses Daten werden von der separaten Anwendung \texttt{bankDataGenerator.jar} generiert. Diese erhält zwei Übergabeparameter: die Anzahl der Konten und die Anzahl der Überweisungen. Auf dieser Grundlage werden zwei Textdateien erstellt, welche dann von den unterschiedlichen Implementierungen importiert werden können, sodass gewährleistet ist, dass alle mit den gleichen Daten arbeiten. Das Ausführen von \texttt{bankDataGenerator.jar} findet zu Beginn des Python-Scripts \texttt{monitoring""Bank.py} (Abschnitt: \ref{subsubsec:monibank}) statt.
  
 \paragraph{PostgreSQL:}
 
@@ -2055,9 +2053,9 @@ Die Implementierung der Bank-Anwendung mit Java Platform Threads erfolgt in der 
 
 Die Klasse \texttt{JDBCBankAccountRepository} implementiert das Interface \texttt{Bank""Account""Re""po""si""to""ry} und stellt die Datenbankzugriffe bereit. Für die Datenbankverbindung wird JDBC in Verbindung mit dem PostgreSQL-Treiber (Version 42.7.2) verwendet. 
 
-Zur effizienten Verwaltung der Datenbankverbindungen kommt HikariCP (Version 6.0.0) zum Einsatz, ein leistungsstarker Connection Pool. HikariCP wurde aufgrund seiner hervorragenden Performance und geringen Overhead ausgewählt. Außerdem ist es eine weitverbreitete Technologie, die so dem Anspruch auf Realitätsnähe gerecht wird.
+Zur effizienten Verwaltung der Datenbankverbindungen kommt HikariCP (Version 6.0.0) zum Einsatz, ein leistungsstarker Connection Pool. HikariCP wurde aufgrund seiner hervorragenden Performance und seines geringen Overheads ausgewählt. Außerdem ist es eine weitverbreitete Technologie, die so dem Anspruch auf Realitätsnähe gerecht wird.
 
-Die Auswahl der spezifischen Implementierung wird über die Klasse \texttt{Transaction""Exe""cu""tor} gesteuert. Für die Ausführung mit Platform Threads ist die Methode \texttt{execute""Trans""ac""ti""ons""Platform} zuständig. Diese Methode nutzt einen Fixed Thread Pool, der mit \texttt{Executors"".new""Fixed""Thread""Pool""(maxConnections*2)} initialisiert wird. Es werden also doppelt so viele Platform Threads wie Datenbankverbindungen erstellt, dadurch ist gewährleistet, dass theoretisch alle Datenbankverbindungen aus dem Connection Pool genutzt werden könnten. Die Anzahl der Threads bleibt dennoch überschaubar, sodass die Systemressourcen nicht übermäßig belastet werden.
+Die Auswahl der spezifischen Implementierung wird über die Klasse \texttt{Transaction""Exe""cu""tor} gesteuert. Für die Ausführung mit Platform Threads ist die Methode \texttt{execute""Trans""ac""ti""ons""Platform} zuständig. Diese Methode nutzt einen Fixed Thread Pool, der mit \texttt{Executors"".new""Fixed""Thread""Pool""(maxConnections*2)} initialisiert wird. Es werden also doppelt so viele Platform Threads wie Datenbankverbindungen erstellt. Dadurch ist gewährleistet, dass theoretisch alle Datenbankverbindungen aus dem Connection Pool genutzt werden können. Die Anzahl der Threads bleibt dennoch überschaubar, sodass die Systemressourcen nicht übermäßig belastet werden.
 
 
 \subsubsection{Virtual Threads: Bank}
@@ -2068,10 +2066,10 @@ Auch hier kommt die Klasse \texttt{JDBCBankAccountRepository} zum Einsatz, die d
 
 Für das Verbindungs-Pooling wird ebenfalls HikariCP (Version 6.0.0) verwendet. HikariCP hat in neueren Versionen Optimierungen für die Arbeit mit Virtual Threads eingeführt, um deren Vorteile optimal zu nutzen. Die Beibehaltung von HikariCP für Virtual Threads ermöglicht eine faire Vergleichsbasis und nutzt gleichzeitig die spezifischen Optimierungen für diese neue Technologie.
 
-Die Auswahl der spezifischen Implementierung wird wie bei den Platform Threads über die Klasse \texttt{TransactionExecutor} gesteuert. Für die Ausführung mit Virtual Threads ist die Methode \texttt{executeTransactionsVirtual} zuständig.
+Die Auswahl der spezifischen Implementierung wird, wie bei den Platform Threads, über die Klasse \texttt{TransactionExecutor} gesteuert. Für die Ausführung mit Virtual Threads ist die Methode \texttt{executeTransactionsVirtual} zuständig.
 Im Gegensatz zur Platform Threads Implementierung wird hier \texttt{Executors.newVirtualThreadPerTaskExecutor()} verwendet. Dieser Executor erstellt für jede Aufgabe einen neuen Virtual Thread.
 
-Um die Anzahl der gleichzeitigen Datenbankzugriffe zu begrenzen, wird eine Semaphore mit \texttt{maxConnections*2} Genehmigungen verwendet. Dies entspricht der Anzahl der Threads im Fixed Thread Pool der Platform Threads Implementierung, gewährleistet aber eine flexiblere Handhabung der Nebenläufigkeit. In der Praxis hat sich gezeigt, dass HikariCP zwar auch deutlich mehr gleichzeitige Anfragen von Virtual Threads verarbeitet kann (zehntausende), aber der Overhead für die Verwaltung steigt und es deshalb sinnvoll ist die gleichzeitigen Anfragen an den Pool zu limitieren.
+Um die Anzahl der gleichzeitigen Datenbankzugriffe zu begrenzen, wird eine Semaphore mit \texttt{maxConnections*2} Genehmigungen verwendet. Dies entspricht der Anzahl der Threads im Fixed Thread Pool der Platform Threads Implementierung, gewährleistet aber eine flexiblere Handhabung der Nebenläufigkeit. In der Praxis hat sich gezeigt, dass HikariCP zwar auch deutlich mehr gleichzeitige Anfragen von Virtual Threads verarbeiten kann (zehntausende), aber der Overhead für die Verwaltung steigt und es deshalb sinnvoll ist, die gleichzeitigen Anfragen an den Pool zu limitieren.
 
 Der Hauptunterschied zwischen den beiden Implementierungen liegt also in der Art, wie auf den Connection Pool zugegriffen wird: Bei Platform Threads geschieht dies über einen festen Thread Pool, während bei Virtual Threads für jede Aufgabe ein neuer Thread erstellt wird, der aber durch die Semaphore in seiner Zugriffshäufigkeit auf den Pool begrenzt wird.
 
@@ -2081,7 +2079,7 @@ Die Implementierung der Bank-Anwendung mit Kotlin Coroutinen erfolgt in der Anwe
 
 Die Klasse \texttt{R2DBCBankAccountRepository} implementiert das Interface \texttt{Bank""Account""Repository} und stellt die Datenbankzugriffe bereit. Für die Datenbankverbindung wird der R2DBC-Treiber (Version 1.0.7.RELEASE) in Verbindung mit einem Connection Pool (Version 1.0.0.RELEASE) verwendet. 
 
-Die Wahl fiel auf R2DBC, da es eine de wenigen Kombinationen aus Datenbankteiber und Connection Pool ist die native Unterstützung für Coroutinen bietet. Allerdings wird dabei ein reaktiver Ansatz verfolgt.
+Die Wahl fiel auf R2DBC, da es eine der wenigen Kombinationen aus Datenbankteiber und Connection Pool ist, die native Unterstützung für Coroutinen bietet. Allerdings wird dabei ein reaktiver Ansatz verfolgt.
 
 Zur Unterstützung der reaktiven Programmierung mit Coroutinen wird die Bibliothek \texttt{kotlinx-coroutines-reactive} verwendet. Diese ermöglicht eine nahtlose Integration zwischen reaktiven Streams und Coroutinen, was die Verarbeitung asynchroner Datenbankoperationen erheblich vereinfacht.
 
@@ -2113,7 +2111,7 @@ Die Verwendung von Goroutinen in Kombination mit dem effizienten pgx-Treiber und
 
 \subsection{Messparameter: Bank}
 
-Für den Bank-Benchmark können verschiedene Parameter variiert werden, um die Leistungsfähigkeit der unterschiedlichen Thread-Abstraktionen zu testen. Die Parameter werden \texttt{docker-compose\_modify.yaml} Datei festgelegt und können von dem Python-Skript \texttt{monitoringBank.py} verändert werden. Im Folgenden werden die wichtigsten Messparameter vorgestellt, die für die Durchführung und Auswertung des Benchmarks von Bedeutung sind.
+Für den Bank-Benchmark können verschiedene Parameter variiert werden, um die Leistungsfähigkeit der unterschiedlichen Thread-Abstraktionen zu testen. Die Parameter werden in der \texttt{docker-compose\_modify.yaml} Datei festgelegt und können von dem Python-Skript \texttt{monitoringBank.py} verändert werden. Im Folgenden werden die wichtigsten Messparameter vorgestellt, die für die Durchführung und Auswertung des Benchmarks von Bedeutung sind.
 
 \subsubsection{Implementierungen}
 
@@ -2147,12 +2145,12 @@ Der Parameter gibt die Gesamtzahl der Bankkonten an, die für den Benchmark verw
 
 \subsubsection{Anzahl der Überweisungen}
 
-Der Parameter gibt die Gesamtzahl der Überweisungen an, die während des Benchmarks durchgeführt werden sollen. Diese Zahl beeinflusst die Laufzeit und den Umfang des Tests sowie die Menge der zu verarbeitenden Daten. Eine höhere Anzahl von Überweisungen erhöht die statistische Zuverlässigkeit der Testergebnisse, da zufällige Schwankungen ausgeglichen werden. Gleichzeitig steigt mit der Anzahl der Transaktionen auch die Gesamtlaufzeit des Benchmarks. Ein Überweisung besteht immer aus einem Sender, einem Empfänger und dem zu überweisenden Betrag. 
+Der Parameter gibt die Gesamtzahl der Überweisungen an, die während des Benchmarks durchgeführt werden sollen. Diese Zahl beeinflusst die Laufzeit und den Umfang des Tests sowie die Menge der zu verarbeitenden Daten. Eine höhere Anzahl von Überweisungen erhöht die statistische Zuverlässigkeit der Testergebnisse, da zufällige Schwankungen ausgeglichen werden. Gleichzeitig steigt mit der Anzahl der Transaktionen auch die Gesamtlaufzeit des Benchmarks. Eine Überweisung besteht immer aus einem Sender, einem Empfänger und dem zu überweisenden Betrag. 
 
 \begin{tabularx}{\textwidth}{@{}lX@{}}
 	\textbf{Parameter:} & \texttt{NUMBER\_OF\_TRANSACTIONS} \\
 	\textbf{Beschreibung:} & Legt die Anzahl der Überweisungen fest, die im Benchmark durchgeführt werden. \\
-	\textbf{Typischer Wert:} & 100000 (Einhunderttausend Transaktionen)
+	\textbf{Typischer Wert:} & 100.000 (Einhunderttausend Transaktionen)
 \end{tabularx}
 
 \subsubsection{Maximale Datenbankverbindungen}
@@ -2195,7 +2193,7 @@ Für den Bank-Benchmark-Container wurden folgende Ressourcenbeschränkungen fest
 
 Der Abschnitt präsentiert die Messergebnisse des Bank-Benchmarks. Die Resultate werden in Form von Graphen dargestellt, während die konkreten Messwerte in Tabellen im Anhang zu finden sind.
 
-Bei allen durchgeführten Messungen kamen Datenbankreiber und Verbindungs-Pools zum Einsatz. Da diese Komponenten durchgängig verwendet wurden, wird dies nicht bei jeder einzelnen Messung explizit erwähnt.
+Bei allen durchgeführten Messungen kamen Datenbanktreiber und Verbindungs-Pools zum Einsatz. Da diese Komponenten durchgängig verwendet wurden, wird dies nicht bei jeder einzelnen Messung explizit erwähnt.
 
 Die Ressourcenbeschränkungen, die in Abschnitt \ref{subsubsec:bankRes} definiert wurden, blieben für alle Messungen unverändert. Dies gewährleistet eine konsistente Testumgebung und ermöglicht einen aussagekräftigen Vergleich der Ergebnisse.
 
@@ -2211,7 +2209,7 @@ Die Ressourcenbeschränkungen, die in Abschnitt \ref{subsubsec:bankRes} definier
 
 Die erste Messung des Bank-Benchmarks untersucht den Einfluss der maximalen Datenbankverbindungen auf die Performance der verschiedenen Thread-Abstraktionen. Hierbei wird die Verbindungspool-Größe variiert, um zu ermitteln, wie sich die Anzahl gleichzeitiger Datenbankverbindungen auf die Leistung der Implementierungen auswirkt.
 
-Die maximalen Datenbankverbindungen wurden im Bereich von 10 bis 40 variiert, wobei die in den Graphen gzeigten Messpunkte so gewählt wurden, dass sie die optimale Ausführungszeit jeder Thread-Abstraktion abbilden. Diese lagt bei Virtual Threads bei 17 Verbindungen, bei Coroutinen bei 21 Verbindungen, bei Goroutinen bei 28 Verbindungen und bei Platform Threads bei 30 Verbindungen.
+Die maximalen Datenbankverbindungen wurden im Bereich von 10 bis 40 variiert, wobei die in den Graphen gezeigten Messpunkte so gewählt wurden, dass sie die optimale Ausführungszeit jeder Thread-Abstraktion abbilden. Diese lag bei Virtual Threads bei 17 Verbindungen, bei Coroutinen bei 21 Verbindungen, bei Goroutinen bei 28 Verbindungen und bei Platform Threads bei 30 Verbindungen.
 
 \begin{figure}[H]
 	\centering
@@ -2242,7 +2240,7 @@ Die Abbildung \ref{fig:bankConnRAM} zeigt den Arbeitsspeicherverbrauch pro maxim
 
 Unter den verglichenen Implementierungen weist Kotlin Coroutinen mit etwa 550 MB den höchsten Arbeitsspeicherverbrauch auf. Dicht dahinter folgen Java Virtual Threads mit ungefähr 450 MB. Java Platform Threads liegen mit circa 220 MB im mittleren Bereich. Go Goroutinen heben sich deutlich von den anderen Implementierungen ab und zeigen mit nur etwa 28 MB den mit Abstand niedrigsten Arbeitsspeicherverbrauch.
 
-Trotz dieser erheblichen Unterschiede zwischen den verschiedenen Thread-Abstraktionen bleibt der jeweilige Arbeitsspeicherverbrauch über alle Messpunkte hinweg konstant. Dies lässt darauf schließen, dass der Arbeitsspeicherverbrauch eine charakteristische Eigenschaft der jeweiligen Implementierung ist und nicht von der Anzahl der maximalen Datenbankverbindungen beeinflusst wird beziehungsweise diese nur einen kleinen Bruchteil ausmachen.
+Trotz dieser erheblichen Unterschiede zwischen den verschiedenen Thread-Abstraktionen bleibt der jeweilige Arbeitsspeicherverbrauch über alle Messpunkte hinweg konstant. Dies lässt darauf schließen, dass der Arbeitsspeicherverbrauch eine charakteristische Eigenschaft der jeweiligen Implementierung ist und nicht von der Anzahl der maximalen Datenbankverbindungen beeinflusst wird, beziehungsweise diese nur einen kleinen Bruchteil ausmachen.
 
 \begin{figure}[H]
 	\centering
@@ -2256,7 +2254,7 @@ Virtual Threads und Goroutinen zeigen konstante Werte über alle Messpunkte hinw
 
 Platform Threads hingegen zeigen einen linearen Anstieg der Thread-Anzahl. Die Anzahl lässt sich durch die Formel \texttt{24+(maxConnections*2)} beschreiben, was auf die Verwendung von \texttt{Executors"".new""Fixed""Thread""Pool""(maxConnections*2)} zurückzuführen ist.
 
-Coroutinen weisen ein anderes Verhalten auf. Die Thread-Anzahl steigt bis auf etwa 85 Threads an und stagniert dann zwischen 80 und 90 Threads. Was sich mit Erfahrungen aus anderen Messungen dekt. Dieses Verhalten unterscheidet sich von den anderen drei Implementierungen, bei denen die maximalen gleichzeitigen Anfragen an den jeweiligen Pool auf\texttt{ maxConnections*2} begrenzt sind. Bei Coroutinen gibt es keine solche Begrenzung dafür, wie viele Coroutinen gleichzeitig Anfragen an den R2DBC-Pool senden dürfen.
+Coroutinen weisen ein anderes Verhalten auf. Die Thread-Anzahl steigt bis auf etwa 85 Threads an und stagniert dann zwischen 80 und 90 Threads, was sich mit Erfahrungen aus anderen Messungen deckt. Dieses Verhalten unterscheidet sich von den anderen drei Implementierungen, bei denen die maximalen gleichzeitigen Anfragen an den jeweiligen Pool auf \texttt{maxConnections*2} begrenzt sind. Bei Coroutinen gibt es keine solche Begrenzung dafür, wie viele Coroutinen gleichzeitig Anfragen an den R2DBC-Pool senden dürfen.
 
 \begin{figure}[H]
 	\centering
@@ -2265,7 +2263,7 @@ Coroutinen weisen ein anderes Verhalten auf. Die Thread-Anzahl steigt bis auf et
 	\label{fig:bankConnPostgCPU}
 \end{figure}
 
-Die Abbildung zeigt die CPU-Auslastung der PostgreSQL-Datenbank in Abhängigkeit von der Anzahl der maximalen Datenbankverbindungen für verschiedene Thread-Abstraktionen. Es fällt auf, das mit Ausnahme der Coroutinen-Implementierung alle anderen untersuchten Implementierungen die Datenbank bei einer hohen Anzahl von Datenbankverbindungen vollständig auslasten können. Im Gegensatz dazu erreichen die Coroutinen nur eine maximale Auslastung der Datenbank von etwa 50\%. Diese Beobachtung lässt damit erklären, dass bei der Coroutinen-Implementierung die CPU-Auslastung der Anwendung selbst der limitierende Faktor ist.
+Die Abbildung \ref{fig:bankConnPostgCPU} zeigt die CPU-Auslastung der PostgreSQL-Datenbank in Abhängigkeit von der Anzahl der maximalen Datenbankverbindungen für verschiedene Thread-Abstrak\-tionen. Es fällt auf, dass mit Ausnahme der Coroutinen-Implementierung alle anderen untersuchten Implementierungen die Datenbank bei einer hohen Anzahl von Datenbankverbindungen vollständig auslasten können. Im Gegensatz dazu erreichen die Coroutinen nur eine maximale Auslastung der Datenbank von etwa 50\%. Diese Beobachtung lässt sich damit erklären, dass bei der Coroutinen-Implementierung die CPU-Auslastung der Anwendung selbst der limitierende Faktor ist.
 
 \subsubsection{Messung 2: Bank - Verzögerung}
 
@@ -2288,9 +2286,9 @@ Besonders interessant für die Analyse waren die Ausführungszeit sowie die CPU-
 	\label{fig:bankDelay80Zeit}
 \end{figure}
 
-Abbildung \ref{fig:bankDelay80Zeit} stellt die Ausführungszeit der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen dar. Die Grafik zeigt einen linearen Anstieg der Ausführungszeit für alle Implementierungen mit zunehmender Ver\-zö\-ge\-rung.
+Abbildung \ref{fig:bankDelay80Zeit} stellt die Ausführungszeit der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen dar. Die Grafik zeigt einen li\-ne\-aren Anstieg der Ausführungszeit für alle Implementierungen mit zunehmender Ver\-zö\-ge\-rung.
 
-Bei geringen Verzögerungen weisen die Platform Threads zunächst die kürzeste Aus\-füh\-rungs\-zei\-ten auf. Ab einer Verzögerung von etwa 30 Millisekunden ändert sich jedoch die Reihenfolge, und es stellt sich ein konsistentes Muster ein. Virtual Threads und Goroutinen zeigen dann die kürzesten Ausführungszeiten, dicht gefolgt von den Platform Threads. Die Coroutinen weisen durchgehend die längsten Ausführungszeiten auf, wenn auch der Abstand zu den anderen Implementierungen relativ gering bleibt.
+Bei geringen Verzögerungen weisen die Platform Threads zunächst die kürzeste Aus\-füh\-rungs\-zei\-t auf. Ab einer Verzögerung von etwa 30 Millisekunden ändert sich jedoch die Reihenfolge, und es stellt sich ein konsistentes Muster ein. Virtual Threads und Goroutinen zeigen dann die kürzesten Ausführungszeiten, dicht gefolgt von den Platform Threads. Die Coroutinen weisen durchgehend die längsten Ausführungszeiten auf, wenn auch der Abstand zu den anderen Implementierungen relativ gering bleibt.
 
 Bemerkenswert ist, dass trotz der unterschiedlichen Leistungscharakteristika die Aus\-füh\-rungs\-zei\-ten aller getesteten Thread-Abstraktionen über den gesamten Ver\-zö\-ge\-rungs\-be\-reich hinweg recht nahe beieinander liegen.
 
@@ -2301,7 +2299,7 @@ Bemerkenswert ist, dass trotz der unterschiedlichen Leistungscharakteristika die
 	\label{fig:bankDelay80CPU}
 \end{figure}
 
-Abbildung \ref{fig:bankDelay80CPU} zeigt die CPU-Auslastung der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen. Bei einer Latenz von 10 Millisekunden liegen die CPU-Auslastungen für Platform Threads, Virtual Threads und Goroutinen eng beieinander, wobei Platform Threads die niedrigste Auslastung mit etwa 44\% und Virtual Threads die höchste mit circa 56\% aufweisen. Auffällig ist, dass die Coroutinen-Implementierung bei dieser Latenz eine deutlich höhere CPU-Auslastung von 100\% zeigt, was mit den Ergebnissen aus der ersten Messung für eine hohe Anzahl maximaler Verbindungen übereinstimmt.
+Abbildung \ref{fig:bankDelay80CPU} zeigt die CPU-Auslastung der verschiedenen Thread-Abstraktionen in Abhängigkeit von der Verzögerung der Überweisungen. Bei einer Latenz von 10 Millisekunden liegen die CPU-Auslastungen für Platform Threads, Virtual Threads und Goroutinen eng beieinander, wobei Platform Threads die niedrigste Auslastung mit etwa 44\% und Virtual Threads die höchste mit etwa 56\% aufweisen. Auffällig ist, dass die Coroutinen-Implementierung bei dieser Latenz eine deutlich höhere CPU-Auslastung von 100\% zeigt, was mit den Ergebnissen aus der ersten Messung für eine hohe Anzahl maximaler Verbindungen übereinstimmt.
 
 Mit zunehmender Verzögerung ist für alle Implementierungen ein leichter linearer Rück\-gang der CPU-Auslastung zu beobachten. Dieser Trend deutet darauf hin, dass bei längeren Wartezeiten zwischen den Überweisungen die Prozessorressourcen weniger intensiv genutzt werden. Die Coroutinen-Implementierung behält jedoch durchgehend die höchste CPU-Auslastung, während die anderen Thread-Abstraktionen weiterhin relativ dicht beieinander liegen.
 
@@ -2340,7 +2338,7 @@ Besonders interessant für die Analyse waren die Ausführungszeiten, sowohl für
 	\label{fig:bankTransactions80Zeit}
 \end{figure}
 
-Abbildung \ref{fig:bankTransactions80Zeit} zeigt die Ausführungszeit pro Anzahl an Überweisungen mit 80 maximalen Verbindungen für die verschiedenen Implementierungen. Es ist erkennbar, dass alle Implementierungen linear mit der steigenden Anzahl an Überweisungen skalieren. Besonders auffällig ist, dass die Coroutinen-Implementierung am besten skaliert und sich mit zunehmender Zahl an Überweisungen deutlich von den anderen drei Implementierungen absetzen kann.
+Abbildung \ref{fig:bankTransactions80Zeit} zeigt die Ausführungszeit pro Anzahl an Über\-wei\-sung\-en mit 80 maximalen Verbindungen für die verschiedenen Implementierungen. Es ist erkennbar, dass alle Implementierungen linear mit der steigenden Anzahl an Überweisungen skalieren. Besonders auffällig ist, dass die Coroutinen-Implementierung am besten skaliert und sich mit zunehmender Zahl an Überweisungen deutlich von den anderen drei Implementierungen absetzen kann.
 
 \begin{figure}[H]
 	\centering
@@ -2349,7 +2347,7 @@ Abbildung \ref{fig:bankTransactions80Zeit} zeigt die Ausführungszeit pro Anzahl
 	\label{fig:bankTransactionsIdealZeit}
 \end{figure}
 
-Im Vergleich dazu präsentiert Abbildung \ref{fig:bankTransactionsIdealZeit} die Ausführungszeit pro Anzahl an Überweisungen unter idealen Verbindungs-Einstellungen für jede Implementierung. Auch hier ist eine lineare Skalierung zu beobachten, jedoch bleibt das Verhältnis der Implementierungen zueinander nun weitgehend konstant. In dieser Konfiguration erweisen sich die Goroutinen als die schnellste Implementierung, mit einer fast doppelt so schnellen Ausführungszeit wie die anderen. Virtual Threads und Coroutinen zeigen ähnliche Leistungen und liegen im Mittelfeld, während die Platform Threads die langsamste Performance aufweisen. Interessanterweise gibt es eine Ausnahme beim ersten Messpunkt, wo die Platform Threads die zweitschnellste Ausführungszeit verzeichnen.
+Im Vergleich dazu präsentiert Abbildung \ref{fig:bankTransactionsIdealZeit} die Ausführungszeit pro Anzahl an Überweisungen unter idealen Verbindungs-Einstellungen für jede Implementierung. Auch hier ist eine lineare Skalierung zu beobachten, jedoch bleibt das Verhältnis der Implementierungen zueinander nun weitgehend konstant. In dieser Konfiguration erweisen sich die Goroutinen als die schnellste Implementierung, mit einer, gegenüber den anderen, fast doppelt so schnellen Ausführungszeit. Virtual Threads und Coroutinen zeigen ähnliche Leistungen und liegen im Mittelfeld, während die Platform Threads die langsamste Performance aufweisen. Interessanterweise gibt es eine Ausnahme beim ersten Messpunkt, wo die Platform Threads die zweitschnellste Ausführungszeit verzeichnen.
 
 Die restlichen Messwerte bleiben unauffällig. Es lässt sich beobachten, dass die CPU-Auslastung für alle Implementierungen konstant bleibt (Abb.: \ref{fig:bankTransactions80CPU}), unabhängig von der steigenden Anzahl der Überweisungen. Ebenso bleibt die Thread-Anzahl über den gesamten Messbereich hinweg unverändert (\ref{fig:bankTransactions80Threads}). Die PostgreSQL CPU-Auslastung zeigt ebenfalls ein konstantes Verhalten (Abb.: \ref{fig:bankTransactions80PostgCPU}).
 
@@ -2375,27 +2373,31 @@ Insgesamt zeigt diese Messung, dass die Anzahl der Bankkonten keine nennenswerte
 
 \subsubsection{Fazit: Bank}
 
-Der Bank-Benchmark zeigt, dass die Performance von Thread-Abstraktionen stark von anderen Technologien abhängt, insbesondere von der Datenbank, dem Datenbanktreiber und dem Datenbankverbindungspool. Um das volle Potenzial der Thread-Abstraktionen auszuschöpfen, müssen all diese Komponenten die jeweilige Thread-Abstraktionen unterstützen.
+Der Bank-Benchmark zeigt, dass die Performance von Thread-Abstraktionen stark von anderen Technologien abhängt, insbesondere von der Datenbank, dem Datenbanktreiber und dem Datenbankverbindungspool. Um das volle Potenzial der Thread-Abstraktionen auszuschöpfen, müssen all diese Komponenten die jeweiligen Thread-Abstraktionen unterstützen.
 
-Die Leistung ist dementsprechend stark von den genutzten Technologien abhängig. Da Virtual Threads noch relativ neu sind, müssen andere Technologien noch nachziehen oder weiter optimiert werden, um das volle Potenzial ausnutzen zu können.
+Die Leistung ist dementsprechend stark von den genutzten Technologien abhängig. Da Virtual Threads noch relativ neu sind, müssen andere Technologien nachziehen oder weiter optimiert werden, um das volle Potenzial der Virtual Threads ausnutzen zu können.
 
 Ein generelles Problem, das sich herauskristallisierte, ist die fehlende Entkopplung bei Datenbankverbindungen, ähnlich wie sie bei Thread-Abstraktionen existiert. Dies begrenzt den Nutzen der Freigabe von Threads erheblich, da die maximale Anzahl an Verbindungen zum limitierenden Faktor für die Parallelität wird. Besonders deutlich wurde dies in der zweiten Messung mit künstlichen Latenzen in den Überweisungen. Hier stand theoretisch noch CPU-Leistung zur Verfügung, die aufgrund dieser Begrenzung nicht ausgeschöpft werden konnte.
 
-Interessanterweise hat sich gezeigt, dass bei geringen Latenzen, also wenig oder kurzen Blockierungen, ein hoher Grad an Parallelisierung nicht vorteilhaft ist. Die erste Messung demonstrierte sogar, dass die idealen Werte für maximale Verbindungen eher niedrig sind. Dies deutet darauf hin, dass es in solchen Szenarien wichtiger ist, den Overhead gering zu halten, als die Parallelität zu steigern.
+Interessanterweise hat sich gezeigt, dass bei geringen Latenzen, also wenigen oder kurzen Blockierungen, ein hoher Grad an Parallelisierung nicht vorteilhaft ist. Die erste Messung demonstrierte sogar, dass die idealen Werte für maximale Verbindungen eher niedrig sind. Dies deutet darauf hin, dass es in solchen Szenarien wichtiger ist, den Overhead gering zu halten, als die Parallelität zu steigern.
 
 \chapter{Zusammenfassung und Ausblick}
 
 \section{Fazit}
 
-Die neuen Thread-Abstraktionen in verschiedenen Programmiersprachen verfolgen einen ähnlichen Ansatz: Sie entkoppeln die Ausführung von Aufgaben von den Betriebssystem-Threads. Dies bedeutet, dass die Anzahl der gleichzeitig ausführbaren Aufgaben nicht mehr direkt an die Anzahl der verfügbaren Betriebssystem-Threads gebunden ist. Stattdessen wird ein Scheduling auf Laufzeitebene eingeführt, das es ermöglicht, eine deutlich größere Zahl von leichtgewichtigen Thread-Abstraktionen (wie Virtual Threads, Coroutinen oder Goroutinen) auf einer kleineren Anzahl von Betriebssystem-Threads zu verwalten.
+Die drei neuen Thread-Abstraktionen der untersuchten Programmiersprachen (Java, Kotlin, Go) verfolgen einen ähnlichen Ansatz: Sie entkoppeln die Ausführung von Aufgaben von den Betriebssystem-Threads. Dies bedeutet, dass die Anzahl der gleichzeitig ausführbaren Aufgaben nicht mehr, wie bei Java Platform Threads, direkt an die Anzahl der verfügbaren Betriebssystem-Threads gebunden ist. Stattdessen wird ein Scheduling auf Laufzeitebene eingeführt, das es ermöglicht, eine deutlich größere Zahl von leichtgewichtigen Thread-Abstraktionen (wie Virtual Threads, Coroutinen oder Goroutinen) auf einer kleineren Anzahl von Betriebssystem-Threads zu verwalten.
 
-Diese Entkopplung führt zu einem geringeren Ressourcenverbrauch, da nicht für jede parallel auszuführende Aufgabe ein eigener Betriebssystem-Thread erstellt werden muss. Dadurch können Anwendungen eine viel höhere Anzahl von gleichzeitigen Aufgaben effizient verwalten, was besonders bei I/O-lastigen Operationen von Vorteil ist.
+Diese Entkopplung führt zu einem geringeren Ressourcenverbrauch, da nicht für jede parallel auszuführende Aufgabe ein eigener Betriebssystem-Thread erstellt werden muss. Dadurch können Anwendungen eine erheblich höhere Anzahl von gleichzeitigen Aufgaben effizient verwalten, was besonders bei I/O-lastigen Operationen von Vorteil ist.
 
-Diese Effizienzsteigerung wurde im Rahmen des ersten Benchmarks (Mergesort) deutlich demonstriert, insbesondere in den Messungen 2 und 3, bei denen bewusst viele Threads erstellt wurden. Die neuen Versionen zeigten sich deutlich länger performant als die alten Platform Threads, wobei die Anzahl der Betriebssystem-Threads bis zum Schluss konstant niedrig blieb, während die Anzahl der Platform Threads stetig anstieg. Allerdings zeigte die erste Messung des Mergesort-Benchmarks auch, dass bei einer bereits optimalen CPU-Auslastung durch einen geringen Grad an Parallelisierung keine weiteren Laufzeitvorteile erzielt werden konnten.
+Diese Effizienzsteigerung wurde im Rahmen des ersten Benchmarks (Mergesort) deutlich demonstriert, insbesondere in den Messungen 2 und 3, bei denen gezielt viele Threads erstellt wurden. Die neuen Versionen zeigten sich deutlich länger performant als die alten Platform Threads. Bei ihnen blieb die Anzahl der Betriebssystem-Threads bis zum Schluss konstant niedrig blieb, während die Anzahl der Platform Threads stetig anstieg. 
 
-Der zweite Benchmark (Bank) offenbarte eine starke Abhängigkeit von anderen Technologien, die die neuen Thread-Abstraktionen unterstützen müssen. Selbst bei vorhandener Unterstützung konnte kein signifikanter Performancegewinn erzielt werden, da eine Entkopplung von Datenbankverbindungen und Transaktionen nicht möglich war.
+Allerdings zeigte die erste Messung des Mergesort-Benchmarks auch, dass nach einer optimalen CPU-Auslastung, mit einen geringen Grad an Parallelisierung, keine weiteren Laufzeitvorteile erzielt werden konnten.
 
-Die neuen Thread-Abstraktionen zeigen ihre Stärken besonders in Szenarien mit hoher Parallelität und häufigen Unterbrechungen. Sie bieten mindestens die gleiche Leistung wie die alten Implementierungen, übertreffen diese jedoch deutlich in Situationen, die viele gleichzeitige Aufgaben und häufig blockierende Vorgänge beinhalten.Generell lässt sich festhalten, dass die neuen Thread-Abstraktionen in keinem Fall schlechter abschneiden als die alten. Dies ermöglicht beispielsweise in Java einen bedenkenlose Umstellung von Platform Threads auf Virtual Threads. Die neuen Virtual Threads konnten in den Benchmarks sogar besser abschneiden als ihr direktes Konkurrenzprodukt in der JVM, die Kotlin Coroutinen.
+Der zweite Benchmark (Bank) offenbarte eine starke Abhängigkeit von anderen Technologien, die die neuen Thread-Abstraktionen unterstützen müssen. Selbst bei vorhandener Unterstützung konnte kein signifikanter Performancegewinn erzielt werden. Es wurde sichtbar, dass da eine Entkopplung von Datenbankverbindungen und Transaktionen mit den genutzten Technologien zurzeit nicht technisch möglich ist.
+
+Die neuen Thread-Abstraktionen zeigen ihre Stärken besonders in Szenarien mit hoher Parallelität in Kombination mit häufigen Unterbrechungen. Sie bieten mindestens die gleiche Leistung wie die alten Implementierungen, übertreffen diese jedoch deutlich in der beschrieben Situationen. 
+
+Generell lässt sich festhalten, dass die neuen Thread-Abstraktionen in keinem Fall schlechter abschneiden als die alten. Dies ermöglicht beispielsweise in Java einen bedenkenlose Umstellung von Platform Threads auf Virtual Threads. Die neuen Virtual Threads konnten in den Benchmarks sogar besser abschneiden als ihr direktes Konkurrenzprodukt in der JVM, die Kotlin Coroutinen.
 
 Trotz dieser Fortschritte zeigten die Goroutinen in Go mit Abstand die beste Performance, was nicht überrascht, da Go von Grund auf für Leistung und Nebenläufigkeit entwickelt wurde.
 
@@ -2404,18 +2406,18 @@ Trotz dieser Fortschritte zeigten die Goroutinen in Go mit Abstand die beste Per
 
 Die vorliegende Masterarbeit bietet eine solide Grundlage für weiterführende Untersuchungen im Bereich der Nebenläufigkeit und Thread-Abstraktionen in verschiedenen Programmiersprachen. Es gibt mehrere vielversprechende Anknüpfungspunkte, die das Potenzial haben, die Arbeit zu erweitern und zu vertiefen und durch Entwicklung eines robusten Testaufbaus inklusive entsprechender Messwerkzeuge ist dies mit einem überschaubaren Aufwand möglich.
 
-Ein wichtiger Bereich für zukünftige Forschung wäre die Erweiterung um weiter Benchmarks. Dabei gibt es verschieden interessante Ansätze:
+Ein wichtiger Bereich für zukünftige Forschung wäre die Erweiterung um weitere Benchmarks. Dabei gibt es verschiedene interessante Ansätze:
 
 Insbesondere könnte die Untersuchung von Cancellation-Mechanismen wertvolle Einblicke liefern. Diese werden in den Sprachen unterschiedlich umgesetzt. Coroutinen nutzen Coroutinen-Scopes zur Ermöglichung einer hierarchischen Strukturierung, Goroutinen hingegen das Closing-Channels-Programmiermuster.
 Für Java Virtual Threads wird zukünftig vermutlich die sogenannte Structured Concurrency eingeführt, welche ebenfalls eine Hierarchie unter den Virtual Threads ermöglicht.
 
 Ein weiterer wichtiger Aspekt für zukünftige Untersuchungen wäre das Exception Handling. Eine detaillierte Analyse des Verhaltens bei Ausnahmen und Abbrüchen in nebenläufigen Szenarien könnte die Robustheit verschiedener Implementierungen aufzeigen.
 
-Zudem könnte die Entwicklung eines Webserver nach dem Thread-per-Request Modell Erkenntnisse für praktische Anwendungsfälle liefern und für die verschiedenen Thread-Abstraktionen deren Effizienz in realen Szenarien demonstrieren.
+Zudem könnte die Entwicklung eines Webservers nach dem Thread-per-Request Modell Erkenntnisse für praktische Anwendungsfälle liefern und die Effizienz der verschiedenen Thread-Abstraktionen in realen Szenarien demonstrieren.
 
 Um ein noch umfassenderes Bild zu erhalten, wäre es alternativ auch möglich, die vorhandenen Benchmarks auf weitere Programmiersprachen mit entsprechenden Thread-Abstraktionen auszuweiten. Insbesondere könnten Sprachen wie C++ und Rust in Betracht gezogen werden, die ihre eigenen Ansätze zur Nebenläufigkeit bieten.
 
-Insgesamt bietet diese Masterarbeit eine gute Grundlage als Fundament für potenziell weitere Untersuchungen. Die gewonnenen Erkenntnisse können als Ausgangspunkt für tiefergehende Analysen und praktische Anwendungen in der Softwareentwicklung dienen.
+Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere Untersuchungen. Die gewonnenen Erkenntnisse können als Ausgangspunkt für tiefergehende Analysen und praktische Anwendungen in der Softwareentwicklung dienen.
 
 
 \printbibliography
