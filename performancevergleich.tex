@@ -219,7 +219,7 @@
 % möchten, können Sie diesen Abschnitt entfernen.
 % Dies hat keinerlei Einfluss auf die Bewertung Ihrer Arbeit.
 Soweit nicht anders gekennzeichnet, ist dieses Werk unter einem
-Creative-Commons-Lizenzvertrag Namensnennung 4.0 lizenziert.
+Creative-Commons-Lizenz\-vertrag Namensnennung 4.0 lizenziert.
 Dies gilt nicht für Zitate und Werke, die aufgrund einer anderen Erlaubnis
 genutzt werden.
 Um die Bedingungen der Lizenz einzusehen, folgen Sie bitte dem Hyperlink:\\
@@ -268,7 +268,7 @@ In den letzten Jahren hat die Bedeutung von nebenläufigen Prozessen in der Soft
 
 Das Ziel dieser Arbeit ist es, eine umfassende Leistungsanalyse der verschiedenen Thread-Abstraktionen in den Programmiersprachen Java, Kotlin und Go durchzuführen. Die Auswahl ist auf diese Sprachen gefallen, da als Ausgangspunkt für diese Arbeit die aktuelle Veröffentlichung von Virtual Threads in Java diente. Als zweite Sprache wurde Kotlin gewählt, da diese ebenfalls in der Java Virtual Machine (JVM) läuft und somit eine direkte Konkurrenz zu Java darstellt. Zuletzt wurde Go als eine weitere zu untersuchende Sprache gewählt, da es sich bei Go um eine Sprache handelt, die von Beginn an mit dem Fokus auf Nebenläufigkeit entwickelt wurde und somit als ein guter Vergleichspunkt für Nebenläufigkeit dient. Die zu vergleichenden Nebenläufigkeitskonzepte sind dabei im Detail: Java Threads (Platform Threads), Java Virtual Threads, Kotlin Coroutinen und Go Goroutinen. Diese unterschiedlichen Ansätze sollen hinsichtlich ihrer Effizienz, Skalierbarkeit und Ressourcennutzung verglichen werden.
 
-Um dieses Ziel zu erreichen, werden, im Rahmen dieser Masterarbeit, spezifische Benchmarks konzeptioniert und implementiert, die die Leistung der einzelnen Neben\-läufig\-keits\-konzepte unter verschiedenen Bedingungen messen. Die Ergebnisse dieser Benchmarks sollen Aufschluss darüber geben, welches Nebenläufigkeitskonzepte für bestimmte Anwendungsfälle am besten geeignet sind und welche Vor- und Nachteile die jeweiligen Modelle bieten.
+Um dieses Ziel zu erreichen, werden, im Rahmen dieser Masterarbeit, spezifische Benchmarks konzeptioniert und implementiert, die die Leistung der einzelnen Neben\-läufig\-keits\-konzepte unter verschiedenen Bedingungen messen. Die Ergebnisse dieser Benchmarks sollen Aufschluss darüber geben, welche Nebenläufigkeitskonzepte für bestimmte Anwendungsfälle am besten geeignet sind und welche Vor- und Nachteile die jeweiligen Modelle bieten.
 
 Ein weiteres Ziel dieser Arbeit ist es, praktische Empfehlungen für Entwickler zu erarbeiten, die ihnen helfen sollen, die passende Thread-Abstraktion für ihre spezifischen Anforderungen auszuwählen. Durch die Analyse der Stärken und Schwächen der einzelnen Konzepte soll ein tiefgehendes Verständnis dafür geschaffen werden, wie sich die Wahl einer Thread-Abstraktion auf die Gesamtperformance und die Effizienz einer Anwendung auswirkt.
 
@@ -280,7 +280,7 @@ In dem Paper \textbf{Concurrency in Go and Java: Performance Analysis} \cite{Tog
 
 In dem Paper \textbf{Comparison of Structured Concurrency Constructs in Java and Kotlin – Virtual Threads and Coroutines} \cite{Modric2022} von D. Beronić, L. Modrić, B. Mihaljević und A. Radovan werden die Nebenläufigkeitskonzepte von Threads und Coroutinen in Kotlin mit Threads und Virtual Threads in Java verglichen. Als Benchmark diente ein von den Autoren implementierter HTTP-Server, jeweils in Java und Kotlin, an welchen Anfragen gesendet wurden. Als Ergebnis zeigte sich, dass sowohl Threads in Kotlin und Java, sowie Coroutinen und Virtual Threads, jeweils dicht beieinander lagen und insgesamt die neuen Technologien deutlich besser als die alten abgeschnitten haben. Da das Paper aus dem Jahr 2022 stammt, konnte nur auf eine Vorabversion von den Virtual Threads zurückgegriffen werden. Es wird also interessant sein, ob sich die Performance von Virtual Threads beim finalen Release noch einmal geändert hat. Außerdem wurde die Performance nur anhand eines Benchmarks verglichen, es wird also ebenfalls interessant sein, wie sich die Performance bei anderen Benchmarks verhält.
 
-Arbeiten die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Masterarbeit zielt darauf ab diese Lücke zu schließen.
+Arbeiten, die Goroutinen in Go mit Coroutinen in Kotlin vergleichen, konnten nicht gefunden werden, dabei könnte ein Vergleich sehr lohnenswert sein, da sie auf sehr ähnliche Konzepte zurückgreifen. Diese Masterarbeit zielt darauf ab, diese Lücke zu schließen.
 
 \section{Gliederung und Aufbau}
 
@@ -319,7 +319,7 @@ Java Threads sind die verbreitetste Technik um Nebenläufigkeit in Java-Programm
 
 Dieser Aufbau hat zur Folge, dass Platform Threads schwergewichtig sind. Schwergewichtig meint in diesem Fall, dass ein Platform Thread viel Speicher verbraucht($\sim$ 2-3 MB) und es lange dauert ihn zu erstellen($\sim$ 1ms). Platform Threads und die dazugehörigen Betriebssystem Threads sind also ressourcenintensiv und ihre maximale Anzahl ist somit für ein ausführendes System begrenzt. Dies führt dazu, dass die maximale Anzahl der Platform Threads, weit vor anderen Ressourcen, zum limitierenden Faktor wird. 
 
-Eine Lösung, um zumindest die Kosten für das Erstellen von neuen Platform Threads zu senken, ist das Verwenden von Thread Pools. Hierbei wird eine Gruppe von Aufgaben einem Pool von Platform Threads zugewiesen. In der Regel übersteigt dabei die Anzahl der Aufgaben die Anzahl an Platform Threads. Dies hat zur Folge, dass einem Platform Thread, nachdem er die ihm zugewiesene Aufgabe abgearbeitet hat, direkt eine neue Aufgabe zugewiesen bekommt. Das hat den Vorteil, dass nicht mehr für jede Aufgabe ein neuer Platform Thread erstellt werden muss. Stattdessen können die gleichen Platform Threads wiederverwendet werden um mehrere Aufgaben hintereinander auszuführen. Damit lassen sich zwar die Kosten für das Erstellen von neuen Platform Threads senken, es lässt sich jedoch nicht die maximale Anzahl an Platform Threads erhöhen.
+Eine Lösung, um zumindest die Kosten für das Erstellen von neuen Platform Threads zu senken, ist das Verwenden von Thread Pools. Hierbei wird eine Gruppe von Aufgaben einem Pool von Platform Threads zugewiesen. In der Regel übersteigt dabei die Anzahl der Aufgaben die Anzahl an Platform Threads. Dies hat zur Folge, dass einem Platform Thread, nachdem er die ihm zugewiesene Aufgabe abgearbeitet hat, direkt eine neue Aufgabe zugewiesen wird. Das hat den Vorteil, dass nicht mehr für jede Aufgabe ein neuer Platform Thread erstellt werden muss. Stattdessen können die gleichen Platform Threads wiederverwendet werden um mehrere Aufgaben hintereinander auszuführen. Damit lassen sich zwar die Kosten für das Erstellen von neuen Platform Threads senken, es lässt sich jedoch nicht die maximale Anzahl an Platform Threads erhöhen.
 
 Ein weiteres Problem ist, dass die Verwaltung der Threads vom Betriebssystem über\-nommen wird und die JRE (Java Runtime Environment) keinen Einfluss darauf nehmen kann. Die Verwaltung der Threads auf Betriebssystemebene muss jedoch sehr allgemein gehalten werden, da sie nicht nur für Java, sondern für alle Programmiersprachen funktionieren muss.
 
@@ -355,13 +355,13 @@ Dies stellt eine entschiedene Neuerung gegenüber den Platform Threads dar. War 
 
 \subsection{Continuations}
 
-Das beschriebene Starten (mount) und Parken (unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergeben Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um die enthaltene Aufgabe entweder zum ersten Mal zu starten oder sie nach dem Parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen (thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren (freeze) bezeichnet. Zuletzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfügung um zu überprüfen, ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen wurde neuer Code hinzugefügt, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
+Das beschriebene Starten (mount) und Parken (unmount) von Virtual Threads wird mit Continuations gelöst. Ein Virtual Thread umschließt die ihm übergebene Aufgabe mit einer Continuation. Diese bietet die Methode \code{Continuation.run()} an, um die enthaltene Aufgabe entweder zum ersten Mal zu starten oder sie nach dem Parken fortzusetzen. Letzteres wird auf der Ebene der Continuations als Auftauen (thaw) bezeichnet. Des weiteren gibt es die Methode \code{Continuation.yield()} um eine Aufgabe zu pausieren, wenn sie blockiert. Dies wird im Kontext der Continuations als einfrieren (freeze) bezeichnet. Zuletzt stellen Continuations noch die Methode \code{Continuation.isDone()}(Rückgabewert: boolean) zur Verfügung um zu überprüfen, ob die enthaltene Aufgabe abgeschlossen wurde. Um die Funktionalität der Continuations umzusetzen, musste das gesamte JDK auf Stellen überprüft werden, an denen eine Aufgabe potenziell blockieren kann. An entsprechenden Stellen wurde neuer Code hinzugefügt, der mit den Continuations kommuniziert, um so eine Aufgabe entweder einzufrieren oder später wieder aufzutauen.\cite{Pressler2023b}
 
-Wenn es um das Blockadeverhalten von Virtual Threads, geht gibt es einen Spezialfall, der nach Möglichkeit vermieden werden sollte, das sogenannte Feststecken (pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread, sondern auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Synchronized wird verwendet, um den gleichzeitigen Zugriff auf eine Methode oder einen Codeblock zu verhindern, damit nur ein Thread zu einem bestimmten Zeitpunkt Zugriff auf den synchronisierten Code hat. Sollte der Code im Synchronized Block lange blockieren kann es sinnvoll sein, das Synchronized durch ein Reentrant Lock zu ersetzen und dieses freizugeben und dann den Platform-Thread abzugeben (unmount). Die Beschränkung durch Synchronized, soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden\cite{Chilano2024}. Die Beschränkung durch das Aufrufen von nativem Code wird jedoch bestehen bleiben.\cite{Bateman2024}
+Wenn es um das Blockadeverhalten von Virtual Threads geht gibt es einen Spezialfall, der nach Möglichkeit vermieden werden sollte, das sogenannte Feststecken (pinning). Dies beschreibt den Fall, wenn die im Virtual Thread enthaltene Aufgabe blockiert und der Virtual Thread nicht aus dem ausführenden Carrier Thread entnommen werden kann. Dies führt dazu, dass nicht nur der Virtual Thread, sondern auch der Carrier Thread blockiert. Dies kann entweder dadurch ausgelöst werden, dass der Thread blockiert während er nativen Code aufruft oder der Thread blockiert, während er Code ausführt der sich in einem Synchronized Block befindet. Synchronized wird verwendet, um den gleichzeitigen Zugriff auf eine Methode oder einen Codeblock zu verhindern, damit nur ein Thread zu einem bestimmten Zeitpunkt Zugriff auf den synchronisierten Code hat. Sollte der Code im Synchronized Block lange blockieren kann es sinnvoll sein, das Synchronized durch ein Reentrant Lock zu ersetzen und dieses freizugeben und dann den Platform-Thread abzugeben (unmount). Die Beschränkung durch Synchronized, soll laut den Virtual Thread Entwicklern in einer zukünftigen Version aufgehoben werden\cite{Chilano2024}. Die Beschränkung durch das Aufrufen von nativem Code wird jedoch bestehen bleiben.\cite{Bateman2024}
 
 \subsection{Thread per request Modell}
 
-Ein typischer Anwendungsfall für Virtual Threads ist eine Server-Anwendung, die Anfragen im Thread per request Modell bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt, der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig bearbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread, sondern auch ein neuer Betriebssystem Threads erstellt werden muss. Da aber die Anzahl an Betriebssystem Threads für ein System stark limitiert ist, in der Regel auf einige Tausend, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Platform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfügung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen.
+Ein typischer Anwendungsfall für Virtual Threads ist eine Server-Anwendung, die Anfragen im Thread per request Modell bearbeitet. Für jede neue Anfrage wird ein neuer Thread erstellt, der diese Anfrage bearbeitet. So können mehrere Anfragen nebenläufig bearbeitet werden. Dies würde bei Platform Threads bedeuten, dass für jede neue Anfrage nicht nur ein neuer Platform Thread, sondern auch ein neuer Betriebssystem Thread erstellt werden muss. Da aber die Anzahl an Betriebssystem Threads für ein System stark limitiert ist, in der Regel auf einige Tausend, ist damit auch die Anzahl der nebenläufig zu bearbeitenden Anfragen limitiert. So werden Platform Threads zum limitierenden Faktor des Systems. Virtual Threads hingegen sind deutlich leichtgewichtiger, da ihre Anzahl nicht an die zur Verfügung stehenden Betriebssystem Threads gebunden ist. Dadurch lässt sich eine große Anzahl von ihnen erstellen, bis zu mehrere Millionen.
 
 Der Vorteil von Virtual Threads gegenüber Platform Threads bei dem Thread per request Modell, lässt sich gut an Little's Gesetz \cite{Little1961} zeigen. Es besagt, dass die sich gleichzeitig in Bearbeitung befindlichen Aufgaben(L) davon abhängig sind, wie hoch der Durchsatz($\lambda$) und die Durchlaufzeit (W) sind.
 
@@ -380,7 +380,7 @@ Gehen wir also von einem System aus, das 200 Anfragen pro Sekunde verarbeitet, b
 
 Da wir vom Thread per request Modell ausgehen, müssen also im Fall von  Platform Threads 100 von ihnen erstellt werden und damit auch 100 Betriebssystem Threads. Somit ist die Skalierbarkeit auf die maximal zur Verfühgung stehenden Betriebssystem Threads (einige Tausend) begrenzt. Virtual Threads hingegen lassen sich in einer deutlich größeren Anzahl erstellen (mehrere Millionen) und werden so nicht zum limitierenden Faktor wenn es um die Skalierbarkeit des beschriebenen Beispiels geht.
 
-Diese Annahme stimmt allerdings nur so lange, wie die nebenläufig bearbeiteten Aufgaben weiterhin mit der gleichen Latenz bearbeitet werden. Dies ist zum Beispiel dann der Fall, wenn eine Aufgabe pausiert wird, um auf eine I/O-Operation zu warten. Wenn die einzelne Aufgaben jedoch rechenintensiv sind und möglicherweise niemals pausieren, verlieren Virtual Threads ihren Vorteil gegenüber Platform Threads. Virtual Threads können nicht einzelne Aufgaben schneller ausführen als Platform Threads, sondern mehr Aufgaben nebenläufig bearbeiten, falls die Aufgaben manchmal blockieren. 
+Diese Annahme stimmt allerdings nur so lange, wie die nebenläufig bearbeiteten Aufgaben weiterhin mit der gleichen Latenz bearbeitet werden. Dies ist zum Beispiel dann der Fall, wenn eine Aufgabe pausiert wird, um auf eine I/O-Operation zu warten. Wenn die einzelnen Aufgaben jedoch rechenintensiv sind und möglicherweise niemals pausieren, verlieren Virtual Threads ihren Vorteil gegenüber Platform Threads. Virtual Threads können nicht einzelne Aufgaben schneller ausführen als Platform Threads, sondern mehr Aufgaben nebenläufig bearbeiten, falls die Aufgaben manchmal blockieren. 
 
 Damit lässt sich abschließend sagen, dass Virtual Threads den Durchsatz einer Anwendung gegenüber Platform Threads steigern, wenn viele Aufgaben nebenläufig ausgeführt werden und diese Aufgaben manchmal pausieren müssen.
 
@@ -457,7 +457,7 @@ Bevor es Coroutinen in Kotlin gab, wurde asynchroner Code häufig mit Callbacks 
 
 In der Programmierung unterscheidet man zwischen synchroner und asynchroner Aus\-füh\-rung:
 
-Synchrone Ausführung bedeutet, dass der Code in der Reihenfolge ausgeführt wird, in der er geschrieben steht. Das heißt, die Ausführung einer Funktion blockiert den weiteren Ablauf des Programms, bis sie abgeschlossen ist. Ein Beispiel für synchrone Ausführung wäre, wenn wir auf das Ergebnis einer Dateioperation warten und das Programm erst dann fortsetzt wird, wenn das Ergebnis vorliegt.
+Synchrone Ausführung bedeutet, dass der Code in der Reihenfolge ausgeführt wird, in der er geschrieben steht. Das heißt, die Ausführung einer Funktion blockiert den weiteren Ablauf des Programms, bis sie abgeschlossen ist. Ein Beispiel für synchrone Ausführung wäre, wenn wir auf das Ergebnis einer Dateioperation warten und das Programm erst dann fortgesetzt wird, wenn das Ergebnis vorliegt.
 
 Asynchrone Ausführung bedeutet, dass eine Funktion gestartet wird, aber das Programm nicht darauf wartet, dass sie abgeschlossen wird. Stattdessen kann das Programm während der Ausführung dieser Funktion andere Aufgaben fortsetzen, ohne blockiert zu werden. Bei asynchroner Ausführung können Callbacks genutzt werden, um das Ergebnis der Funktion zu verarbeiten, wenn sie abgeschlossen ist.
 
@@ -490,13 +490,13 @@ Da es sich bei dem gezeigten Beispiel um eine asynchrone Ausführung handelt kan
 
 Würde das Starten des Threads in \texttt{readFileAsync} weggelassen, würde es sich um einen synchronen Aufruf handeln. Die Ausgabe wäre dann zuerst \texttt{"File Content: ""[Datei""inhalt]"} und danach \texttt{"Read File..."}, da der Haupt-Thread auf das Ergebnis der Dateioperation warten würde, bevor er fortfährt.
 
-Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben. Ein Nachteil jedoch ist die Verwendung vieler verschachtelter Callbacks, welche umgangssprachlich als Callback Hell bezeichnet werden\cite{Leger2021}. Die Callback Hell führt dazu, dass der Code schwer lesbar wird. Daraus resultiert eine erhöhte Komplexität bei der Wartung und dem Debuggen. Die Verschachtelungen machen die Rückverfolgung des Programmflusses kompliziert und  die Fehlerbehandlung wird immer aufwendiger, da sie auf jeder Ebene der Verschachtelungen stattfinden muss.
+Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben. Ein Nachteil ist jedoch die Verwendung vieler verschachtelter Callbacks, welche umgangssprachlich als Callback Hell bezeichnet werden\cite{Leger2021}. Die Callback Hell führt dazu, dass der Code schwer lesbar wird. Daraus resultiert eine erhöhte Komplexität bei der Wartung und dem Debuggen. Die Verschachtelungen machen die Rückverfolgung des Programmflusses kompliziert und  die Fehlerbehandlung wird immer aufwendiger, da sie auf jeder Ebene der Verschachtelungen stattfinden muss.
 
 \begin{lstlisting}[language=Kotlin]
 	import kotlin.concurrent.thread
 	import kotlin.Result
 
-	// Simuliert eine asynchrone, zeitaufwändige I/O-Operation (z.B. Datei lesen)
+	// Simuliert eine asynchrone, zeitaufwendige I/O-Operation (z.B. Datei lesen)
 	fun readFileAsync(callback: (Result<String>) -> Unit) {
 		thread {
 			try {
@@ -508,7 +508,7 @@ Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben.
 		}
 	}
 
-	// Simuliert eine asynchrone, zeitaufwändige Netzwerkoperation, bei der Daten verarbeitet werden (z.B. API-Anfrage)
+	// Simuliert eine asynchrone, zeitaufwendige Netzwerkoperation, bei der Daten verarbeitet werden (z.B. API-Anfrage)
 	fun processData(input: String, callback: (Result<String>) -> Unit) {
 		thread {
 			try {
@@ -520,7 +520,7 @@ Callbacks sind folglich eine gängige Variante um asynchronen Code zu schreiben.
 		}
 	}
 
-	// Simuliert das asynchrone, zeitaufwändige Speichern von Daten (z.B. in einer Datenbank oder Datei)
+	// Simuliert das asynchrone, zeitaufwendige Speichern von Daten (z.B. in einer Datenbank oder Datei)
 	fun saveData(input: String, callback: (Result<String>) -> Unit) {
 		thread {
 			try {
@@ -582,19 +582,19 @@ Um die Nachteile der Callback-Hell zu umgehen, verfolgen die Coroutinen den Ansa
 \begin{lstlisting}[language=Kotlin]
 	import kotlinx.coroutines.*
 
-	// Simuliert eine asynchrone, zeitaufwändige I/O-Operation (z.B. Datei lesen)
+	// Simuliert eine asynchrone, zeitaufwendige I/O-Operation (z.B. Datei lesen)
 	suspend fun readFileAsync(): String {
 		delay(500)
 		return "File Content"
 	}
 
-	// Simuliert eine asynchrone, zeitaufwändige Netzwerkoperation, bei der Daten verarbeitet werden (z.B. API-Anfrage)
+	// Simuliert eine asynchrone, zeitaufwendige Netzwerkoperation, bei der Daten verarbeitet werden (z.B. API-Anfrage)
 	suspend fun processData(input: String): String {
 		delay(500)
 		return "$input -> Processed Data"
 	}
 
-	// Simuliert das asynchrone, zeitaufwändige Speichern von Daten (z.B. in einer Datenbank oder Datei)
+	// Simuliert das asynchrone, zeitaufwendige Speichern von Daten (z.B. in einer Datenbank oder Datei)
 	suspend fun saveData(input: String): String {
 		delay(500)
 		return "$input -> Data Saved"
@@ -610,7 +610,7 @@ Um die Nachteile der Callback-Hell zu umgehen, verfolgen die Coroutinen den Ansa
 			val deferred3 = 
 				async { saveData(deferred2.await()) }
 		
-			// Warten auf die Ergebnisse und Ausgabe des finalen Ergebnisses
+			// Wartet auf die Ergebnisse und Ausgabe des finalen Ergebnisses
 			println("Final Result: ${deferred3.await()}")
 		} catch (e: Exception) {
 			println("Error: ${e.message}")
@@ -664,7 +664,7 @@ Der Parameter \texttt{start} gibt an, wann die Coroutine gestartet wird. Dafür 
 
 Im Parameter \texttt{block} wird der von der Coroutine auszuführende Code gespeichert. Wie der Code konkret von der Coroutine ausgeführt wird, wird im Kapitel \ref{subsec:csp} genauer erklärt.
 
-Abschließend hat der Builder als Rückgabewert ein Job-Objekt. Seine Funktionsweise wird im nachfolgendem Kapitel beschrieben.
+Abschließend hat der Builder als Rückgabewert ein Job-Objekt. Seine Funktionsweise wird im nachfolgenden Kapitel beschrieben.
 
 
 \subsection{Job}
@@ -976,7 +976,7 @@ Nachdem die State Machine erstellt wurde folgt ein \texttt{when}-Statement. Es b
 
 \subsubsection{Zustand 0}
 
-Als erstes in diesem Abschnitt wird \texttt{sm.lable} auf 1 gesetzt. Das bedeutet in der State Machine wird vermerkt, dass beim erneuten Aufrufen von \texttt{block} der Code in Zustand 1 ausgeführt werden soll. Danach wird der eigentliche Code aus der ursprünglichen \texttt{main}-Funktion ausgeführt. Die lokale Variable \texttt{sm.localVar1} erhält den Wert \texttt{Hello}. Sie ist Teil der State Machine, deshalb bleibt ihr Inhalt über alle Zustände hinweg gespeichert. Als nächstes wird die Funktion \texttt{firstOperation} aufgerufen. Bei dieser handelt es sich um eine \texttt{suspend}-Funktion. Deshalb ist sie ein potenzieller suspension-Punkt und dem entsprechend der letzte Aufruf in dem Zustand. Es fallen zwei Veränderungen im Vergleich zum Kotlin Code auf. Erstens wird der \texttt{suspend}-Funktion \texttt{firstOperation} die State Machine in Form einer Continuation als zusätzliches Übergabeparameter mit übergeben und zweitens schreibt sie ihr Ergebnis nicht mehr in die Variable \texttt{result1}. Stattdessen wird überprüft ob die Funktion \texttt{COROUTINE\_SUSPENDED} zurückgibt\cite{Akhin2024}. Dies würde passieren wenn die die \texttt{suspend}-Funktion \texttt{first""Operation} nicht sofort ein Ergebnis zurückgibt, sondern blockiert. Was zur Folge hätte, dass die Coroutine suspendiert würde und sich ihr aktueller Zustand, der in der State Machine gespeichert ist, gemerkt würde. Wenn die Funktion \texttt{firstOperation} zu einem Ergebnis gekommen ist, würde die Coroutine erneut gestartet werden, indem die Funktion \texttt{resume} aufgerufen wird.
+Als erstes in diesem Abschnitt wird \texttt{sm.lable} auf 1 gesetzt. Das bedeutet in der State Machine wird vermerkt, dass beim erneuten Aufrufen von \texttt{block} der Code in Zustand 1 ausgeführt werden soll. Danach wird der eigentliche Code aus der ursprünglichen \texttt{main}-Funktion ausgeführt. Die lokale Variable \texttt{sm.localVar1} erhält den Wert \texttt{Hello}. Sie ist Teil der State Machine, deshalb bleibt ihr Inhalt über alle Zustände hinweg gespeichert. Als nächstes wird die Funktion \texttt{firstOperation} aufgerufen. Bei dieser handelt es sich um eine \texttt{suspend}-Funktion. Deshalb ist sie ein potenzieller suspension-Punkt und dem entsprechend der letzte Aufruf in dem Zustand. Es fallen zwei Veränderungen im Vergleich zum Kotlin Code auf. Erstens wird der \texttt{suspend}-Funktion \texttt{firstOperation} die State Machine in Form einer Continuation als zusätzliches Übergabeparameter mit übergeben und zweitens schreibt sie ihr Ergebnis nicht mehr in die Variable \texttt{result1}. Stattdessen wird überprüft ob die Funktion \texttt{COROUTINE\_SUSPENDED} zurückgibt\cite{Akhin2024}. Dies würde passieren wenn die \texttt{suspend}-Funktion \texttt{first""Operation} nicht sofort ein Ergebnis zurückgibt, sondern blockiert. Was zur Folge hätte, dass die Coroutine suspendiert würde und sich ihr aktueller Zustand, der in der State Machine gespeichert ist, gemerkt würde. Wenn die Funktion \texttt{firstOperation} zu einem Ergebnis gekommen ist, würde die Coroutine erneut gestartet werden, indem die Funktion \texttt{resume} aufgerufen wird.
 
 Bei einer genauen Betrachtung der Funktion \texttt{firstOperation} fällt auf, dass sie intern die Low-Level-Funktion \texttt{suspendCoroutine} verwendet, mit der eine Coroutine an der aktuellen Stelle suspendiert wird. Sie nimmt als Lambda-Parameter \texttt{cont} entgegen, der ein Continuation-Objekt ist. Innerhalb dieses Blocks wird definiert, wie und wann die Coroutine fortgesetzt wird. In diesem Fall wird die Coroutine sofort fortgesetzt und der Coroutine wird mit \texttt{resume} der Rückgabewert (Result1: Hello) von \texttt{firstOperation} übermittelt.
 
@@ -984,7 +984,7 @@ In \texttt{resume} wird in der Variable \texttt{stateResult} der State Machine d
 
 \subsubsection{Zustand 1}
 
-Beim erneuten Aufruf von \texttt{block} wird diesmal keine neue State Machine erstellt, sonder die übergebene State Machine genutzt, so bleiben alle gespeicherten Informationen aus dem vorausgegangenen Zustand erhalten. Außerdem hat das \texttt{sm.lable} den Wert 1, weshalb diesmal der Zustand 1 ausgeführt wird. Hier zeigt sich noch einmal die Funktionsweise einer Continuation. Sie repräsentiert den noch auszuführenden Code und merkt sich den aktuellen Zustand der Coroutine. 
+Beim erneuten Aufruf von \texttt{block} wird diesmal keine neue State Machine erstellt, sondern die übergebene State Machine genutzt, so bleiben alle gespeicherten Informationen aus dem vorausgegangenen Zustand erhalten. Außerdem hat das \texttt{sm.lable} den Wert 1, weshalb diesmal der Zustand 1 ausgeführt wird. Hier zeigt sich noch einmal die Funktionsweise einer Continuation. Sie repräsentiert den noch auszuführenden Code und merkt sich den aktuellen Zustand der Coroutine. 
 
 Der eigentliche Ablauf von Zustand 1 ist sehr ähnlich zu Zustand 0. Zuerst wird wieder der Wert der Variable \texttt{lable} erhöht, diesmal auf 2. Als nächstes wird der Variable \texttt{result1} das Ergebnis von \texttt{first""Operation} übergeben, welches in \texttt{sm.""result} gespeichert wurde. Dann wird der lokalen Variable \texttt{sm.localVar2} der Wert \texttt{3.14} zugewiesen. Zuletzt wird die \texttt{suspend}-Funktion \texttt{second""Operation} aufgerufen. Dieser wird erneut, neben dem eigentlichen Übergabeparameter, auch die State Machine übergeben und es wird überprüft ob sie \texttt{COROUTINE\_SUSPENDED} zurück gibt. In \texttt{second""Operation} wir erneut \texttt{resume} aufgerufen, was letztendlich dazu führt, dass \texttt{block} erneut ausgeführt wird. Diesmal für den Zustand 2.
 
@@ -1008,7 +1008,7 @@ Kotlin Coroutinen bieten eine elegante Lösung für die Herausforderungen der Ne
 
 Goroutinen sind ein grundlegendes Konzept der Programmiersprache Go. Zusammen mit Channels bilden Goroutinen das Rückgrat von Go's Thread-Abstraktion zur nebenläufigen Programmierung. Sie sind seit Beginn ein Teil von Go, da Go schon mit dem Fokus auf effiziente und leicht zu handhabende Nebenläufigkeit entwickelt wurde. Goroutinen und Channels sind ein direkter Bestandteil von Go und nicht Teil einer Bibliothek. Das hat den Vorteil, dass sich die Syntax für Nebenläufigkeit in Go auf wenige Schlüsselwörter und Operatoren begrenzt. Dadurch lässt sich ein effizienter und leicht zu lesender Code schreiben.
 
-Goroutinen wurden von ihrem Designer Rob Pike als eine ''independently executing function, launched by a go statement''\cite{Pike2012} bezeichnet. Damit wollte er unterstreichen, dass Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
+Goroutinen wurden von ihrem Designer Rob Pike als eine ''independently executing function, launched by a go statement''\cite{Pike2012} bezeichnet. Damit wollte er unterstreichen, dass Goroutinen unabhängig vom restlichen Code ausgeführt werden, dabei aber im Wesentlichen den Aufbau einer Funktion behalten. So lässt sich eine Goroutine starten indem eine herkömmliche Funktion, unter der Verwendung des Schlüsselwortes \texttt{go}, aufgerufen wird, wie das folgende Beispiel zeigt:
 
 \begin{lstlisting}[language=Go,extendedchars=true]
 	package main
@@ -1147,14 +1147,14 @@ Es gibt noch weitere spezielle Zustände, die für das Verstehen der Funktionswe
 Der Go-Runtime-Scheduler \cite{goScheduler2024} ist dafür verantwortlich, Goroutinen effizient auf ver\-füg\-bare Prozessorkerne zu verteilen und ihre Ausführung zu koordinieren. Seine Hauptaufgabe besteht darin, die Parallelität und Nebenläufigkeit von Go-Programmen zu optimieren. Dafür nutzt er drei Schlüsselkonzepte:
 
 \begin{itemize}
-	\item \textbf{G - Goroutine:} G steht für Goroutine und wurde bereits im vorherigen Abschnitt vorgestellt. Sie kann als Repräsentation der nebenläufige Aufgaben betrachtet werden.
+	\item \textbf{G - Goroutine:} G steht für Goroutine und wurde bereits im vorherigen Abschnitt vorgestellt. Sie kann als Repräsentation der nebenläufigen Aufgaben betrachtet werden.
 	\item \textbf{M - Machine:} M steht für Machine und repräsentiert einen Betriebssystem-Thread. Diese Threads werden vom Scheduler verwaltet, um Goroutinen auszuführen.
 	\item \textbf{P - Processor:} P steht für Processor und repräsentiert einen logischen Prozessor. Es handelt sich dabei um eine Abstraktionsschicht zwischen Goroutinen und Betriebssystem-Threads. P's dienen als Kontext für die Ausführung von Goroutinen und ermöglichen eine effiziente Verwaltung und Verteilung der Arbeitslast.
 \end{itemize}	
 
-Bei dem Go-Runtime-Scheduler handelt es sich um einen sogenannten M:N Scheduler. M steht dabei für die Anzahl der Goroutinen und N für die Anzahl der Betriebssystem-Threads. Dies ermöglicht das so genannte Multiplexing, also M Aufgaben effizient auf eine begrenzte Anzahl von N Ressourcen zu verteilen. Diese flexible Architektur führt zu einer möglichst optimalen Ressourcenausnutzung, unabhängig von dem ausführenden System.
+Bei dem Go-Runtime-Scheduler handelt es sich um einen sogenannten M:N Scheduler. M steht dabei für die Anzahl der Goroutinen und N für die Anzahl der Betriebssystem-Threads. Dies ermöglicht das sogenannte Multiplexing, also M Aufgaben effizient auf eine begrenzte Anzahl von N Ressourcen zu verteilen. Diese flexible Architektur führt zu einer möglichst optimalen Ressourcenausnutzung, unabhängig von dem ausführenden System.
 
-Dafür ist es wichtig, dass die Betriebssystem-Threads möglichst durchgehend Goroutinenen ausführen, die nicht blockiert sind. Sollte eine Goroutine in den Status waiting wechseln, also blockieren, wird sie aus dem Betriebssystem-Thread entfernt und von dem Scheduler durch eine Goroutine ersetzt, die bereit zur Ausführung ist. Typische Situation für das Blockieren einer Goroutine könnten das Warten auf die Kommunikation über einen Channel, die Kommunikation über ein Netzwerk oder Systemaufrufe sein. Im Folgenden werden diese drei Fälle im Detail beleuchtet um die Arbeitsweise des Schedulers zu erklären.
+Dafür ist es wichtig, dass die Betriebssystem-Threads möglichst durchgehend Goroutinen ausführen, die nicht blockiert sind. Sollte eine Goroutine in den Status waiting wechseln, also blockieren, wird sie aus dem Betriebssystem-Thread entfernt und von dem Scheduler durch eine Goroutine ersetzt, die bereit zur Ausführung ist. Typische Situation für das Blockieren einer Goroutine könnten das Warten auf die Kommunikation über einen Channel, die Kommunikation über ein Netzwerk oder Systemaufrufe sein. Im Folgenden werden diese drei Fälle im Detail beleuchtet, um die Arbeitsweise des Schedulers zu erklären.
 
 \subsubsection{Channel-Kommunikation}
 
@@ -1187,7 +1187,7 @@ Der Scheduler hat G1 aus P1 entfernt und der Empfänger-Warteschlange \texttt{re
 
 Da G2 die Nachricht von G1 empfangen hat ist G1 nicht mehr blockiert und wechselt auf den Status Runnable. Deshalb verschiebt der Scheduler G1 in die LRQ von P1.
 
-Diese Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht die aufgrund von Channel-Kommunikation blockiert. In der Praxis hat ein System jedoch meist mehr als einen Prozessorkern, was dem Go-Scheduler zusätzliche Möglichkeiten zur Optimierung der Ausführung bietet. Dies wird im Abschnitt Workstealing(\ref{subsubsec:workstealing}) genauer erläutert.
+Dieses Beispiel hat verdeutlicht wie der Scheduler mit einer Goroutine umgeht, die aufgrund von Channel-Kommunikation blockiert. In der Praxis hat ein System jedoch meist mehr als einen Prozessorkern, was dem Go-Scheduler zusätzliche Möglichkeiten zur Optimierung der Ausführung bietet. Dies wird im Abschnitt Workstealing(\ref{subsubsec:workstealing}) genauer erläutert.
 
 \subsubsection{Systemaufrufe}
 
@@ -1218,7 +1218,7 @@ Wenn G1 nicht mehr blockiert ist, überprüft der Scheduler, ob es einen freien 
 	\label{fig:GoroutineSystemaufrufe3}
 \end{figure}
 
-Der Vorteil diese Verfahrens ist, dass die logischen Prozessoren nicht mit den Goroutinen blockieren. Sie können weiterhin Goroutinen ausführen. Jedoch wird für jeden Systemaufruf ein eigener Betriebssystemthread benötigt.
+Der Vorteil dieses Verfahrens ist, dass die logischen Prozessoren nicht mit den Goroutinen blockieren. Sie können weiterhin Goroutinen ausführen, jedoch wird für jeden Systemaufruf ein eigener Betriebssystemthread benötigt.
 
 \subsubsection{Netzwerk-Kommunikation}
 
@@ -1226,7 +1226,7 @@ Eine weitere Kategorie häufig blockierender Operationen ist die Kommunikation �
 
 Wenn eine Goroutine eine potenziell blockierende Netzwerkoperation durchführt (z.B. Lesen von einem Socket), übergibt sie die Kontrolle an den Net Poller. Der Net Poller registriert die Operation beim Betriebssystem und überwacht sie asynchron ohne einen OS-Thread zu blockieren. Während der Net Poller auf die Fertigstellung der I/O-Operation wartet, kann der Go-Scheduler andere Goroutinen auf dem verfügbaren OS-Thread ausführen. Sobald die I/O-Operation abgeschlossen ist, benachrichtigt das Betriebssystem den Net Poller. Der Net Poller setzt die ursprüngliche Goroutine zur Ausführung fort, sobald ein Thread verfügbar ist.
 
-Der Net Poller ermöglicht es, eine große Anzahl von gleichzeitigen Netzwerkverbindungen mit einer begrenzten Anzahl von Betriebssystemthreads zu verwalten. Durch die Vermeidung von blockierten Betriebssystemthreads wird die CPU-Auslastung optimiert. Programmierer können blockierende I/O-Operationen in Goroutinen schreiben, ohne sich um die zugrunde liegende asynchrone Implementierung kümmern zu müssen, da der Net Poller tief in die Go-Laufzeitumgebung integriert ist. Er arbeitet eng mit dem Goroutine-Scheduler zusammen, um eine nahtlose Integration von Netzwerk-I/O und Goroutinen-Ausführung zu gewährleisten. 
+Der Net Poller ermöglicht es, eine große Anzahl von gleichzeitigen Netzwerkverbindungen mit einer begrenzten Anzahl von Betriebssystemthreads zu verwalten. Durch die Vermeidung von blockierten Betriebssystemthreads wird die CPU-Auslastung optimiert. Programmierer können blockierende I/O-Operationen in Goroutinen schreiben, ohne sich um die zugrundeliegende asynchrone Implementierung kümmern zu müssen, da der Net Poller tief in die Go-Laufzeitumgebung integriert ist. Er arbeitet eng mit dem Goroutine-Scheduler zusammen, um eine nahtlose Integration von Netzwerk-I/O und Goroutinen-Ausführung zu gewährleisten. 
 
 \subsubsection{Work-Stealing}
 \label{subsubsec:workstealing}
@@ -1573,7 +1573,7 @@ Abschließend werden die so erhobenen Rohdaten in entsprechenden CSV-Dateien ges
 
 Für die Überwachung des Bank-Benchmarks wurde ein weiteres Python-Skript namens \texttt{monitoring""Bank.py} entwickelt.
 
-Zu Beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (Abschnitt: \ref{para:datagenerator}) gestartet, diese erzeugt den für den Benchmark nötigen Datensatz, der von allen Implementierungen genutzt wird. 
+Zu Beginn des Skripts wird die Java-Anwendung \texttt{bankDataGenerator.jar} (Abschnitt: \ref{para:datagenerator}) gestartet. Diese erzeugt den für den Benchmark nötigen Datensatz, der von allen Implementierungen genutzt wird. 
 
 Da die unterschiedlichen Implementierungen des Benchmarks in Docker Containern laufen (siehe Abschnitt \ref{para:docker} für den genauen Aufbau), wird im nächsten Schritt die Datei \texttt{docker-""compose\_""modify"".yaml} erzeugt. In dieser werden die für den Durchlauf wichtigen Parameter gesetzt, wie zum Beispiel die Anzahl der Accounts und Transaktionen oder die Wahl der Implementierung. Eine vollständige Auflistung der Parameter befindet sich in Abschnitt \ref{subsec:parabank}.
 
@@ -1649,7 +1649,7 @@ Der grundlegende Ansatz zur Parallelisierung von Mergesort ist für alle vier Im
 	\end{algorithmic}
 \end{algorithm}
 
-Des weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion parallelisieren lässt \cite[S. 776-782]{Cormen2022}. In der Praxis hat sich jedoch gezeigt, dass der Vorschlag sogar zu einer Verschlechterung der Laufzeit führt, deshalb wurde statt dessen ein sequentieller Ansatz genutzt \cite[S. 36]{Cormen2022}. Das schlechtere Abschneiden der parallelen merge-Implementierung hat verschiedene Gründe. So bietet eine Parallelisierung von merge ab einer bestimmten Baumtiefe keinen Vorteil mehr, da die Mergesort-Funktion bereits parallelisiert wurde und  die CPU-Kerne ab einer bestimmten Baumtiefe bereits vollständig ausgelastet sind, sodass eine zusätzliche Parallelisierung von merge keinen weiteren Vorteil bringt. Außerdem entsteht Overhead für die Verwaltung der parallelen Aufgaben, sowie für die wiederholte Suche nach dem Pivot-Element.
+Des Weiteren gibt  es einen Vorschlag wie sich zusätzlich die merge-Funktion parallelisieren lässt \cite[S. 776-782]{Cormen2022}. In der Praxis hat sich jedoch gezeigt, dass der Vorschlag sogar zu einer Verschlechterung der Laufzeit führt. Deshalb wurde statt dessen ein sequentieller Ansatz genutzt \cite[S. 36]{Cormen2022}. Das schlechtere Abschneiden der parallelen merge-Implementierung hat verschiedene Gründe. So bietet eine Parallelisierung von merge ab einer bestimmten Baumtiefe keinen Vorteil mehr, da die Mergesort-Funktion bereits parallelisiert wurde und  die CPU-Kerne ab einer bestimmten Baumtiefe bereits vollständig ausgelastet sind, sodass eine zusätzliche Parallelisierung von merge keinen weiteren Vorteil bringt. Außerdem entsteht Overhead für die Verwaltung der parallelen Aufgaben, sowie für die wiederholte Suche nach dem Pivot-Element.
 
 \begin{algorithm}[H]
 	\caption{MERGE(array, tempArray, left, mid, right)}
@@ -1829,7 +1829,7 @@ Dabei ist zu beachten, dass es zwischen den maximalen und mittleren Werten kaum 
 
 Der Speicherverbrauch der Java Virtual Threads und Java Platform Threads liegt nahezu gleichauf bei etwa 2200 MB und zeigt somit fast keinen Unterschied. Hierbei ist ein leichter Vorteil für die Platform Threads zu beobachten, die einen minimal niedrigeren Speicherverbrauch aufweisen.
 
-Im Vergleich dazu liegt der Arbeitsspeicherverbrauch der Goroutinen deutlich niedriger, bei etwa 350 MB, weist aber die größten Schwankungen zwischen den maximalen und mittel Werten auf.
+Im Vergleich dazu liegt der Arbeitsspeicherverbrauch der Goroutinen deutlich niedriger, bei etwa 350 MB, weist aber die größten Schwankungen zwischen den maximalen und mittleren Werten auf.
 
 Coroutinen hingegen benötigen erheblich mehr Arbeitsspeicher. Der Verbrauch liegt bei etwa  3800 MB, was eine deutlich höhere Speichernutzung im Vergleich zu den anderen Implementierungen ist.
 
@@ -1998,7 +1998,7 @@ Um die Häufigkeit von Deadlocks zu reduzieren, wird eine Strategie implementier
 
 Durch die Verwendung von PostgreSQL als Datenbank für den Bank-Benchmark wird eine realitätsnahe Umgebung geschaffen, die typische Herausforderungen in Bezug auf Datenkonsistenz und Nebenläufigkeit in Geschäftsanwendungen widerspiegelt. Dies er\-mög\-licht eine aussagekräftige Evaluation der verschiedenen Thread-Abstraktionen in einem praxisnahen Szenario.
 
-\paragraph{PostREST:}
+\paragraph{PostgREST:}
 
 PostgREST ist ein leistungsfähiges Open-Source-Tool, das automatisch eine RESTful-API für PostgreSQL-Datenbanken generiert. Es erstellt dynamisch Endpunkte für Tabellen und Views in der Datenbank, wodurch eine schnelle und flexible Schnittstelle zwischen der Datenbank und den Anwendungen geschaffen wird.
 
@@ -2400,39 +2400,39 @@ Diese Entkopplung führt zu einem geringeren Ressourcenverbrauch, da nicht für 
 
 Diese theoretische Grundlage wurde im zweiten Teil der Arbeit durch Benchmarks praktisch überprüft, um die Konzepte unter realistischen Bedingungen zu evaluieren. Ziel war es, die theoretischen Annahmen durch konkrete Messungen zu verifizieren oder zu falsifizieren und die tatsächliche Leistungsfähigkeit der Thread-Abstraktionen zu bewerten:
 
-Diese theoretischen Effizienzsteigerungen wurde im Rahmen des ersten Benchmarks (Mergesort) deutlich demonstriert, insbesondere in den Messungen 2 und 3, bei denen gezielt viele Threads erstellt wurden. Die neuen Versionen zeigten sich deutlich länger performant als die alten Platform Threads. Bei ihnen blieb die Anzahl der Betriebssystem-Threads bis zum Schluss konstant niedrig blieb, während die Anzahl der Platform Threads stetig anstieg. 
+Die theoretischen Effizienzsteigerungen wurde im Rahmen des ersten Benchmarks (Mergesort) deutlich demonstriert, insbesondere in den Messungen 2 und 3, bei denen gezielt viele Threads erstellt wurden. Die neuen Versionen zeigten sich deutlich länger performant als die alten Platform Threads. Bei ihnen blieb die Anzahl der Betriebssystem-Threads bis zum Schluss konstant niedrig, während die Anzahl der Platform Threads stetig anstieg. 
 
 Allerdings zeigte die erste Messung des Mergesort-Benchmarks auch, dass nach einer optimalen CPU-Auslastung, mit einen geringen Grad an Parallelisierung, keine weiteren Laufzeitvorteile erzielt werden konnten.
 
-Der zweite Benchmark (Bank) offenbarte eine starke Abhängigkeit von anderen Technologien, die die neuen Thread-Abstraktionen unterstützen müssen. Selbst bei vorhandener Unterstützung konnte kein signifikanter Performancegewinn erzielt werden. Es wurde sichtbar, dass da eine Entkopplung von Datenbankverbindungen und Transaktionen mit den genutzten Technologien zurzeit nicht technisch möglich ist.
+Der zweite Benchmark (Bank) offenbarte eine starke Abhängigkeit von anderen Technologien, die die neuen Thread-Abstraktionen unterstützen müssen. Selbst bei vorhandener Unterstützung konnte kein signifikanter Performancegewinn erzielt werden. Es wurde sichtbar, dass eine Entkopplung von Datenbankverbindungen und Transaktionen mit den genutzten Technologien zurzeit nicht technisch möglich ist.
 
 Ein zweiter zentraler Befund des Bank-Benchmarks ist, dass höhere Parallelisierung nicht automatisch bessere Performance bedeutet. Bei niedrigen Latenzen oder wenigen Blockierungen überwiegt der Verwaltungsaufwand vieler Datenbankverbindungen oft die Vorteile höherer Parallelisierung. Effiziente Ressourcennutzung und optimal abgestimmte Verbindungen sind entscheidender als die bloße Erhöhung paralleler Aufgaben.
 
-Die neuen Thread-Abstraktionen zeigen ihre Stärken besonders in Szenarien mit hoher Parallelität in Kombination mit häufigen Unterbrechungen. Sie bieten mindestens die gleiche Leistung wie die alten Implementierungen, übertreffen diese jedoch deutlich in der beschrieben Situationen. 
+Die neuen Thread-Abstraktionen zeigen ihre Stärken besonders in Szenarien mit hoher Par\-al\-le\-li\-tät in Kombination mit häufigen Unterbrechungen. Sie bieten mindestens die gleiche Leistung wie die alten Implementierungen, übertreffen diese jedoch deutlich in der beschrieben Situation. 
 
-Generell lässt sich festhalten, dass die neuen Thread-Abstraktionen in keinem Fall schlechter abschneiden als die alten. Dies ermöglicht beispielsweise in Java einen bedenkenlose Umstellung von Platform Threads auf Virtual Threads. Die neuen Virtual Threads konnten in den Benchmarks sogar besser abschneiden als ihr direktes Konkurrenzprodukt in der JVM, die Kotlin Coroutinen.
+Generell lässt sich festhalten, dass die neuen Thread-Abstraktionen in keinem Fall schlechter abschneiden als die alten. Dies ermöglicht beispielsweise in Java eine bedenkenlose Umstellung von Platform Threads auf Virtual Threads. Die neuen Virtual Threads konnten in den Benchmarks sogar besser abschneiden als ihr direktes Konkurrenzprodukt in der JVM, die Kotlin Coroutinen.
 
-Trotz dieser Fortschritte zeigten die Goroutinen in Go mit Abstand die beste Performance, was nicht überrascht, da Go von Grund auf für Leistung und Nebenläufigkeit entwickelt wurde.
+Trotz dieser Fortschritte Virtual Threads und Coroutinen zeigten die Goroutinen in Go mit Abstand die beste Performance, was nicht überrascht, da Go von Grund auf für Leistung und Nebenläufigkeit entwickelt wurde.
 
 
 \section{Ausblick}
 
-Die vorliegende Masterarbeit bietet eine solide Grundlage für weiterführende Untersuchungen im Bereich der Nebenläufigkeit und Thread-Abstraktionen in verschiedenen Programmiersprachen. Es gibt mehrere vielversprechende Anknüpfungspunkte, die das Potenzial haben, die Arbeit zu erweitern und zu vertiefen und durch Entwicklung eines robusten Testaufbaus inklusive entsprechender Messwerkzeuge ist dies mit einem überschaubaren Aufwand möglich.
+Die vorliegende Masterarbeit bietet eine solide Grundlage für weiterführende Untersuchungen im Bereich der Nebenläufigkeit und Thread-Abstraktionen in verschiedenen Programmiersprachen. Es gibt mehrere vielversprechende Anknüpfungspunkte, die das Potenzial haben, die Arbeit zu erweitern und zu vertiefen. Durch Entwicklung eines robusten Testaufbaus inklusive entsprechender Messwerkzeuge ist dies mit einem überschaubaren Aufwand möglich.
 
 Ein wichtiger Bereich für zukünftige Forschung wäre die Erweiterung um weitere Benchmarks. Dabei gibt es verschiedene interessante Ansätze:
 
-Insbesondere wäre es interessant zu untersuchen ob es eine Möglichkeit zur Entkopplung von Transaktionen und Datenbankverbindungen gibt, ähnlich wie sie bei Thread-Abstraktionen existiert. Eine mögliche Lösung wäre die Entwicklung eines "Connection Pooling"-Systems, das Datenbankverbindungen ähnlich verwaltet wie Goroutinen oder Virtual Threads. Dieses System könnte eine große Anzahl von virtuellen Datenbankverbindungen auf eine begrenzte Anzahl tatsächlicher Verbindungen abbilden. Dadurch würde die Limitierung durch die maximale Anzahl an Datenbankverbindungen umgangen und die volle Leistungsfähigkeit der Thread-Abstraktionen könnte ausgeschöpft werden.
+Insbesondere wäre es interessant zu untersuchen, ob es eine Möglichkeit zur Entkopplung von Transaktionen und Datenbankverbindungen gibt, ähnlich wie sie bei Thread-Abstraktionen existiert. Eine mögliche Lösung wäre die Entwicklung eines "Connection Pooling"-Systems, das Datenbankverbindungen ähnlich verwaltet wie Goroutinen oder Virtual Threads. Dieses System könnte eine große Anzahl von virtuellen Datenbankverbindungen auf eine begrenzte Anzahl tatsächlicher Verbindungen abbilden. Dadurch würde die Limitierung durch die maximale Anzahl an Datenbankverbindungen umgangen und die volle Leistungsfähigkeit der Thread-Abstraktionen könnte ausgeschöpft werden.
 
-Des weiteren könnte die Untersuchung von Cancellation-Mechanismen wertvolle Einblicke liefern. Diese werden in den Sprachen unterschiedlich umgesetzt. Coroutinen nutzen Coroutinen-Scopes zur Ermöglichung einer hierarchischen Strukturierung, Goroutinen hingegen das Closing-Channels-Programmiermuster.
+Des Weiteren könnte die Untersuchung von Cancellation-Mechanismen wertvolle Einblicke liefern. Diese werden in den Sprachen unterschiedlich umgesetzt. Coroutinen nutzen Coroutinen-Scopes zur Ermöglichung einer hierarchischen Strukturierung, Goroutinen hingegen das Closing-Channels-Programmiermuster.
 Für Java Virtual Threads wird zukünftig vermutlich die sogenannte Structured Concurrency eingeführt, welche ebenfalls eine Hierarchie unter den Virtual Threads ermöglicht.
 
 Ein weiterer wichtiger Aspekt für zukünftige Untersuchungen wäre das Exception Handling. Eine detaillierte Analyse des Verhaltens bei Ausnahmen und Abbrüchen in nebenläufigen Szenarien könnte die Robustheit verschiedener Implementierungen aufzeigen.
 
-Zudem könnte die Entwicklung eines Webservers nach dem Thread-per-Request Modell Erkenntnisse für praktische Anwendungsfälle liefern und die Effizienz der verschiedenen Thread-Abstraktionen in realen Szenarien demonstrieren.
+Die Entwicklung eines Webservers nach dem Thread-per-Request Modell würde Erkenntnisse für praktische Anwendungsfälle liefern und die Effizienz der verschiedenen Thread-Abstraktionen in realen Szenarien demonstrieren.
 
 Um ein noch umfassenderes Bild zu erhalten, wäre es alternativ auch möglich, die vorhandenen Benchmarks auf weitere Programmiersprachen mit entsprechenden Thread-Abs\-trak\-tio\-nen auszuweiten. Insbesondere könnten Sprachen wie C++ und Rust in Betracht gezogen werden, die ihre eigenen Ansätze zur Nebenläufigkeit bieten.
 
-Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere Untersuchungen. Die gewonnenen Erkenntnisse können als Ausgangspunkt für tiefergehende Analysen und praktische Anwendungen in der Softwareentwicklung dienen.
+Insgesamt bietet diese Masterarbeit ein gutes Fundament für potenziell weitere Untersuchungen. Die gewonnenen Erkenntnisse können als Ausgangspunkt für tiefergehende Analysen und praktische Anwendungen in der Softwareentwicklung dienen, die hier entwickelten Messwerkzeuge können für zukünftige Messaufgaben genutzt und adaptiert werden.
 
 
 \printbibliography
